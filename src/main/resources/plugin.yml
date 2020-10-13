@@ -1,0 +1,7 @@
+name: Sushida
+version: ${project.version}
+main: net.teamfruit.sushida.Sushida
+api-version: 1.15
+prefix: Sushida
+authors: [Kamesuta]
+description: 寿司打
