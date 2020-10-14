@@ -1,14 +1,14 @@
-package net.teamfruit.sushida;
+package net.teamfruit.sushida.player;
 
-public class GamePlayerData {
-    public GamePlayerSession session;
+public class PlayerState {
+    public GameState session;
 
     public boolean isStarted() {
         return session != null;
     }
 
     public void start() {
-        session = new GamePlayerSession();
+        session = new GameState();
     }
 
     public void finish() {

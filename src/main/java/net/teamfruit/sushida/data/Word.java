@@ -1,4 +1,4 @@
-package net.teamfruit.sushida;
+package net.teamfruit.sushida.data;
 
 import com.google.common.base.Charsets;
 import org.yaml.snakeyaml.Yaml;
