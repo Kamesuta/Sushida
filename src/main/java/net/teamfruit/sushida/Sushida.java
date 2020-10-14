@@ -13,11 +13,14 @@ public final class Sushida extends JavaPlugin {
 
     public Logger logger;
     private final Map<Player, GamePlayerData> data = new HashMap<>();
+    public Romaji romaji;
 
     @Override
     public void onEnable() {
         // Plugin startup logic
         logger = getLogger();
+
+        romaji = Romaji.load(getResource("romaji.json"));
 
         ManageCommandListener manageCommand = new ManageCommandListener(this);
         GameLogic gameLogic = new GameLogic(this);
