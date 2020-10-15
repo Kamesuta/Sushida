@@ -1,7 +1,9 @@
 package net.teamfruit.sushida.listener;
 
 import com.destroystokyo.paper.event.server.AsyncTabCompleteEvent;
-import net.teamfruit.sushida.logic.GameLogic;
+import net.teamfruit.sushida.Sushida;
+import net.teamfruit.sushida.player.PlayerData;
+import net.teamfruit.sushida.player.StateContainer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -14,13 +16,25 @@ public class TypeEventListener implements Listener {
         String buffer = event.getBuffer();
         if (!buffer.startsWith("/ "))
             return;
+        buffer = buffer.substring(2);
 
         CommandSender sender = event.getSender();
         if (!(sender instanceof Player))
             return;
         Player player = (Player) sender;
 
-        player.sendTitle("ローマ字", buffer, 0, 100, 0);
+        PlayerData playerState = Sushida.logic.states.getPlayerState(player);
+        if (!playerState.hasSession())
+            return;
+        StateContainer state = playerState.getSession();
+
+        if (buffer.length() > state.inputCursor) {
+            String newChar = buffer.substring(state.inputCursor);
+            state.inputCursor = buffer.length();
+            newChar.chars().forEach(i -> state.apply((s, c) -> s.onType(c, String.valueOf((char) i))));
+        } else {
+            state.apply((s, c) -> s.onType(c, ""));
+        }
     }
 
 }

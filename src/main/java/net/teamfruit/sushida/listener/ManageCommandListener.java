@@ -2,6 +2,8 @@ package net.teamfruit.sushida.listener;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.teamfruit.sushida.Sushida;
+import net.teamfruit.sushida.player.PlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -9,9 +11,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class ManageCommandListener implements CommandExecutor, TabCompleter {
 
@@ -44,28 +44,25 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
             players.add((Player) sender);
         }
 
-        sender.sendMessage("");
-        sender.sendMessage(new ComponentBuilder()
-                .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
-                .append(new ComponentBuilder("寿司打").bold(true).create()).color(ChatColor.GREEN)
-                .create()
-        );
-        sender.sendMessage("");
-        sender.sendMessage(new ComponentBuilder()
-                .append("画面中央の文字の指示に従ってください").color(ChatColor.GREEN)
-                .append("※快適なプレイのために一度チャット画面を閉じ、").color(ChatColor.GREEN)
-                .append(new ComponentBuilder("【F3+D】").bold(true).create()).color(ChatColor.GRAY)
-                .append("を押すことを推奨します").color(ChatColor.GREEN)
-                .create()
-        );
-        sender.sendMessage("");
+        for (Player player : players) {
+            PlayerData state = Sushida.logic.states.getPlayerState(player);
+            if (state.hasSession()) {
+                state.destroy();
+                player.sendMessage("寿司打を終了しました。");
+            } else {
+                player.sendMessage("寿司打を開始しました。");
+                state.create();
+            }
+        }
 
-        return false;
+        return true;
     }
 
     @Override
-    public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
-        return null;
+    public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] args) {
+        if (args.length == 1)
+            return Arrays.asList("start", "exit");
+        return Collections.emptyList();
     }
 
 }

@@ -1,12 +1,11 @@
 package net.teamfruit.sushida.player;
 
 import net.teamfruit.sushida.player.state.NoneState;
-import net.teamfruit.sushida.player.state.PlayState;
 import net.teamfruit.sushida.player.state.TitleState;
 import org.bukkit.entity.Player;
 
 public class PlayerData {
-    private Player player;
+    public final Player player;
     private StateContainer session;
 
     public PlayerData(Player player) {
@@ -25,7 +24,7 @@ public class PlayerData {
         if (session != null)
             return;
         session = new StateContainer(this);
-        session.apply(StateContainer.supply(PlayState::new));
+        session.apply(StateContainer.supply(TitleState::new));
     }
 
     public void destroy() {

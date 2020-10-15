@@ -10,6 +10,7 @@ public class StateContainer {
     private IState state = new TitleState();
     public Timer timer;
     public int score;
+    public int inputCursor;
 
     public StateContainer(PlayerData data) {
         this.data = data;
@@ -33,7 +34,7 @@ public class StateContainer {
         return this.state;
     }
 
-    public static BiFunction<IState, StateContainer, IState> changed(Class<?> stateClass, BiFunction<IState, StateContainer, IState> func) {
+    public static BiFunction<IState, StateContainer, IState> exclude(Class<?> stateClass, BiFunction<IState, StateContainer, IState> func) {
         return (state, container) -> {
             if (state.getClass().equals(stateClass))
                 return null;

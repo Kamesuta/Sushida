@@ -4,17 +4,21 @@ import net.teamfruit.sushida.player.StateContainer;
 
 public interface IState {
     default IState onEnter(StateContainer state) {
-        return this;
+        return null;
     }
 
     default void onExit(StateContainer state) {
     }
 
-    default IState onCommand(StateContainer state, String command) {
-        return this;
+    default IState onPause(StateContainer state) {
+        return null;
     }
 
-    default IState onType(StateContainer state, char typed) {
-        return this;
+    default IState onType(StateContainer state, String typed) {
+        return null;
+    }
+
+    default IState onTick(StateContainer state) {
+        return null;
     }
 }
