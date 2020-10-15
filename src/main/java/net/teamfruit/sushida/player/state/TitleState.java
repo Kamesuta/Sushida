@@ -1,4 +1,4 @@
 package net.teamfruit.sushida.player.state;
 
-public class CreatedState implements IState {
+public class TitleState implements IState {
 }

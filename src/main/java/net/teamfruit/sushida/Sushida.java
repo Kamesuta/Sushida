@@ -12,8 +12,8 @@ import java.util.logging.Logger;
 
 public final class Sushida extends JavaPlugin {
 
-    public Logger logger;
-    public GameLogic logic;
+    public static Logger logger;
+    public static GameLogic logic;
 
     @Override
     public void onEnable() {
@@ -26,11 +26,11 @@ public final class Sushida extends JavaPlugin {
                 .build();
 
         // Event
-        getServer().getPluginManager().registerEvents(new TypeEventListener(logic), this);
+        getServer().getPluginManager().registerEvents(new TypeEventListener(), this);
 
         // Command
-        getCommand("sushida").setExecutor(new ManageCommandListener(logic));
-        getCommand("").setExecutor(new GameCommandListener(logic));
+        getCommand("sushida").setExecutor(new ManageCommandListener());
+        getCommand("").setExecutor(new GameCommandListener());
     }
 
     @Override

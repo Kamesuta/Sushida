@@ -2,20 +2,19 @@ package net.teamfruit.sushida.listener;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.teamfruit.sushida.logic.GameLogic;
-import net.teamfruit.sushida.player.PlayerState;
+import net.teamfruit.sushida.Sushida;
+import net.teamfruit.sushida.player.PlayerData;
+import net.teamfruit.sushida.player.StateContainer;
+import net.teamfruit.sushida.player.state.NoneState;
+import net.teamfruit.sushida.player.state.PauseState;
+import net.teamfruit.sushida.player.state.PlayState;
+import net.teamfruit.sushida.player.state.TitleState;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class GameCommandListener implements CommandExecutor {
-
-    private final GameLogic logic;
-
-    public GameCommandListener(GameLogic logic) {
-        this.logic = logic;
-    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] strings) {
@@ -29,9 +28,8 @@ public class GameCommandListener implements CommandExecutor {
         }
         Player player = (Player) sender;
 
-        PlayerState playerState = logic.states.getPlayerState(player);
-        playerState.create();
-        if (!playerState.hasSession() || playerState.getSession().isS) {
+        PlayerData playerState = Sushida.logic.states.getPlayerState(player);
+        if (!playerState.hasSession()) {
             sender.sendMessage(new ComponentBuilder()
                     .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
                     .append("寿司打を始めるためには").color(ChatColor.GREEN)
@@ -42,8 +40,7 @@ public class GameCommandListener implements CommandExecutor {
             return true;
         }
 
-        PlayerState state = logic.states.getPlayerState(player);
-        state.pause();
+        playerState.getSession().apply(StateContainer.changed(PlayState.class, StateContainer.supply(PauseState::new)));
 
         player.sendTitle("一時停止", "再開するには「/ (スラッシュ・スペース)」と入力してください。", 0, 100, 0);
 

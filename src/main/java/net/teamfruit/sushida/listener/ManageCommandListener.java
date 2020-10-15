@@ -2,7 +2,6 @@ package net.teamfruit.sushida.listener;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.teamfruit.sushida.logic.GameLogic;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -10,16 +9,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class ManageCommandListener implements CommandExecutor, TabCompleter {
-
-    private final GameLogic logic;
-
-    public ManageCommandListener(GameLogic logic) {
-        this.logic = logic;
-    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
@@ -73,5 +67,5 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
         return null;
     }
-    
+
 }

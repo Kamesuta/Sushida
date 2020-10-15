@@ -1,10 +1,20 @@
 package net.teamfruit.sushida.player.state;
 
-import net.teamfruit.sushida.logic.GameLogic;
-import net.teamfruit.sushida.player.PlayerState;
+import net.teamfruit.sushida.player.StateContainer;
 
 public interface IState {
-    default IState onInit(GameLogic logic, PlayerState state) { return this; }
-    default IState onCommand(GameLogic logic, PlayerState state, String command) { return this; }
-    default IState onType(GameLogic logic, PlayerState state, char typed) { return this; }
+    default IState onEnter(StateContainer state) {
+        return this;
+    }
+
+    default void onExit(StateContainer state) {
+    }
+
+    default IState onCommand(StateContainer state, String command) {
+        return this;
+    }
+
+    default IState onType(StateContainer state, char typed) {
+        return this;
+    }
 }

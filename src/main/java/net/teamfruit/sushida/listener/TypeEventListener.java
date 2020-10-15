@@ -9,12 +9,6 @@ import org.bukkit.event.Listener;
 
 public class TypeEventListener implements Listener {
 
-    private final GameLogic logic;
-
-    public TypeEventListener(GameLogic logic) {
-        this.logic = logic;
-    }
-
     @EventHandler
     public void onType(AsyncTabCompleteEvent event) {
         String buffer = event.getBuffer();

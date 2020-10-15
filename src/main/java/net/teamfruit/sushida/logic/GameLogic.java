@@ -3,17 +3,17 @@ package net.teamfruit.sushida.logic;
 import com.google.common.collect.ArrayListMultimap;
 import net.teamfruit.sushida.data.Romaji;
 import net.teamfruit.sushida.data.Word;
-import net.teamfruit.sushida.player.PlayerStateContainer;
+import net.teamfruit.sushida.player.PlayerDataContainer;
 
 import java.util.HashMap;
 
 public class GameLogic {
-    public final PlayerStateContainer states;
+    public final PlayerDataContainer states;
     public final Romaji romaji;
     public final Word word;
 
     private GameLogic(Romaji romaji, Word word) {
-        this.states = new PlayerStateContainer();
+        this.states = new PlayerDataContainer();
         this.romaji = romaji;
         this.word = word;
     }
