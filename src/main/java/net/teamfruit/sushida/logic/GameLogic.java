@@ -1,11 +1,10 @@
 package net.teamfruit.sushida.logic;
 
-import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ImmutableListMultimap;
+import com.google.common.collect.ImmutableMap;
 import net.teamfruit.sushida.data.Romaji;
 import net.teamfruit.sushida.data.Word;
 import net.teamfruit.sushida.player.PlayerDataContainer;
-
-import java.util.HashMap;
 
 public class GameLogic {
     public final PlayerDataContainer states;
@@ -19,8 +18,8 @@ public class GameLogic {
     }
 
     public static class GameLogicBuilder {
-        private Romaji romaji = new Romaji(ArrayListMultimap.create());
-        private Word word = new Word(new HashMap<>());
+        private Romaji romaji = new Romaji(ImmutableListMultimap.of());
+        private Word word = new Word(ImmutableMap.of());
 
         public GameLogicBuilder romaji(Romaji romaji) {
             this.romaji = romaji;

@@ -2,6 +2,7 @@ package net.teamfruit.sushida.data;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ListMultimap;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.CustomClassLoaderConstructor;
@@ -12,9 +13,9 @@ import java.util.List;
 import java.util.Map;
 
 public class Romaji {
-    private final ListMultimap<String, String> mappings;
+    public final ImmutableListMultimap<String, String> mappings;
 
-    public Romaji(ListMultimap<String, String> mappings) {
+    public Romaji(ImmutableListMultimap<String, String> mappings) {
         this.mappings = mappings;
     }
 
@@ -27,7 +28,7 @@ public class Romaji {
                     .collect(ArrayListMultimap::create,
                             (m, e) -> m.put(e.getKey(), e.getValue()),
                             (a, b) -> a.putAll(b));
-            return new Romaji(multimap);
+            return new Romaji(ImmutableListMultimap.copyOf(multimap));
         } catch (Exception e) {
             throw new RuntimeException("Romaji load error", e);
         }
