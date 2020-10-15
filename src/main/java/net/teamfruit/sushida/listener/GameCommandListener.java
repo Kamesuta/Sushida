@@ -20,13 +20,18 @@ public class GameCommandListener implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] strings) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage("プレイヤーのみ実行可能です。");
+            sender.sendMessage(new ComponentBuilder()
+                    .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
+                    .append("プレイヤーのみ実行可能です。").color(ChatColor.RED)
+                    .create()
+            );
             return true;
         }
         Player player = (Player) sender;
 
         PlayerState playerState = logic.states.getPlayerState(player);
-        if (!playerState.isStarted()) {
+        playerState.create();
+        if (!playerState.hasSession() || playerState.getSession().isS) {
             sender.sendMessage(new ComponentBuilder()
                     .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
                     .append("寿司打を始めるためには").color(ChatColor.GREEN)
@@ -36,6 +41,9 @@ public class GameCommandListener implements CommandExecutor {
             );
             return true;
         }
+
+        PlayerState state = logic.states.getPlayerState(player);
+        state.pause();
 
         player.sendTitle("一時停止", "再開するには「/ (スラッシュ・スペース)」と入力してください。", 0, 100, 0);
 
