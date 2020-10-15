@@ -11,44 +11,44 @@ public class TitleState implements IState {
     public IState onEnter(StateContainer state) {
         Player player = state.data.player;
 
-        for (int i = 0; i < 8; i++)
+        for (int i = 0; i < 9; i++)
             player.sendMessage("");
 
         player.sendMessage(new ComponentBuilder()
-                .append("≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)").color(ChatColor.GRAY)
+                .append("  ≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)").color(ChatColor.GRAY)
                 .create()
         );
         player.sendMessage("");
         player.sendMessage(new ComponentBuilder()
-                .append("                                ")
+                .append("      ")
                 .append(new ComponentBuilder("寿司打").bold(true).create()).color(ChatColor.YELLOW)
-                .create()
-        );
-        player.sendMessage(new ComponentBuilder()
-                .append("                                                  ")
+                .append("  -  ").color(ChatColor.GRAY)
                 .append("制作: かめすた").color(ChatColor.LIGHT_PURPLE)
                 .create()
         );
+        player.sendMessage("");
         player.sendMessage(new ComponentBuilder()
-                .append("(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡").color(ChatColor.GRAY)
+                .append("  (≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡").color(ChatColor.GRAY)
                 .create()
         );
-        player.sendMessage("");
         player.sendMessage("");
         player.sendMessage(new ComponentBuilder()
                 .append("    画面中央の文字の指示に従ってください").color(ChatColor.GREEN)
                 .create()
         );
         player.sendMessage(new ComponentBuilder()
-                .append("    ※快適なプレイのために一度チャット画面を閉じ、").color(ChatColor.GREEN)
+                .append("    ※推奨設定: 全画面、GUIの大きさ→3、Unicodeフォント強制→OFF").color(ChatColor.GREEN)
                 .create()
         );
         player.sendMessage(new ComponentBuilder()
-                .append(new TextComponent(new ComponentBuilder("    【F3+D】").bold(true).create())).color(ChatColor.GRAY)
-                .append("を押すことを推奨します").color(ChatColor.GREEN)
+                .append("    ※快適なプレイのために一度チャット画面を閉じ、").color(ChatColor.GOLD)
                 .create()
         );
-        player.sendMessage("");
+        player.sendMessage(new ComponentBuilder()
+                .append(new TextComponent(new ComponentBuilder("   【F3+D】").bold(true).create())).color(ChatColor.GRAY)
+                .append("を押すことを推奨します").color(ChatColor.GOLD)
+                .create()
+        );
         player.sendMessage("");
 
         return null;
@@ -63,7 +63,7 @@ public class TitleState implements IState {
 
     @Override
     public IState onTick(StateContainer state) {
-        state.data.player.sendTitle("ⓘ タイピング中はチャット画面を使います", "「/ 」スラッシュを押してからスペースを押すとスタートします", 10, 0, 10);
+        state.data.player.sendTitle("ⓘ チャット画面を使います", "「/ 」スラッシュを押してからスペースを押すとスタートします", 10, 0, 10);
         return null;
     }
 }
