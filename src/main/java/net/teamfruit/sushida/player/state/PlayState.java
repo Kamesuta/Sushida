@@ -16,7 +16,7 @@ public class PlayState implements IState {
     private String wordRequiredHiragana;
     private String wordRequiredRomaji;
 
-    private int charTypedHiraganaPosition;
+    private int charTypedHiraganaPosition = 100;
     private String charRequiredHiragana;
 
     private Map<String, String> charRequiredRomaji = new HashMap<>();
@@ -43,6 +43,7 @@ public class PlayState implements IState {
     }
 
     public void nextCharHiragana() {
+        charTypedHiraganaPosition++;
         if (charTypedHiraganaPosition >= wordRequiredHiragana.length()) {
             genNextWord();
             charTypedHiraganaPosition = 0;
@@ -54,6 +55,7 @@ public class PlayState implements IState {
         ImmutableList<String> candidate = romaji.get(charRequiredHiragana);
         if (candidate.contains(charTypedRomaji)) {
             nextCharHiragana();
+            candidate = romaji.get(charRequiredHiragana);
             charTypedRomaji = "";
         }
         charRequiredRomaji = candidate.stream()
@@ -79,13 +81,15 @@ public class PlayState implements IState {
 
     @Override
     public IState onType(StateContainer state, String typed) {
-        if (!charRequiredRomaji.containsValue(typed)) {
+        Sushida.logger.info(charRequiredHiragana + "(" + charTypedHiraganaPosition + "): " + charTypedRomaji + " += " + typed + " [ " + charRequiredRomaji + " ]");
+        if (charRequiredRomaji.containsValue(typed)) {
+            // OK
+            charTypedRomaji += typed;
+            nextCharRomaji();
+        } else {
             // Miss
-            state.data.player.sendTitle(wordRequiredHiragana, charTypedRomaji, 0, 100, 0);
-            return null;
         }
-        charTypedRomaji += typed;
-        nextCharRomaji();
+        Sushida.logger.info(charRequiredHiragana + "(" + charTypedHiraganaPosition + "): " + charTypedRomaji + " += " + typed + " [ " + charRequiredRomaji + " ]");
 
         state.data.player.sendTitle(wordRequiredHiragana, charTypedRomaji, 0, 100, 0);
         return null;
