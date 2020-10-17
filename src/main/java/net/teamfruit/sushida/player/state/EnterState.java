@@ -4,13 +4,27 @@ import com.destroystokyo.paper.Title;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.teamfruit.sushida.player.StateContainer;
+import org.bukkit.Bukkit;
 import org.bukkit.SoundCategory;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
+import org.bukkit.boss.KeyedBossBar;
 import org.bukkit.entity.Player;
 
 public class EnterState implements IState {
+    private KeyedBossBar bossBar;
+
     @Override
     public IState onEnter(StateContainer state) {
         Player player = state.data.player;
+
+        if (bossBar == null)
+            bossBar = Bukkit.getBossBar(state.bossKey);
+        if (bossBar == null)
+            bossBar = Bukkit.createBossBar(state.bossKey, "Enter", BarColor.RED, BarStyle.SEGMENTED_12);
+
+        bossBar.addPlayer(state.data.player);
+        bossBar.setVisible(true);
 
         player.sendTitle(new Title(
                 new ComponentBuilder("Enter").bold(true).color(ChatColor.RED).create(),
@@ -20,6 +34,14 @@ public class EnterState implements IState {
         player.playSound(player.getLocation(), "sushida:sushida.poke", SoundCategory.PLAYERS, 1, 1);
 
         return null;
+    }
+
+    @Override
+    public void onExit(StateContainer state) {
+        bossBar.setVisible(false);
+        bossBar.removeAll();
+
+        Bukkit.removeBossBar(state.bossKey);
     }
 
     @Override

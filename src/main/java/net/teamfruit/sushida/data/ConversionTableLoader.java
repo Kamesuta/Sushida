@@ -35,7 +35,7 @@ public class ConversionTableLoader {
             String line;
             while ((line = reader.readLine()) != null) {
 
-                int delimiterIndex = line.indexOf(',');
+                int delimiterIndex = line.lastIndexOf(',');
 
                 String key = line.substring(0, delimiterIndex);
                 String value = line.substring(delimiterIndex + 1);

@@ -44,9 +44,21 @@ public class PlayState implements IState {
         if (state.typingLogic.type(typed)) {
             // OK
             player.playSound(player.getLocation(), "sushida:sushida.k", SoundCategory.PLAYERS, 1, 1);
+
+            state.score++;
+
+            if (state.score % 30 == 0) {
+                player.playSound(player.getLocation(), "sushida:sushida.kin", SoundCategory.PLAYERS, 1, 1);
+            }
+
+            if (state.score >= 120) {
+                state.score = 0;
+            }
         } else {
             // NG
             player.playSound(player.getLocation(), "sushida:sushida.miss", SoundCategory.PLAYERS, 1, 1);
+
+            state.score = 0;
         }
 
         if (state.typingLogic.isNextTiming()) {
@@ -58,6 +70,7 @@ public class PlayState implements IState {
         }
 
         bossBar.setTitle(state.typingLogic.getRequiredKanji());
+        bossBar.setProgress(state.score / 30d / 4);
 
         player.sendTitle(new Title(
                 new ComponentBuilder()
