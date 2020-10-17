@@ -4,24 +4,41 @@ import com.destroystokyo.paper.Title;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.teamfruit.sushida.player.StateContainer;
+import org.bukkit.Bukkit;
 import org.bukkit.SoundCategory;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
+import org.bukkit.boss.KeyedBossBar;
 import org.bukkit.entity.Player;
 
 public class PlayState implements IState {
+    private KeyedBossBar bossBar;
+
     @Override
     public IState onEnter(StateContainer state) {
-        onType(state, "");
+        if (bossBar == null)
+            bossBar = Bukkit.getBossBar(state.bossKey);
+        if (bossBar == null)
+            bossBar = Bukkit.createBossBar(state.bossKey, state.data.player.getName(), BarColor.GREEN, BarStyle.SEGMENTED_12);
+
+        bossBar.addPlayer(state.data.player);
+        bossBar.setVisible(true);
+
+        onType(state, "", "");
 
         return null;
     }
 
     @Override
     public void onExit(StateContainer state) {
-        Player player = state.data.player;
+        bossBar.setVisible(false);
+        bossBar.removeAll();
+
+        Bukkit.removeBossBar(state.bossKey);
     }
 
     @Override
-    public IState onType(StateContainer state, String typed) {
+    public IState onType(StateContainer state, String typed, String buffer) {
         Player player = state.data.player;
 
         if (state.typingLogic.type(typed)) {
@@ -35,19 +52,23 @@ public class PlayState implements IState {
         if (state.typingLogic.isNextTiming()) {
             // Next
             player.playSound(player.getLocation(), "sushida:sushida.coin", SoundCategory.PLAYERS, 1, 1);
+
+            if (buffer.length() > 220)
+                return new EnterState();
         }
 
+        bossBar.setTitle(state.typingLogic.getRequiredKanji());
+
         player.sendTitle(new Title(
-                new ComponentBuilder()
-                        .append(state.typingLogic.getRequiredKanji()).color(ChatColor.GREEN)
-                        .create(),
                 new ComponentBuilder()
                         .append(state.typingLogic.getRequiredHiragana().substring(0, state.typingLogic.getRequiredHiragana().length() - state.typingLogic.getRemainingRequiredHiraganaVisual().length())).color(ChatColor.WHITE)
                         .append(state.typingLogic.getRemainingRequiredHiraganaVisual()).color(ChatColor.GRAY)
                         .create(),
+                new ComponentBuilder()
+                        .append(state.typingLogic.getTypedTotalRomaji()).color(ChatColor.WHITE)
+                        .append(state.typingLogic.getTypedRomaji()).color(ChatColor.GRAY)
+                        .create(),
                 0, 10000, 0));
-
-        player.sendActionBar(ChatColor.WHITE + state.typingLogic.getTypedTotalRomaji() + ChatColor.GRAY + state.typingLogic.getTypedRomaji());
 
         return null;
     }
@@ -61,7 +82,7 @@ public class PlayState implements IState {
     public IState onTick(StateContainer state) {
         Player player = state.data.player;
 
-        player.sendActionBar(ChatColor.WHITE + state.typingLogic.getTypedTotalRomaji() + ChatColor.GRAY + state.typingLogic.getTypedRomaji());
+        //player.sendActionBar(ChatColor.WHITE + state.typingLogic.getTypedTotalRomaji() + ChatColor.GRAY + state.typingLogic.getTypedRomaji());
 
         if (state.bgmCount++ >= 4) {
             state.bgmCount = 0;

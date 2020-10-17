@@ -13,10 +13,11 @@ public class TypeEventListener implements Listener {
 
     @EventHandler
     public void onType(AsyncTabCompleteEvent event) {
-        String buffer = event.getBuffer();
-        if (!buffer.startsWith("/ "))
+        String buffer0 = event.getBuffer();
+        if (!buffer0.startsWith("/ "))
             return;
-        buffer = buffer.substring(2);
+        buffer0 = buffer0.substring(2);
+        String buffer = buffer0;
 
         CommandSender sender = event.getSender();
         if (!(sender instanceof Player))
@@ -32,9 +33,9 @@ public class TypeEventListener implements Listener {
             String newChar = buffer.substring(state.inputCursor);
             // チート対策
             // newChar.chars().forEach(i -> state.apply((s, c) -> s.onType(c, String.valueOf((char) i))));
-            state.apply((s, c) -> s.onType(c, String.valueOf((char) newChar.charAt(0))));
+            state.apply((s, c) -> s.onType(c, String.valueOf((char) newChar.charAt(0)), buffer));
         } else {
-            state.apply((s, c) -> s.onType(c, ""));
+            state.apply((s, c) -> s.onType(c, "", buffer));
         }
         state.inputCursor = buffer.length();
     }

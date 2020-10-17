@@ -50,7 +50,7 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
                 state.destroy();
                 player.sendMessage("寿司打を終了しました。");
             } else {
-                player.sendMessage("寿司打を開始しました。");
+                //player.sendMessage("寿司打を開始しました。");
                 state.create();
             }
         }

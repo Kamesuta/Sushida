@@ -7,6 +7,7 @@ import net.teamfruit.sushida.listener.ManageCommandListener;
 import net.teamfruit.sushida.listener.TickEventGenerator;
 import net.teamfruit.sushida.listener.TypeEventListener;
 import net.teamfruit.sushida.logic.GameLogic;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.logging.Logger;
@@ -15,11 +16,13 @@ public final class Sushida extends JavaPlugin {
 
     public static Logger logger;
     public static GameLogic logic;
+    public static Plugin plugin;
 
     @Override
     public void onEnable() {
         // Plugin startup logic
         logger = getLogger();
+        plugin = this;
 
         logic = new GameLogic.GameLogicBuilder()
                 .romaji(ConversionTableLoader.createFromStream(getResource("romaji.csv")))

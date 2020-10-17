@@ -8,7 +8,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 public class TickEventGenerator extends BukkitRunnable {
     @Override
     public void run() {
-        Sushida.logic.states.removeOfflinePlayers();
         Sushida.logic.states.getPlayers().stream()
                 .filter(PlayerData::hasSession)
                 .map(PlayerData::getSession)

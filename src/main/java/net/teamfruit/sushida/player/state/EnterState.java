@@ -7,14 +7,14 @@ import net.teamfruit.sushida.player.StateContainer;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 
-public class PauseState implements IState {
+public class EnterState implements IState {
     @Override
     public IState onEnter(StateContainer state) {
         Player player = state.data.player;
 
         player.sendTitle(new Title(
-                new ComponentBuilder("「/ 」").bold(true).color(ChatColor.GREEN).create(),
-                new ComponentBuilder("スラッシュ＋スペースで続行").bold(false).color(ChatColor.GREEN).create(),
+                new ComponentBuilder("Enter").bold(true).color(ChatColor.RED).create(),
+                new ComponentBuilder("エンターキーを押してください").bold(false).color(ChatColor.GREEN).create(),
                 0, 10000, 0));
 
         player.playSound(player.getLocation(), "sushida:sushida.poke", SoundCategory.PLAYERS, 1, 1);
@@ -24,20 +24,24 @@ public class PauseState implements IState {
 
     @Override
     public IState onType(StateContainer state, String typed, String buffer) {
-        Player player = state.data.player;
-
-        if ("".equals(typed)) {
-            player.playSound(player.getLocation(), "sushida:sushida.open", SoundCategory.PLAYERS, 1, 1);
-
+        if ("".equals(typed) && buffer.length() < 50)
             return new PlayState();
-        }
-
         return null;
+    }
+
+    @Override
+    public IState onPause(StateContainer state) {
+        return new PauseState();
     }
 
     @Override
     public IState onTick(StateContainer state) {
         Player player = state.data.player;
+
+        player.sendTitle(new Title(
+                new ComponentBuilder("Enter").bold(true).color(ChatColor.RED).create(),
+                new ComponentBuilder("エンターキーを押してください").bold(false).color(ChatColor.GREEN).create(),
+                5, 10, 5));
 
         if (state.bgmCount++ >= 4) {
             state.bgmCount = 0;

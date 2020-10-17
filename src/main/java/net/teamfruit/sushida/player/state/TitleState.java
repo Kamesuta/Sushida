@@ -1,5 +1,6 @@
 package net.teamfruit.sushida.player.state;
 
+import com.destroystokyo.paper.Title;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -28,6 +29,8 @@ public class TitleState implements IState {
                 .append(new ComponentBuilder("寿司打").bold(true).create()).color(ChatColor.YELLOW)
                 .append("  -  ").color(ChatColor.GRAY)
                 .append("制作: かめすた").color(ChatColor.LIGHT_PURPLE)
+                .append(" / ").color(ChatColor.GRAY)
+                .append("制作時間: 26時間").color(ChatColor.RED)
                 .create()
         );
         player.sendMessage("");
@@ -38,6 +41,10 @@ public class TitleState implements IState {
         player.sendMessage("");
         player.sendMessage(new ComponentBuilder()
                 .append("    画面中央の文字の指示に従ってください").color(ChatColor.GREEN)
+                .create()
+        );
+        player.sendMessage(new ComponentBuilder()
+                .append("    入力モードを半角にしてください").color(ChatColor.GREEN)
                 .create()
         );
         player.sendMessage(new ComponentBuilder()
@@ -68,7 +75,7 @@ public class TitleState implements IState {
     }
 
     @Override
-    public IState onType(StateContainer state, String typed) {
+    public IState onType(StateContainer state, String typed, String buffer) {
         Player player = state.data.player;
 
         if ("".equals(typed)) {
@@ -84,7 +91,10 @@ public class TitleState implements IState {
     public IState onTick(StateContainer state) {
         Player player = state.data.player;
 
-        player.sendTitle("ⓘ チャット画面を使います", "「/ 」スラッシュを押してからスペースを押すとスタートします", 10, 0, 10);
+        player.sendTitle(new Title(
+                new ComponentBuilder("ⓘ チャット画面を使います").bold(true).color(ChatColor.BLUE).create(),
+                new ComponentBuilder("「/ 」スラッシュを押してからスペースを押すとスタートします").bold(false).color(ChatColor.AQUA).create(),
+                10, 0, 10));
 
         if (bgmCount++ >= 7) {
             bgmCount = 0;

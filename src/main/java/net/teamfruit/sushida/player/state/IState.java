@@ -14,7 +14,7 @@ public interface IState {
         return null;
     }
 
-    default IState onType(StateContainer state, String typed) {
+    default IState onType(StateContainer state, String typed, String buffer) {
         return null;
     }
 
