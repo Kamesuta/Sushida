@@ -30,7 +30,9 @@ public class TypeEventListener implements Listener {
 
         if (buffer.length() > state.inputCursor) {
             String newChar = buffer.substring(state.inputCursor);
-            newChar.chars().forEach(i -> state.apply((s, c) -> s.onType(c, String.valueOf((char) i))));
+            // チート対策
+            // newChar.chars().forEach(i -> state.apply((s, c) -> s.onType(c, String.valueOf((char) i))));
+            state.apply((s, c) -> s.onType(c, String.valueOf((char) newChar.charAt(0))));
         } else {
             state.apply((s, c) -> s.onType(c, ""));
         }

@@ -1,9 +1,12 @@
 package net.teamfruit.sushida.player;
 
-import net.teamfruit.sushida.player.state.*;
+import net.teamfruit.sushida.logic.TypingLogic;
+import net.teamfruit.sushida.player.state.IState;
+import net.teamfruit.sushida.player.state.TitleState;
 import net.teamfruit.sushida.util.Timer;
 
-import java.util.function.*;
+import java.util.function.BiFunction;
+import java.util.function.Supplier;
 
 public class StateContainer {
     public final PlayerData data;
@@ -11,6 +14,7 @@ public class StateContainer {
     public Timer timer;
     public int score;
     public int inputCursor;
+    public TypingLogic typingLogic = new TypingLogic();
 
     public StateContainer(PlayerData data) {
         this.data = data;
