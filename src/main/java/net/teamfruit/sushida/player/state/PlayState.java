@@ -1,10 +1,14 @@
 package net.teamfruit.sushida.player.state;
 
+import com.destroystokyo.paper.Title;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.teamfruit.sushida.Sushida;
 import net.teamfruit.sushida.data.MojiExtractor;
 import net.teamfruit.sushida.player.StateContainer;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.Collections;
 import java.util.List;
@@ -16,12 +20,14 @@ public class PlayState implements IState {
     private Map.Entry<String, String> wordRequired;
     private String wordRemainingRequiredHiragana;
     private String wordTypedRomaji = "";
+    private String wordTypedTotalRomaji = "";
 
     public void genNextWord() {
         if (wordRequiredList.isEmpty())
             return;
         wordRequired = wordRequiredList.remove(0);
         wordRemainingRequiredHiragana = wordRequired.getKey();
+        wordTypedTotalRomaji = "";
     }
 
     @Override
@@ -48,6 +54,7 @@ public class PlayState implements IState {
             hiragana.stream().filter(wordRemainingRequiredHiragana::startsWith)
                     .findFirst().ifPresent(e -> {
                 wordRemainingRequiredHiragana = wordRemainingRequiredHiragana.substring(e.length());
+                wordTypedTotalRomaji += wordTypedRomaji;
                 wordTypedRomaji = "";
             });
             if (wordRemainingRequiredHiragana.isEmpty()) {
@@ -56,9 +63,17 @@ public class PlayState implements IState {
         } else {
             // Miss
         }
-//        Sushida.logger.info(wordRemainingRequiredHiragana + "(" + charTypedHiraganaPosition + "): " + charTypedRomaji + " += " + typed + " [ " + charRequiredRomaji + " ]");
 
-        state.data.player.sendTitle(wordRemainingRequiredHiragana, wordTypedRomaji, 0, 10000, 0);
+        state.data.player.sendTitle(new Title(
+                new ComponentBuilder()
+                        .append(StringUtils.substringBefore(wordRequired.getKey(), wordRemainingRequiredHiragana)).color(ChatColor.WHITE)
+                        .append(wordRemainingRequiredHiragana).color(ChatColor.GRAY)
+                        .create(),
+                new ComponentBuilder()
+                        .append(wordTypedTotalRomaji).color(ChatColor.WHITE)
+                        .append(wordTypedRomaji).color(ChatColor.GRAY)
+                        .create(),
+                0, 10000, 0));
         return null;
     }
 
