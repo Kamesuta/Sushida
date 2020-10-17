@@ -1,29 +1,38 @@
 package net.teamfruit.sushida.logic;
 
-import com.google.common.collect.ImmutableListMultimap;
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableMap;
-import net.teamfruit.sushida.data.Romaji;
+import net.teamfruit.sushida.data.ConversionTable;
+import net.teamfruit.sushida.data.ConversionTableLoader;
 import net.teamfruit.sushida.data.Word;
 import net.teamfruit.sushida.player.PlayerDataContainer;
 
 public class GameLogic {
     public final PlayerDataContainer states;
-    public final Romaji romaji;
+    public final ConversionTable romajiToHiragana;
+    public final ConversionTable hiraganaToRomaji;
     public final Word word;
 
-    private GameLogic(Romaji romaji, Word word) {
+    private GameLogic(ConversionTable romajiToHiragana, ConversionTable hiraganaToRomaji, Word word) {
         this.states = new PlayerDataContainer();
-        this.romaji = romaji;
+        this.romajiToHiragana = romajiToHiragana;
+        this.hiraganaToRomaji = hiraganaToRomaji;
         this.word = word;
     }
 
     public static class GameLogicBuilder {
-        private Romaji romaji = new Romaji(ImmutableListMultimap.of());
+        private ConversionTable romajiToHiragana = new ConversionTable(ArrayListMultimap.create());
+        private ConversionTable hiraganaToRomaji = new ConversionTable(ArrayListMultimap.create());
         private Word word = new Word(ImmutableMap.of());
 
-        public GameLogicBuilder romaji(Romaji romaji) {
-            this.romaji = romaji;
+        public GameLogicBuilder romaji(ConversionTable romajiToHiragana, ConversionTable hiraganaToRomaji) {
+            this.romajiToHiragana = romajiToHiragana;
+            this.hiraganaToRomaji = hiraganaToRomaji;
             return this;
+        }
+
+        public GameLogicBuilder romaji(ConversionTableLoader loader) {
+            return romaji(loader.romajiToHiraganaTable, loader.hiraganaToRomajiTable);
         }
 
         public GameLogicBuilder word(Word word) {
@@ -32,7 +41,7 @@ public class GameLogic {
         }
 
         public GameLogic build() {
-            return new GameLogic(romaji, word);
+            return new GameLogic(romajiToHiragana, hiraganaToRomaji, word);
         }
     }
 }

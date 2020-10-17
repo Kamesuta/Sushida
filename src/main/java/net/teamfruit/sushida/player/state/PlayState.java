@@ -3,7 +3,7 @@ package net.teamfruit.sushida.player.state;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
 import net.teamfruit.sushida.Sushida;
-import net.teamfruit.sushida.moji.MojiExtractor;
+import net.teamfruit.sushida.data.MojiExtractor;
 import net.teamfruit.sushida.player.StateContainer;
 
 import java.util.Collections;
@@ -12,8 +12,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class PlayState implements IState {
-    private ImmutableListMultimap<String, String> romaji;
-
     private List<Map.Entry<String, String>> wordRequiredList;
     private Map.Entry<String, String> wordRequired;
     private String wordRemainingRequiredHiragana;
@@ -28,7 +26,6 @@ public class PlayState implements IState {
 
     @Override
     public IState onEnter(StateContainer state) {
-        romaji = Sushida.logic.romaji.mappings;
         wordRequiredList = Sushida.logic.word.mappings.entrySet().stream()
                 .flatMap(e -> e.getValue().entrySet().stream())
                 .collect(Collectors.toList());
@@ -43,11 +40,11 @@ public class PlayState implements IState {
     @Override
     public IState onType(StateContainer state, String typed) {
         String wordTypedRomajiNext = wordTypedRomaji + typed;
-        List<String> candidate = MojiExtractor.getRomajiCandidate(wordRemainingRequiredHiragana);
+        List<String> candidate = MojiExtractor.getRomajiCandidate(wordRemainingRequiredHiragana, Sushida.logic.hiraganaToRomaji);
         if (candidate.stream().anyMatch(s -> s.startsWith(wordTypedRomajiNext))) {
             // OK
             wordTypedRomaji = wordTypedRomajiNext;
-            ImmutableList<String> hiragana = MojiExtractor.getHiraganaCandidate(wordTypedRomajiNext);
+            ImmutableList<String> hiragana = MojiExtractor.getHiraganaCandidate(wordTypedRomajiNext, Sushida.logic.romajiToHiragana);
             hiragana.stream().filter(wordRemainingRequiredHiragana::startsWith)
                     .findFirst().ifPresent(e -> {
                 wordRemainingRequiredHiragana = wordRemainingRequiredHiragana.substring(e.length());

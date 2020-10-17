@@ -1,4 +1,4 @@
-package net.teamfruit.sushida.moji;
+package net.teamfruit.sushida.data;
 
 import com.google.common.collect.ImmutableList;
 
@@ -7,11 +7,11 @@ import java.util.stream.Stream;
 
 public class MojiExtractor {
 
-    public static ImmutableList<String> getRomajiCandidate(String string) {
+    public static ImmutableList<String> getRomajiCandidate(String string, ConversionTable hiraganaToRomaji) {
         if (string.isEmpty())
             return ImmutableList.of();
 
-        ImmutableList<String> candidate = getCandidate(string, ConversionTable.getHiraganaToRomaji());
+        ImmutableList<String> candidate = getCandidate(string, hiraganaToRomaji);
 
         if (string.length() >= 2) {
             char currentCharacter = string.charAt(0);
@@ -19,7 +19,7 @@ public class MojiExtractor {
             if (currentCharacter == 'ん')
                 return Stream.concat(
                         candidate.stream(),
-                        getCandidate(string.substring(1), ConversionTable.getHiraganaToRomaji()).stream()
+                        getCandidate(string.substring(1), hiraganaToRomaji).stream()
                                 .filter(e -> e.charAt(0) != 'y' && isRomanConsonant(e.charAt(0)))
                                 .map("n"::concat)
                 ).collect(ImmutableList.toImmutableList());
@@ -27,7 +27,7 @@ public class MojiExtractor {
             if (currentCharacter == 'っ') {
                 return Stream.concat(
                         candidate.stream(),
-                        getCandidate(string.substring(1), ConversionTable.getHiraganaToRomaji()).stream()
+                        getCandidate(string.substring(1), hiraganaToRomaji).stream()
                                 .filter(e -> isRomanConsonant(e.charAt(0)))
                                 .map(e -> e.charAt(0) + e)
                 ).collect(ImmutableList.toImmutableList());
@@ -37,20 +37,20 @@ public class MojiExtractor {
         return candidate;
     }
 
-    public static ImmutableList<String> getHiraganaCandidate(String string) {
+    public static ImmutableList<String> getHiraganaCandidate(String string, ConversionTable romajiToHiragana) {
 
         string = string.toLowerCase();
 
         if (hasDoubleConsonantWithSokuon(string))
-            return getCandidate(string.substring(1), ConversionTable.getRomajiToHiragana()).stream()
+            return getCandidate(string.substring(1), romajiToHiragana).stream()
                     .map("っ"::concat)
                     .collect(ImmutableList.toImmutableList());
         else if (hasConsonantNextToN(string))
-            return getCandidate(string.substring(1), ConversionTable.getRomajiToHiragana()).stream()
+            return getCandidate(string.substring(1), romajiToHiragana).stream()
                     .map("ん"::concat)
                     .collect(ImmutableList.toImmutableList());
 
-        return getCandidate(string, ConversionTable.getRomajiToHiragana());
+        return getCandidate(string, romajiToHiragana);
     }
 
     public static ImmutableList<String> getCandidate(String string, ConversionTable conversionTable) {

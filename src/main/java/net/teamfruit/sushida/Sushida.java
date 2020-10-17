@@ -1,6 +1,6 @@
 package net.teamfruit.sushida;
 
-import net.teamfruit.sushida.data.Romaji;
+import net.teamfruit.sushida.data.ConversionTableLoader;
 import net.teamfruit.sushida.data.Word;
 import net.teamfruit.sushida.listener.GameCommandListener;
 import net.teamfruit.sushida.listener.ManageCommandListener;
@@ -22,7 +22,7 @@ public final class Sushida extends JavaPlugin {
         logger = getLogger();
 
         logic = new GameLogic.GameLogicBuilder()
-                .romaji(Romaji.load(getResource("romaji.yml")))
+                .romaji(ConversionTableLoader.createFromStream(getResource("romaji.csv")))
                 .word(Word.load(getResource("word.yml")))
                 .build();
 
