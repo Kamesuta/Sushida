@@ -26,8 +26,8 @@ public class PlayState implements IState {
                         .append(state.typingLogic.getRequiredKanji()).color(ChatColor.GREEN)
                         .create(),
                 new ComponentBuilder()
-                        .append(StringUtils.substringBefore(state.typingLogic.getRequiredHiragana(), state.typingLogic.getRemainingRequiredHiragana())).color(ChatColor.WHITE)
-                        .append(state.typingLogic.getRemainingRequiredHiragana()).color(ChatColor.GRAY)
+                        .append(state.typingLogic.getRequiredHiragana().substring(0, state.typingLogic.getRequiredHiragana().length() - state.typingLogic.getRemainingRequiredHiraganaVisual().length())).color(ChatColor.WHITE)
+                        .append(state.typingLogic.getRemainingRequiredHiraganaVisual()).color(ChatColor.GRAY)
                         .create(),
                 0, 10000, 0));
 

@@ -20,7 +20,7 @@ public class MojiExtractor {
                 return Stream.concat(
                         candidate.stream(),
                         getCandidate(string.substring(1), hiraganaToRomaji).stream()
-                                .filter(e -> e.charAt(0) != 'y' && isRomanConsonant(e.charAt(0)))
+                                .filter(e -> e.charAt(0) != 'y' && e.charAt(1) != 'n' && isRomanConsonant(e.charAt(0)))
                                 .map("n"::concat)
                 ).collect(ImmutableList.toImmutableList());
 
@@ -53,6 +53,18 @@ public class MojiExtractor {
         return getCandidate(string, romajiToHiragana);
     }
 
+    public static ImmutableList<String> getHiraganaEarlyCandidate(String string, ConversionTable romajiToHiragana) {
+
+        string = string.toLowerCase();
+
+        if (hasDoubleConsonantWithSokuon(string))
+            return ImmutableList.of("っ");
+        else if (hasConsonantNextToN(string))
+            return ImmutableList.of("ん");
+
+        return getCandidate(string, romajiToHiragana);
+    }
+
     public static ImmutableList<String> getCandidate(String string, ConversionTable conversionTable) {
 
         ImmutableList.Builder<String> resultBuilder = ImmutableList.builder();
@@ -76,28 +88,28 @@ public class MojiExtractor {
 
     public static boolean hasDoubleConsonantWithSokuon(String string) {
 
-        if (string.length() <= 2)
+        if (string.length() < 2)
             return false;
 
         char currentCharacter = string.charAt(0);
         char nextCharacter = string.charAt(1);
 
         boolean isDoubleConsonant = currentCharacter == nextCharacter;
-        boolean isExceptionalCase = currentCharacter == 't' && nextCharacter == 'c';
+        boolean isExceptionalCase = currentCharacter == 'n' && nextCharacter == 'n';
 
-        return (isRomanConsonant(currentCharacter) && (isDoubleConsonant || isExceptionalCase));
+        return (isRomanConsonant(currentCharacter) && (isDoubleConsonant && !isExceptionalCase));
 
     }
 
     public static boolean hasConsonantNextToN(String string) {
 
-        if (string.length() <= 2)
+        if (string.length() < 2)
             return false;
 
         char currentCharacter = string.charAt(0);
         char nextCharacter = string.charAt(1);
 
-        boolean isConsonantNextToN = currentCharacter == 'n' && isRomanConsonant(nextCharacter);
+        boolean isConsonantNextToN = currentCharacter == 'n' && nextCharacter != 'n' && isRomanConsonant(nextCharacter);
         boolean isExceptionalCase = currentCharacter == 'n' && nextCharacter == 'y';
 
         return (isConsonantNextToN && !isExceptionalCase);

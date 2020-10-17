@@ -32,6 +32,12 @@ public class TypingLogic {
         return wordRemainingRequiredHiragana;
     }
 
+    public String getRemainingRequiredHiraganaVisual() {
+        if (MojiExtractor.hasDoubleConsonantWithSokuon(wordTypedRomaji) || MojiExtractor.hasConsonantNextToN(wordTypedRomaji))
+            return wordRemainingRequiredHiragana.substring(1);
+        return wordRemainingRequiredHiragana;
+    }
+
     public String getTypedTotalRomaji() {
         return wordTypedTotalRomaji;
     }
@@ -44,8 +50,10 @@ public class TypingLogic {
         if (wordRequiredList.isEmpty())
             return;
         wordRequired = wordRequiredList.remove(0);
+        //wordRequired = new AbstractMap.SimpleEntry<>("きんにくつう", "筋肉痛");
         wordRemainingRequiredHiragana = wordRequired.getKey();
         wordTypedTotalRomaji = "";
+        wordTypedRomaji = "";
     }
 
     public void init() {
@@ -64,11 +72,10 @@ public class TypingLogic {
             // OK
             wordTypedRomaji = wordTypedRomajiNext;
             ImmutableList<String> hiragana = MojiExtractor.getHiraganaCandidate(wordTypedRomajiNext, Sushida.logic.romajiToHiragana);
-            hiragana.stream().filter(wordRemainingRequiredHiragana::startsWith)
-                    .findFirst().ifPresent(e -> {
-                wordRemainingRequiredHiragana = wordRemainingRequiredHiragana.substring(e.length());
+            hiragana.stream().filter(wordRemainingRequiredHiragana::startsWith).findFirst().ifPresent(e -> {
                 wordTypedTotalRomaji += wordTypedRomaji;
                 wordTypedRomaji = "";
+                wordRemainingRequiredHiragana = wordRemainingRequiredHiragana.substring(e.length());
             });
             if (wordRemainingRequiredHiragana.isEmpty()) {
                 genNextWord();
