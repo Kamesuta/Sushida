@@ -6,13 +6,14 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.teamfruit.sushida.player.StateContainer;
 import org.bukkit.entity.Player;
 
+import java.util.stream.IntStream;
+
 public class TitleState implements IState {
     @Override
     public IState onEnter(StateContainer state) {
         Player player = state.data.player;
 
-        for (int i = 0; i < 9; i++)
-            player.sendMessage("");
+        IntStream.range(0, 9).forEachOrdered(e -> player.sendMessage(""));
 
         player.sendMessage(new ComponentBuilder()
                 .append("  ≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)").color(ChatColor.GRAY)
