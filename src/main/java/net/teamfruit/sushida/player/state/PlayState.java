@@ -4,24 +4,40 @@ import com.destroystokyo.paper.Title;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.teamfruit.sushida.player.StateContainer;
-import org.apache.commons.lang.StringUtils;
+import org.bukkit.SoundCategory;
+import org.bukkit.entity.Player;
 
 public class PlayState implements IState {
     @Override
     public IState onEnter(StateContainer state) {
         onType(state, "");
+
         return null;
     }
 
     @Override
+    public void onExit(StateContainer state) {
+        Player player = state.data.player;
+    }
+
+    @Override
     public IState onType(StateContainer state, String typed) {
+        Player player = state.data.player;
+
         if (state.typingLogic.type(typed)) {
             // OK
+            player.playSound(player.getLocation(), "sushida:sushida.k", SoundCategory.PLAYERS, 1, 1);
         } else {
             // NG
+            player.playSound(player.getLocation(), "sushida:sushida.miss", SoundCategory.PLAYERS, 1, 1);
         }
 
-        state.data.player.sendTitle(new Title(
+        if (state.typingLogic.isNextTiming()) {
+            // Next
+            player.playSound(player.getLocation(), "sushida:sushida.coin", SoundCategory.PLAYERS, 1, 1);
+        }
+
+        player.sendTitle(new Title(
                 new ComponentBuilder()
                         .append(state.typingLogic.getRequiredKanji()).color(ChatColor.GREEN)
                         .create(),
@@ -31,7 +47,7 @@ public class PlayState implements IState {
                         .create(),
                 0, 10000, 0));
 
-        state.data.player.sendActionBar(ChatColor.WHITE + state.typingLogic.getTypedTotalRomaji() + ChatColor.GRAY + state.typingLogic.getTypedRomaji());
+        player.sendActionBar(ChatColor.WHITE + state.typingLogic.getTypedTotalRomaji() + ChatColor.GRAY + state.typingLogic.getTypedRomaji());
 
         return null;
     }
@@ -43,7 +59,14 @@ public class PlayState implements IState {
 
     @Override
     public IState onTick(StateContainer state) {
-        state.data.player.sendActionBar(ChatColor.WHITE + state.typingLogic.getTypedTotalRomaji() + ChatColor.GRAY + state.typingLogic.getTypedRomaji());
+        Player player = state.data.player;
+
+        player.sendActionBar(ChatColor.WHITE + state.typingLogic.getTypedTotalRomaji() + ChatColor.GRAY + state.typingLogic.getTypedRomaji());
+
+        if (state.bgmCount++ >= 4) {
+            state.bgmCount = 0;
+            player.playSound(player.getLocation(), "sushida:sushida.bgm", SoundCategory.RECORDS, 1, 1);
+        }
 
         return null;
     }

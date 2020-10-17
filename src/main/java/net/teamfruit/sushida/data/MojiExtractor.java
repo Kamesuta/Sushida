@@ -20,7 +20,7 @@ public class MojiExtractor {
                 return Stream.concat(
                         candidate.stream(),
                         getCandidate(string.substring(1), hiraganaToRomaji).stream()
-                                .filter(e -> e.charAt(0) != 'y' && e.charAt(1) != 'n' && isRomanConsonant(e.charAt(0)))
+                                .filter(e -> e.charAt(0) != 'y' && e.charAt(0) != 'n' && isRomanConsonant(e.charAt(0)))
                                 .map("n"::concat)
                 ).collect(ImmutableList.toImmutableList());
 

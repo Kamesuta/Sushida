@@ -4,11 +4,14 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.teamfruit.sushida.player.StateContainer;
+import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 
 import java.util.stream.IntStream;
 
 public class TitleState implements IState {
+    private int bgmCount = 100;
+
     @Override
     public IState onEnter(StateContainer state) {
         Player player = state.data.player;
@@ -52,19 +55,42 @@ public class TitleState implements IState {
         );
         player.sendMessage("");
 
+        player.playSound(player.getLocation(), "sushida:sushida.open", SoundCategory.PLAYERS, 1, 1);
+
         return null;
     }
 
     @Override
+    public void onExit(StateContainer state) {
+        Player player = state.data.player;
+
+        player.stopSound("sushida:sushida.op", SoundCategory.RECORDS);
+    }
+
+    @Override
     public IState onType(StateContainer state, String typed) {
-        if ("".equals(typed))
-             return new PlayState();
+        Player player = state.data.player;
+
+        if ("".equals(typed)) {
+            player.playSound(player.getLocation(), "sushida:sushida.whistle1", SoundCategory.PLAYERS, 1, 1);
+
+            return new PlayState();
+        }
+
         return null;
     }
 
     @Override
     public IState onTick(StateContainer state) {
-        state.data.player.sendTitle("ⓘ チャット画面を使います", "「/ 」スラッシュを押してからスペースを押すとスタートします", 10, 0, 10);
+        Player player = state.data.player;
+
+        player.sendTitle("ⓘ チャット画面を使います", "「/ 」スラッシュを押してからスペースを押すとスタートします", 10, 0, 10);
+
+        if (bgmCount++ >= 7) {
+            bgmCount = 0;
+            player.playSound(player.getLocation(), "sushida:sushida.op", SoundCategory.RECORDS, 1, 1);
+        }
+
         return null;
     }
 }

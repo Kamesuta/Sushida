@@ -15,6 +15,7 @@ public class TypingLogic {
     private String wordRemainingRequiredHiragana;
     private String wordTypedRomaji = "";
     private String wordTypedTotalRomaji = "";
+    private boolean nextTiming;
 
     public TypingLogic() {
         init();
@@ -46,6 +47,10 @@ public class TypingLogic {
         return wordTypedRomaji;
     }
 
+    public boolean isNextTiming() {
+        return nextTiming;
+    }
+
     public void genNextWord() {
         if (wordRequiredList.isEmpty())
             return;
@@ -66,6 +71,7 @@ public class TypingLogic {
     }
 
     public boolean type(String typed) {
+        nextTiming = false;
         String wordTypedRomajiNext = wordTypedRomaji + typed;
         List<String> candidate = MojiExtractor.getRomajiCandidate(wordRemainingRequiredHiragana, Sushida.logic.hiraganaToRomaji);
         if (candidate.stream().anyMatch(s -> s.startsWith(wordTypedRomajiNext))) {
@@ -79,6 +85,7 @@ public class TypingLogic {
             });
             if (wordRemainingRequiredHiragana.isEmpty()) {
                 genNextWord();
+                nextTiming = true;
             }
             return true;
         } else {

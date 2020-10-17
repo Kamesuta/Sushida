@@ -15,6 +15,7 @@ public class StateContainer {
     public int score;
     public int inputCursor;
     public TypingLogic typingLogic = new TypingLogic();
+    public int bgmCount = 100;
 
     public StateContainer(PlayerData data) {
         this.data = data;
