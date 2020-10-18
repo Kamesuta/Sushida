@@ -7,13 +7,15 @@ import net.teamfruit.sushida.data.ConversionTableLoader;
 import net.teamfruit.sushida.data.Word;
 import net.teamfruit.sushida.player.PlayerDataContainer;
 
+import java.util.Map;
+
 public class GameLogic {
     public final PlayerDataContainer states;
     public final ConversionTable romajiToHiragana;
     public final ConversionTable hiraganaToRomaji;
-    public final Word word;
+    public final Map<String, Word> word;
 
-    private GameLogic(ConversionTable romajiToHiragana, ConversionTable hiraganaToRomaji, Word word) {
+    private GameLogic(ConversionTable romajiToHiragana, ConversionTable hiraganaToRomaji, Map<String, Word> word) {
         this.states = new PlayerDataContainer();
         this.romajiToHiragana = romajiToHiragana;
         this.hiraganaToRomaji = hiraganaToRomaji;
@@ -23,7 +25,7 @@ public class GameLogic {
     public static class GameLogicBuilder {
         private ConversionTable romajiToHiragana = new ConversionTable(ArrayListMultimap.create());
         private ConversionTable hiraganaToRomaji = new ConversionTable(ArrayListMultimap.create());
-        private Word word = new Word(ImmutableMap.of());
+        private Map<String, Word> word = ImmutableMap.of();
 
         public GameLogicBuilder romaji(ConversionTable romajiToHiragana, ConversionTable hiraganaToRomaji) {
             this.romajiToHiragana = romajiToHiragana;
@@ -35,7 +37,7 @@ public class GameLogic {
             return romaji(loader.romajiToHiraganaTable, loader.hiraganaToRomajiTable);
         }
 
-        public GameLogicBuilder word(Word word) {
+        public GameLogicBuilder word(Map<String, Word> word) {
             this.word = word;
             return this;
         }

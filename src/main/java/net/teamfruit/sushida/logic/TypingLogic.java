@@ -3,13 +3,16 @@ package net.teamfruit.sushida.logic;
 import com.google.common.collect.ImmutableList;
 import net.teamfruit.sushida.Sushida;
 import net.teamfruit.sushida.data.MojiExtractor;
+import net.teamfruit.sushida.player.Group;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 public class TypingLogic {
+    private Group group;
     private List<Map.Entry<String, String>> wordRequiredList;
     private Map.Entry<String, String> wordRequired;
     private String wordRemainingRequiredHiragana;
@@ -17,8 +20,14 @@ public class TypingLogic {
     private String wordTypedTotalRomaji = "";
     private boolean nextTiming;
 
-    public TypingLogic() {
+    public TypingLogic(Group group) {
+        wordRequiredList = new ArrayList<>(group.getWordList());
+
         init();
+    }
+
+    public void init() {
+        genNextWord();
     }
 
     public String getRequiredHiragana() {
@@ -59,15 +68,6 @@ public class TypingLogic {
         wordRemainingRequiredHiragana = wordRequired.getKey();
         wordTypedTotalRomaji = "";
         wordTypedRomaji = "";
-    }
-
-    public void init() {
-        wordRequiredList = Sushida.logic.word.mappings.entrySet().stream()
-                .flatMap(e -> e.getValue().entrySet().stream())
-                .collect(Collectors.toList());
-        Collections.shuffle(wordRequiredList);
-
-        genNextWord();
     }
 
     public boolean type(String typed) {

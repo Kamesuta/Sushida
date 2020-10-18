@@ -7,10 +7,15 @@ import net.teamfruit.sushida.listener.ManageCommandListener;
 import net.teamfruit.sushida.listener.TickEventGenerator;
 import net.teamfruit.sushida.listener.TypeEventListener;
 import net.teamfruit.sushida.logic.GameLogic;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
+import java.util.Arrays;
+import java.util.Map;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public final class Sushida extends JavaPlugin {
 
@@ -24,9 +29,14 @@ public final class Sushida extends JavaPlugin {
         logger = getLogger();
         plugin = this;
 
+        saveResource("wordset/word.yml", false);
+        File folder = new File(getDataFolder(), "wordset");
+        Map<String, Word> wordset = Arrays.stream(folder.listFiles())
+                .collect(Collectors.toMap(e -> StringUtils.substringBeforeLast(e.getName(), ".yml"),
+                        e -> Word.load(getResource("wordset/" + e.getName()))));
         logic = new GameLogic.GameLogicBuilder()
                 .romaji(ConversionTableLoader.createFromStream(getResource("romaji.csv")))
-                .word(Word.load(getResource("word.yml")))
+                .word(wordset)
                 .build();
 
         // Event

@@ -7,9 +7,26 @@ import org.bukkit.entity.Player;
 public class PlayerData {
     public final Player player;
     private StateContainer session;
+    private Group group;
 
     public PlayerData(Player player) {
         this.player = player;
+        this.group = new Group(this);
+    }
+
+    public Group getGroup() {
+        return group;
+    }
+
+    public void join(Group group) {
+        this.group.getMembers().forEach(PlayerData::leave);
+        this.group = group;
+        this.group.addMember(this);
+    }
+
+    public void leave() {
+        this.group.removeMember(this);
+        this.group = new Group(this);
     }
 
     public StateContainer getSession() {

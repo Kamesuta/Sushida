@@ -13,16 +13,19 @@ import java.util.function.Supplier;
 public class StateContainer {
     public final PlayerData data;
     public final NamespacedKey bossKey;
+    public final NamespacedKey progressKey;
     private IState state = new TitleState();
     public Timer timer;
     public int score;
     public int inputCursor;
-    public TypingLogic typingLogic = new TypingLogic();
+    public TypingLogic typingLogic;
     public int bgmCount = 100;
 
     public StateContainer(PlayerData data) {
         this.data = data;
+        this.typingLogic = new TypingLogic(data.getGroup());
         this.bossKey = new NamespacedKey(Sushida.plugin, "bossbar." + data.player.getName());
+        this.progressKey = new NamespacedKey(Sushida.plugin, "bossbar." + data.player.getName());
 
         timer = new Timer();
         timer.pause();
