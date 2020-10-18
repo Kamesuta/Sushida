@@ -21,4 +21,4 @@ permissions:
     default: true
   sushida.other:
     description: 他人の寿司打をコントロール
-    default: true
+    default: op

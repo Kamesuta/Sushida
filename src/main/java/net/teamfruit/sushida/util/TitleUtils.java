@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 import java.util.stream.Collector;
 
 public class TitleUtils {
-    public static Collector<BaseComponent[], ?, BaseComponent[]> joining(BaseComponent[] baseComponents) {
+    public static Collector<BaseComponent[], ?, BaseComponent[]> joining() {
         return Collector.of(
                 ComponentBuilder::new,
                 ComponentBuilder::append,
@@ -16,7 +16,7 @@ public class TitleUtils {
                 ComponentBuilder::create);
     }
 
-    public static Collector<BaseComponent[], ?, BaseComponent[]> joining(BaseComponent joiner) {
+    public static Collector<BaseComponent[], ?, BaseComponent[]> joining(BaseComponent[] joiner) {
         return Collector.of(
                 ComponentBuilder::new,
                 (r1, r2) -> {

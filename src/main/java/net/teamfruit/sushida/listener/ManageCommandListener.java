@@ -6,6 +6,7 @@ import net.teamfruit.sushida.Sushida;
 import net.teamfruit.sushida.player.Group;
 import net.teamfruit.sushida.player.PlayerData;
 import net.teamfruit.sushida.util.TitleUtils;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -15,6 +16,7 @@ import org.bukkit.entity.Player;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ManageCommandListener implements CommandExecutor, TabCompleter {
 
@@ -84,156 +86,172 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
 
         List<String> args = Arrays.asList(arg);
         String arg0 = get(args, 0);
-        if ("assign".equals(arg0)) {
-            if (!validateGroupOwner(state))
-                return true;
-            if (!validateSession(state, "メンバーの変更"))
-                return true;
-            if (!player.hasPermission("sushida.other")) {
-                player.sendMessage(new ComponentBuilder()
-                        .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
-                        .append("他人の強制追加するためには権限が足りません").color(ChatColor.RED)
-                        .create()
-                );
-                return true;
+        if (arg0 != null) {
+            switch (arg0) {
+                case "assign": {
+                    if (!validateGroupOwner(state))
+                        return true;
+                    if (!validateSession(state, "メンバーの変更"))
+                        return true;
+                    if (!player.hasPermission("sushida.other")) {
+                        player.sendMessage(new ComponentBuilder()
+                                .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
+                                .append("他人の強制追加するためには権限が足りません").color(ChatColor.RED)
+                                .create()
+                        );
+                        return true;
+                    }
+                    List<Player> players = getPlayers(player, getFrom(args, 1));
+                    List<String> errored = players.stream().map(Sushida.logic.states::getPlayerState)
+                            .filter(e -> !e.join(state.getGroup()))
+                            .map(e -> e.player.getName())
+                            .collect(Collectors.toList());
+                    if (!errored.isEmpty())
+                        player.sendMessage(new ComponentBuilder()
+                                .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
+                                .append(errored.stream()
+                                        .map(e -> new ComponentBuilder(e).color(ChatColor.YELLOW).create())
+                                        .collect(TitleUtils.joining(new ComponentBuilder(", ").color(ChatColor.GRAY).create()))).color(ChatColor.WHITE)
+                                .append("を参加させられませんでした").color(ChatColor.RED)
+                                .create()
+                        );
+                    if (players.size() > errored.size())
+                        player.sendMessage(new ComponentBuilder()
+                                .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
+                                .append((players.size() - errored.size()) + "人").color(ChatColor.WHITE)
+                                .append("を参加させました").color(ChatColor.GREEN)
+                                .create()
+                        );
+                    break;
+                }
+                case "kick": {
+                    if (!validateGroupOwner(state))
+                        return true;
+                    if (!validateSession(state, "メンバーの変更"))
+                        return true;
+                    List<Player> players = getPlayers(player, getFrom(args, 1));
+                    players.stream().map(Sushida.logic.states::getPlayerState)
+                            .filter(e -> e.getGroup().equals(state.getGroup()))
+                            .forEach(PlayerData::leave);
+                    player.sendMessage(new ComponentBuilder()
+                            .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
+                            .append(players.size() + "人").color(ChatColor.WHITE)
+                            .append("を退出させました").color(ChatColor.GREEN)
+                            .create()
+                    );
+                    break;
+                }
+                case "join": {
+                    String arg1 = get(args, 1);
+                    if (arg1 == null) {
+                        player.sendMessage(new ComponentBuilder()
+                                .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
+                                .append("/sushida join <プレイヤー名>").color(ChatColor.RED)
+                                .create()
+                        );
+                        return true;
+                    }
+                    if (!validateSession(state, "メンバーの変更"))
+                        return true;
+                    Player groupPlayer = Bukkit.getPlayer(arg1);
+                    if (groupPlayer == null) {
+                        player.sendMessage(new ComponentBuilder()
+                                .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
+                                .append("プレイヤーが見つかりません").color(ChatColor.RED)
+                                .create()
+                        );
+                        return true;
+                    }
+                    PlayerData groupState = Sushida.logic.states.getPlayerState(groupPlayer);
+                    if (!validateSession(state, "部屋の変更"))
+                        return true;
+                    Group group = groupState.getGroup();
+                    state.destroy();
+                    if (state.join(group))
+                        player.sendMessage(new ComponentBuilder()
+                                .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
+                                .append(groupPlayer.getName()).color(ChatColor.WHITE)
+                                .append("に参加しました").color(ChatColor.GREEN)
+                                .create()
+                        );
+                    else
+                        player.sendMessage(new ComponentBuilder()
+                                .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
+                                .append(groupPlayer.getName()).color(ChatColor.WHITE)
+                                .append("の参加に失敗しました").color(ChatColor.RED)
+                                .create()
+                        );
+                    break;
+                }
+                case "leave": {
+                    if (!validateSession(state, "部屋の変更"))
+                        return true;
+                    player.sendMessage(new ComponentBuilder()
+                            .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
+                            .append(state.getGroup().owner.player.getName()).color(ChatColor.WHITE)
+                            .append("から退出しました").color(ChatColor.GREEN)
+                            .create()
+                    );
+                    state.destroy();
+                    state.leave();
+                    break;
+                }
+                case "word": {
+                    if (!validateGroupOwner(state))
+                        return true;
+                    if (!validateSession(state, "辞書の変更"))
+                        return true;
+                    String arg1 = get(args, 1);
+                    if (!state.getGroup().setWord(arg1)) {
+                        player.sendMessage(new ComponentBuilder()
+                                .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
+                                .append("辞書「").color(ChatColor.RED)
+                                .append(StringUtils.defaultString(arg1)).color(ChatColor.WHITE)
+                                .append("」は存在しません").color(ChatColor.RED)
+                                .create()
+                        );
+                        return true;
+                    }
+                    player.sendMessage(new ComponentBuilder()
+                            .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
+                            .append("辞書を「").color(ChatColor.GREEN)
+                            .append(arg1).color(ChatColor.WHITE)
+                            .append("」に設定しました").color(ChatColor.GREEN)
+                            .create()
+                    );
+                    break;
+                }
+                case "start": {
+                    if (!validateGroupOwner(state))
+                        return true;
+                    state.getGroup().init();
+                    state.getGroup().getPlayers().forEach(PlayerData::create);
+                    return true;
+                }
+                case "stop": {
+                    if (!validateGroupOwner(state))
+                        return true;
+                    state.getGroup().getPlayers().forEach(e -> {
+                        e.destroy();
+                        e.player.sendMessage("寿司打を終了しました。");
+                    });
+                    return true;
+                }
+                default: {
+                    player.sendMessage(new ComponentBuilder()
+                            .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
+                            .append("不明なコマンドです").color(ChatColor.RED)
+                            .create()
+                    );
+                    player.sendMessage(new ComponentBuilder()
+                            .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
+                            .append("/sushida").color(ChatColor.GRAY)
+                            .append(" でメニューを表示します").color(ChatColor.GREEN)
+                            .create()
+                    );
+                    return true;
+                }
             }
-            List<Player> players = getPlayers(player, getFrom(args, 1));
-            List<String> errored = players.stream().map(Sushida.logic.states::getPlayerState)
-                    .filter(e -> !e.join(state.getGroup()))
-                    .map(e -> e.player.getName())
-                    .collect(Collectors.toList());
-            if (!errored.isEmpty())
-                player.sendMessage(new ComponentBuilder()
-                        .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
-                        .append(errored.stream()
-                                .map(e -> new ComponentBuilder(e).color(ChatColor.YELLOW).create())
-                                .collect(TitleUtils.joining(new ComponentBuilder(", ").color(ChatColor.GRAY).create()))).color(ChatColor.WHITE)
-                        .append("を参加させられませんでした").color(ChatColor.RED)
-                        .create()
-                );
-            if (players.size() > errored.size())
-                player.sendMessage(new ComponentBuilder()
-                        .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
-                        .append((players.size() - errored.size()) + "人").color(ChatColor.WHITE)
-                        .append("を参加させました").color(ChatColor.GREEN)
-                        .create()
-                );
-        } else if ("kick".equals(arg0)) {
-            if (!validateGroupOwner(state))
-                return true;
-            if (!validateSession(state, "メンバーの変更"))
-                return true;
-            List<Player> players = getPlayers(player, getFrom(args, 1));
-            players.stream().map(Sushida.logic.states::getPlayerState)
-                    .filter(e -> e.getGroup().equals(state.getGroup()))
-                    .forEach(PlayerData::leave);
-            player.sendMessage(new ComponentBuilder()
-                    .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
-                    .append(players.size() + "人").color(ChatColor.WHITE)
-                    .append("を退出させました").color(ChatColor.GREEN)
-                    .create()
-            );
-        } else if ("join".equals(arg0)) {
-            String arg1 = get(args, 1);
-            if (arg1 == null) {
-                player.sendMessage(new ComponentBuilder()
-                        .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
-                        .append("/sushida join <プレイヤー名>").color(ChatColor.RED)
-                        .create()
-                );
-                return true;
-            }
-            if (!validateSession(state, "メンバーの変更"))
-                return true;
-            Player groupPlayer = Bukkit.getPlayer(arg1);
-            if (groupPlayer == null) {
-                player.sendMessage(new ComponentBuilder()
-                        .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
-                        .append("プレイヤーが見つかりません").color(ChatColor.RED)
-                        .create()
-                );
-                return true;
-            }
-            PlayerData groupState = Sushida.logic.states.getPlayerState(groupPlayer);
-            if (!validateSession(state, "メンバーの変更"))
-                return true;
-            Group group = groupState.getGroup();
-            state.destroy();
-            if (state.join(group))
-                player.sendMessage(new ComponentBuilder()
-                        .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
-                        .append(groupPlayer.getName()).color(ChatColor.WHITE)
-                        .append("に参加しました").color(ChatColor.GREEN)
-                        .create()
-                );
-            else
-                player.sendMessage(new ComponentBuilder()
-                        .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
-                        .append(groupPlayer.getName()).color(ChatColor.WHITE)
-                        .append("の参加に失敗しました").color(ChatColor.RED)
-                        .create()
-                );
-        } else if ("leave".equals(arg0)) {
-            if (!validateSession(state, "メンバーの変更"))
-                return true;
-            player.sendMessage(new ComponentBuilder()
-                    .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
-                    .append(state.getGroup().owner.player.getName()).color(ChatColor.WHITE)
-                    .append("から退出しました").color(ChatColor.GREEN)
-                    .create()
-            );
-            state.destroy();
-            state.leave();
-        } else if ("word".equals(arg0)) {
-            if (!validateGroupOwner(state))
-                return true;
-            if (!validateSession(state, "ワード辞書の変更"))
-                return true;
-            String arg1 = get(args, 1);
-            if (!state.getGroup().setWord(arg1)) {
-                player.sendMessage(new ComponentBuilder()
-                        .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
-                        .append("ワード辞書「").color(ChatColor.RED)
-                        .append(arg1).color(ChatColor.WHITE)
-                        .append("」は存在しません").color(ChatColor.RED)
-                        .create()
-                );
-                return true;
-            }
-            player.sendMessage(new ComponentBuilder()
-                    .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
-                    .append("ワード辞書を「").color(ChatColor.GREEN)
-                    .append(arg1).color(ChatColor.WHITE)
-                    .append("」に設定しました").color(ChatColor.GREEN)
-                    .create()
-            );
-        } else if ("start".equals(arg0)) {
-            if (!validateGroupOwner(state))
-                return true;
-            state.getGroup().init();
-            state.getGroup().getPlayers().forEach(PlayerData::create);
-            return true;
-        } else if ("stop".equals(arg0)) {
-            if (!validateGroupOwner(state))
-                return true;
-            state.getGroup().getPlayers().forEach(e -> {
-                e.destroy();
-                e.player.sendMessage("寿司打を終了しました。");
-            });
-            return true;
-        } else if (arg0 != null) {
-            player.sendMessage(new ComponentBuilder()
-                    .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
-                    .append("不明なコマンドです").color(ChatColor.RED)
-                    .create()
-            );
-            player.sendMessage(new ComponentBuilder()
-                    .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
-                    .append("/sushida").color(ChatColor.GRAY)
-                    .append(" でメニューを表示します").color(ChatColor.GREEN)
-                    .create()
-            );
-            return true;
         }
 
         // タイトル表示
@@ -269,7 +287,7 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
             }
             {
                 ComponentBuilder cb = new ComponentBuilder()
-                        .append("ワード: ").color(ChatColor.WHITE)
+                        .append("辞書: ").color(ChatColor.WHITE)
                         .append(state.getGroup().getWordName()).color(ChatColor.YELLOW);
                 if (state.getGroup().hasPermission(state))
                     cb.append(new TextComponent(
@@ -293,7 +311,7 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
                                 c.append(new TextComponent(
                                         new ComponentBuilder("[-]").color(ChatColor.BLUE).bold(true)
                                                 .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                                                        new ComponentBuilder().append("メンバーを追放します").create()))
+                                                        new ComponentBuilder().append(e).append("を追放します").create()))
                                                 .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/sushida kick " + e))
                                                 .create()
                                 ));
@@ -308,7 +326,7 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
                     cb.append(new TextComponent(
                             new ComponentBuilder("[+]").color(ChatColor.BLUE).bold(true)
                                     .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                                            new ComponentBuilder().append("メンバーを追加します").create()))
+                                            new ComponentBuilder().append("を追加します").create()))
                                     .event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/sushida assign "))
                                     .create()
                     ));
@@ -341,10 +359,51 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
     }
 
     @Override
-    public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] args) {
-        if (args.length == 1)
-            return Arrays.asList("assign", "kick", "join", "leave", "word", "start", "exit");
-        return Collections.emptyList();
+    public List<String> onTabComplete(CommandSender sender, Command command, String s, String[] arg) {
+        if (!(sender instanceof Player))
+            return Collections.emptyList();
+        Player player = (Player) sender;
+        PlayerData state = Sushida.logic.states.getPlayerState(player);
+
+        List<String> args = Arrays.asList(arg);
+        String arg0 = get(args, 0);
+        String arg1 = get(args, 1);
+        switch (args.size()) {
+            case 1:
+                return Stream.of("assign", "kick", "join", "leave", "word", "start", "stop")
+                        .filter(e -> !e.equals("assign") || player.hasPermission("sushida.other"))
+                        .filter(e -> arg0 == null || e.startsWith(arg0))
+                        .collect(Collectors.toList());
+            case 2:
+                if ("word".equals(arg0)) {
+                    return Sushida.logic.word.keySet().stream()
+                            .filter(e -> arg1 == null || e.startsWith(arg1))
+                            .collect(Collectors.toList());
+                } else if ("join".equals(arg0)) {
+                    return Bukkit.getOnlinePlayers().stream()
+                            .map(Player::getName)
+                            .filter(e -> arg1 == null || e.startsWith(arg1))
+                            .collect(Collectors.toList());
+                }
+                // Fall through
+            default:
+                if ("assign".equals(arg0)) {
+                    Set<PlayerData> members = state.getGroup().getPlayers();
+                    return Stream.concat(
+                            Stream.of("@a"),
+                            Bukkit.getOnlinePlayers().stream()
+                                    .filter(e -> members.stream().noneMatch(x -> x.player.equals(e)))
+                                    .map(Player::getName)
+                                    .filter(e -> arg1 == null || e.startsWith(arg1))
+                    ).collect(Collectors.toList());
+                } else if ("kick".equals(arg0)) {
+                    return state.getGroup().getMembers().stream()
+                            .map(e -> e.player.getName())
+                            .filter(e -> arg1 == null || e.startsWith(arg1))
+                            .collect(Collectors.toList());
+                }
+                return Collections.emptyList();
+        }
     }
 
 }
