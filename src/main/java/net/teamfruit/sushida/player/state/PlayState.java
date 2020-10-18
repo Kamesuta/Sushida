@@ -41,24 +41,27 @@ public class PlayState implements IState {
     public IState onType(StateContainer state, String typed, String buffer) {
         Player player = state.data.player;
 
-        if (state.typingLogic.type(typed)) {
-            // OK
-            player.playSound(player.getLocation(), "sushida:sushida.k", SoundCategory.PLAYERS, 1, 1);
+        boolean type = state.typingLogic.type(typed);
+        if (!"".equals(typed)) {
+            if (type) {
+                // OK
+                player.playSound(player.getLocation(), "sushida:sushida.k", SoundCategory.PLAYERS, 1, 1);
 
-            state.score++;
+                state.score++;
 
-            if (state.score % 30 == 0) {
-                player.playSound(player.getLocation(), "sushida:sushida.kin", SoundCategory.PLAYERS, 1, 1);
-            }
+                if (state.score % 30 == 0) {
+                    player.playSound(player.getLocation(), "sushida:sushida.kin", SoundCategory.PLAYERS, 1, 1);
+                }
 
-            if (state.score >= 120) {
+                if (state.score >= 120) {
+                    state.score = 0;
+                }
+            } else {
+                // NG
+                player.playSound(player.getLocation(), "sushida:sushida.miss", SoundCategory.PLAYERS, 1, 1);
+
                 state.score = 0;
             }
-        } else {
-            // NG
-            player.playSound(player.getLocation(), "sushida:sushida.miss", SoundCategory.PLAYERS, 1, 1);
-
-            state.score = 0;
         }
 
         if (state.typingLogic.isNextTiming()) {
