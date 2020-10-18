@@ -5,6 +5,7 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.teamfruit.sushida.player.StateContainer;
+import net.teamfruit.sushida.util.TitleUtils;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 
@@ -19,26 +20,7 @@ public class TitleState implements IState {
 
         IntStream.range(0, 9).forEachOrdered(e -> player.sendMessage(""));
 
-        player.sendMessage(new ComponentBuilder()
-                .append("  ≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)").color(ChatColor.GRAY)
-                .create()
-        );
-        player.sendMessage("");
-        player.sendMessage(new ComponentBuilder()
-                .append("      ")
-                .append(new ComponentBuilder("寿司打").bold(true).create()).color(ChatColor.YELLOW)
-                .append("  -  ").color(ChatColor.GRAY)
-                .append("制作: かめすた").color(ChatColor.LIGHT_PURPLE)
-                .append(" / ").color(ChatColor.GRAY)
-                .append("制作時間: 26時間").color(ChatColor.RED)
-                .create()
-        );
-        player.sendMessage("");
-        player.sendMessage(new ComponentBuilder()
-                .append("  (≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡").color(ChatColor.GRAY)
-                .create()
-        );
-        player.sendMessage("");
+        TitleUtils.showTitle(player);
         player.sendMessage(new ComponentBuilder()
                 .append("    画面中央の文字の指示に従ってください").color(ChatColor.GREEN)
                 .create()

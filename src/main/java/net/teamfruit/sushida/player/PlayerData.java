@@ -4,6 +4,8 @@ import net.teamfruit.sushida.player.state.NoneState;
 import net.teamfruit.sushida.player.state.TitleState;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+
 public class PlayerData {
     public final Player player;
     private StateContainer session;
@@ -18,15 +20,25 @@ public class PlayerData {
         return group;
     }
 
-    public void join(Group group) {
-        this.group.getMembers().forEach(PlayerData::leave);
+    public boolean join(Group group) {
+        // 自分のグループ
+        if (equals(group.owner))
+            return false;
+        // すでに参加しているグループ
+        if (group.equals(getGroup()))
+            return false;
+        // 自分がオーナーな場合蹴る
+        if (equals(getGroup().owner))
+            getGroup().getMembers().forEach(PlayerData::leave);
+        leave();
         this.group = group;
-        this.group.addMember(this);
+        return this.group.getMembers().add(this);
     }
 
-    public void leave() {
-        this.group.removeMember(this);
+    public boolean leave() {
+        boolean b = this.group.getMembers().remove(this);
         this.group = new Group(this);
+        return b;
     }
 
     public StateContainer getSession() {

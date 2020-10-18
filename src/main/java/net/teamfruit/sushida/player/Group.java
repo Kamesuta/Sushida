@@ -5,22 +5,23 @@ import com.google.common.collect.ImmutableSet;
 import net.teamfruit.sushida.Sushida;
 import net.teamfruit.sushida.data.Word;
 import net.teamfruit.sushida.util.ShuffleCollectors;
-import org.apache.commons.lang.NotImplementedException;
-import org.bukkit.entity.Player;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class Group {
     public PlayerData owner;
-    private Word word = Sushida.logic.word.get("word");
+    private String wordName = "word";
+    private Word word = Sushida.logic.word.get(wordName);
     private Set<PlayerData> members = new HashSet<>();
+    private ImmutableList<Map.Entry<String, String>> wordRequiredList;
 
     public Group(PlayerData owner) {
         this.owner = owner;
     }
 
-    public boolean hasPermission(Player player) {
+    public boolean hasPermission(PlayerData player) {
         return player.equals(owner);
     }
 
@@ -28,16 +29,9 @@ public class Group {
         Word word = Sushida.logic.word.get(name);
         if (word == null)
             return false;
+        this.wordName = name;
         this.word = word;
         return true;
-    }
-
-    public void addMember(PlayerData player) {
-        members.add(player);
-    }
-
-    public void removeMember(PlayerData player) {
-        members.remove(player);
     }
 
     public Set<PlayerData> getMembers() {
@@ -48,15 +42,18 @@ public class Group {
         return ImmutableSet.<PlayerData>builder().add(owner).addAll(members).build();
     }
 
+    public String getWordName() {
+        return wordName;
+    }
+
     public ImmutableList<Map.Entry<String, String>> getWordList() {
-        throw new NotImplementedException();
+        return wordRequiredList;
     }
 
     public void init() {
-        List<?> wordRequiredList = word.mappings.entrySet().stream()
+        wordRequiredList = word.mappings.entrySet().stream()
                 .sorted(Map.Entry.comparingByKey())
                 .flatMap(e -> e.getValue().entrySet().stream().collect(ShuffleCollectors.toShuffledList()).stream())
-                .collect(Collectors.toList());
-        Collections.shuffle(wordRequiredList);
+                .collect(ImmutableList.toImmutableList());
     }
 }
