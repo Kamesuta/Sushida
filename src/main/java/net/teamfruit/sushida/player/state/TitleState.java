@@ -12,8 +12,6 @@ import org.bukkit.entity.Player;
 import java.util.stream.IntStream;
 
 public class TitleState implements IState {
-    private int bgmCount = 100;
-
     @Override
     public IState onEnter(StateContainer state) {
         Player player = state.data.player;
@@ -50,21 +48,22 @@ public class TitleState implements IState {
     }
 
     @Override
-    public void onExit(StateContainer state) {
+    public IState onReady(StateContainer state, int total, int ready) {
         Player player = state.data.player;
 
-        player.stopSound("sushida:sushida.op", SoundCategory.RECORDS);
+        player.sendActionBar(String.format("他のプレイヤーがあなたの準備を待機しています (%d/%d)", ready, total));
+
+        // 人数が揃ったら開始
+        if (ready >= total)
+            return new CountdownState();
+
+        return null;
     }
 
     @Override
     public IState onType(StateContainer state, String typed, String buffer) {
-        Player player = state.data.player;
-
-        if ("".equals(typed)) {
-            player.playSound(player.getLocation(), "sushida:sushida.whistle1", SoundCategory.PLAYERS, 1, 1);
-
-            return new PlayState();
-        }
+        if ("".equals(typed))
+            return new ReadyState();
 
         return null;
     }
@@ -78,8 +77,8 @@ public class TitleState implements IState {
                 new ComponentBuilder("「/ 」スラッシュを押してからスペースを押すとスタートします").bold(false).color(ChatColor.AQUA).create(),
                 10, 0, 10));
 
-        if (bgmCount++ >= 7) {
-            bgmCount = 0;
+        if (state.titleBgmCount++ >= 7) {
+            state.titleBgmCount = 0;
             player.playSound(player.getLocation(), "sushida:sushida.op", SoundCategory.RECORDS, 1, 1);
         }
 

@@ -19,6 +19,7 @@ public class StateContainer {
     public int score;
     public int inputCursor;
     public TypingLogic typingLogic;
+    public int titleBgmCount = 100;
     public int bgmCount = 100;
 
     public StateContainer(PlayerData data) {
@@ -38,10 +39,16 @@ public class StateContainer {
 
     public IState apply(BiFunction<IState, StateContainer, IState> func) {
         IState state = func.apply(this.state, this);
+        return apply(state);
+    }
+
+    private IState apply(IState state) {
         if (state != null) {
             this.state.onExit(this);
             this.state = state;
-            this.state.onEnter(this);
+            IState newState = this.state.onEnter(this);
+            if (newState != null)
+                return apply(newState);
         }
         return this.state;
     }

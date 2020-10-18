@@ -18,6 +18,10 @@ public interface IState {
         return null;
     }
 
+    default IState onReady(StateContainer state, int total, int ready) {
+        return null;
+    }
+
     default IState onTick(StateContainer state) {
         return null;
     }
