@@ -32,11 +32,11 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
         return Collections.emptyList();
     }
 
-    private boolean validateGroupOwner(PlayerData state) {
+    private boolean validateGroupOwner(PlayerData state, String actionName) {
         if (!state.getGroup().hasPermission(state)) {
             state.player.sendMessage(new ComponentBuilder()
                     .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
-                    .append("グループのホストのみがメンバーを追加できます").color(ChatColor.RED)
+                    .append("グループのホストのみ" + actionName + "ができます").color(ChatColor.RED)
                     .create()
             );
             return false;
@@ -89,7 +89,7 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
         if (arg0 != null) {
             switch (arg0) {
                 case "assign": {
-                    if (!validateGroupOwner(state))
+                    if (!validateGroupOwner(state, "メンバーの変更"))
                         return true;
                     if (!validateSession(state, "メンバーの変更"))
                         return true;
@@ -125,7 +125,7 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
                     break;
                 }
                 case "kick": {
-                    if (!validateGroupOwner(state))
+                    if (!validateGroupOwner(state, "メンバーの変更"))
                         return true;
                     if (!validateSession(state, "メンバーの変更"))
                         return true;
@@ -197,7 +197,7 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
                     break;
                 }
                 case "word": {
-                    if (!validateGroupOwner(state))
+                    if (!validateGroupOwner(state, "辞書の変更"))
                         return true;
                     if (!validateSession(state, "辞書の変更"))
                         return true;
@@ -222,14 +222,14 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
                     break;
                 }
                 case "start": {
-                    if (!validateGroupOwner(state))
+                    if (!validateGroupOwner(state, "ゲームの開始"))
                         return true;
                     state.getGroup().init();
                     state.getGroup().getPlayers().forEach(PlayerData::create);
                     return true;
                 }
                 case "stop": {
-                    if (!validateGroupOwner(state))
+                    if (!validateGroupOwner(state, "ゲームの終了"))
                         return true;
                     state.getGroup().getPlayers().forEach(e -> {
                         e.destroy();
