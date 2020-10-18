@@ -48,6 +48,13 @@ public class TitleState implements IState {
     }
 
     @Override
+    public void onExit(StateContainer state) {
+        Player player = state.data.player;
+
+        player.stopSound("sushida:sushida.op", SoundCategory.RECORDS);
+    }
+
+    @Override
     public IState onReady(StateContainer state, int total, int ready) {
         Player player = state.data.player;
 

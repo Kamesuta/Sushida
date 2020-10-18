@@ -34,13 +34,6 @@ public class ReadyState implements IState {
     }
 
     @Override
-    public void onExit(StateContainer state) {
-        Player player = state.data.player;
-
-        player.stopSound("sushida:sushida.op", SoundCategory.RECORDS);
-    }
-
-    @Override
     public IState onReady(StateContainer state, int total, int ready) {
         Player player = state.data.player;
 
@@ -72,18 +65,6 @@ public class ReadyState implements IState {
 
             // 自プレイヤー開始
             return new CountdownState();
-        }
-
-        return null;
-    }
-
-    @Override
-    public IState onTick(StateContainer state) {
-        Player player = state.data.player;
-
-        if (state.titleBgmCount++ >= 7) {
-            state.titleBgmCount = 0;
-            player.playSound(player.getLocation(), "sushida:sushida.op", SoundCategory.RECORDS, 1, 1);
         }
 
         return null;
