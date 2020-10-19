@@ -16,11 +16,15 @@ public class StateContainer {
     public final NamespacedKey progressKey;
     private IState state = new TitleState();
     public Timer timer;
-    public int score;
+    public int scoreCombo;
     public int inputCursor;
     public TypingLogic typingLogic;
     public int titleBgmCount = 100;
     public int bgmCount = 100;
+
+    public int scoreCount;
+    public int missCount;
+    public int doneCount;
 
     public StateContainer(PlayerData data) {
         this.data = data;
