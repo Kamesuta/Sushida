@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class TypingLogic {
-    private Group group;
+    private int wordInitialCount;
     private List<Map.Entry<String, String>> wordRequiredList;
     private Map.Entry<String, String> wordRequired;
     private String wordRemainingRequiredHiragana;
@@ -22,8 +22,20 @@ public class TypingLogic {
 
     public TypingLogic(Group group) {
         wordRequiredList = new ArrayList<>(group.getWordList());
-
+        wordInitialCount = wordRequiredList.size();
         init();
+    }
+
+    public int wordTotalCount() {
+        return wordInitialCount;
+    }
+
+    public int wordDoneCount() {
+        return wordInitialCount - wordRequiredList.size();
+    }
+
+    public int wordRemainingCount() {
+        return wordRequiredList.size();
     }
 
     public void init() {

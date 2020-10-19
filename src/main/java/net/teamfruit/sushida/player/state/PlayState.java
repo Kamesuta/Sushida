@@ -13,14 +13,21 @@ import org.bukkit.entity.Player;
 
 public class PlayState implements IState {
     private KeyedBossBar bossBar;
+    private KeyedBossBar progressBar;
 
     @Override
     public IState onEnter(StateContainer state) {
+        if (progressBar == null)
+            progressBar = Bukkit.getBossBar(state.progressKey);
+        if (progressBar == null)
+            progressBar = Bukkit.createBossBar(state.progressKey, "", BarColor.BLUE, BarStyle.SEGMENTED_12);
+        progressBar.addPlayer(state.data.player);
+        progressBar.setVisible(true);
+
         if (bossBar == null)
             bossBar = Bukkit.getBossBar(state.bossKey);
         if (bossBar == null)
-            bossBar = Bukkit.createBossBar(state.bossKey, state.data.player.getName(), BarColor.GREEN, BarStyle.SEGMENTED_12);
-
+            bossBar = Bukkit.createBossBar(state.bossKey, "", BarColor.GREEN, BarStyle.SEGMENTED_12);
         bossBar.addPlayer(state.data.player);
         bossBar.setVisible(true);
 
@@ -33,9 +40,12 @@ public class PlayState implements IState {
 
     @Override
     public void onExit(StateContainer state) {
+        progressBar.setVisible(false);
+        progressBar.removeAll();
+        Bukkit.removeBossBar(state.progressKey);
+
         bossBar.setVisible(false);
         bossBar.removeAll();
-
         Bukkit.removeBossBar(state.bossKey);
     }
 
@@ -74,11 +84,14 @@ public class PlayState implements IState {
             // Next
             player.playSound(player.getLocation(), "sushida:sushida.coin", SoundCategory.PLAYERS, 1, 1);
 
-            state.doneCount++;
-
             if (buffer.length() > 220)
                 return new EnterState();
         }
+
+        progressBar.setTitle(String.format("%d / %d",
+                state.typingLogic.wordTotalCount() - state.typingLogic.wordRemainingCount(),
+                state.typingLogic.wordTotalCount()));
+        progressBar.setProgress(state.typingLogic.wordDoneCount() / (double) state.typingLogic.wordTotalCount());
 
         bossBar.setTitle(state.typingLogic.getRequiredKanji());
         bossBar.setProgress(state.scoreCombo / 30d / 4);
@@ -94,6 +107,8 @@ public class PlayState implements IState {
                         .create(),
                 0, 10000, 0));
 
+        updateActionBar(state);
+
         return null;
     }
 
@@ -102,11 +117,25 @@ public class PlayState implements IState {
         return new PauseState();
     }
 
+    private void updateActionBar(StateContainer state) {
+        state.data.player.sendActionBar(
+                ChatColor.WHITE + "残り"
+                        + (state.timer.getTime() < 10 ? ChatColor.YELLOW : ChatColor.GREEN)
+                        + ChatColor.BOLD + String.format("%.0f秒", state.timer.getTime())
+                        + ChatColor.GRAY + ", "
+                        + ChatColor.WHITE + "ミス"
+                        + ChatColor.GREEN + ChatColor.BOLD + String.format("%d回", state.missCount)
+                        + ChatColor.GRAY + ", "
+                        + ChatColor.WHITE + "加点"
+                        + ChatColor.GREEN + ChatColor.BOLD + String.format("%d点", state.scoreCount)
+        );
+    }
+
     @Override
     public IState onTick(StateContainer state) {
         Player player = state.data.player;
 
-        //player.sendActionBar(ChatColor.WHITE + state.typingLogic.getTypedTotalRomaji() + ChatColor.GRAY + state.typingLogic.getTypedRomaji());
+        updateActionBar(state);
 
         if (state.bgmCount++ >= 4) {
             state.bgmCount = 0;

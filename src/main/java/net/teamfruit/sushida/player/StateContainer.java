@@ -24,13 +24,12 @@ public class StateContainer {
 
     public int scoreCount;
     public int missCount;
-    public int doneCount;
 
     public StateContainer(PlayerData data) {
         this.data = data;
         this.typingLogic = new TypingLogic(data.getGroup());
         this.bossKey = new NamespacedKey(Sushida.plugin, "bossbar." + data.player.getName());
-        this.progressKey = new NamespacedKey(Sushida.plugin, "bossbar." + data.player.getName());
+        this.progressKey = new NamespacedKey(Sushida.plugin, "progressbar." + data.player.getName());
 
         timer = new Timer();
         timer.pause();
