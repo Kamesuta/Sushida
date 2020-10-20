@@ -13,6 +13,7 @@ import java.util.Set;
 public class Group {
     public PlayerData owner;
     private String wordName = "word";
+    private String wordName = "word";
     private Word word = Sushida.logic.word.get(wordName);
     private Set<PlayerData> members = new HashSet<>();
     private ImmutableList<Map.Entry<String, String>> wordRequiredList;
