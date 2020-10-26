@@ -6,6 +6,7 @@ import net.teamfruit.sushida.Sushida;
 import net.teamfruit.sushida.data.Word;
 import net.teamfruit.sushida.mode.GameMode;
 import net.teamfruit.sushida.mode.GameModes;
+import net.teamfruit.sushida.mode.TimeAttackMode;
 import net.teamfruit.sushida.util.ShuffleCollectors;
 
 import java.util.HashSet;
@@ -76,5 +77,15 @@ public class Group {
                 .sorted(Map.Entry.comparingByKey())
                 .flatMap(e -> e.getValue().entrySet().stream().collect(ShuffleCollectors.toShuffledList()).stream())
                 .collect(ImmutableList.toImmutableList());
+        if (getMode() == GameModes.stock.mode) {
+            int setting = getMode().getSetting(TimeAttackMode.SettingCount);
+            if (setting < wordRequiredList.size()) {
+                wordRequiredList = wordRequiredList.stream()
+                        .collect(ShuffleCollectors.toShuffledList())
+                        .stream()
+                        .limit(setting)
+                        .collect(ImmutableList.toImmutableList());
+            }
+        }
     }
 }
