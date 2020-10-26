@@ -39,6 +39,9 @@ public class PauseState implements IState {
     public IState onTick(StateContainer state) {
         Player player = state.data.player;
 
+        if (state.data.getGroup().getMode().isGameOver(state))
+            return new ResultState();
+
         if (state.bgmCount++ >= 4) {
             state.bgmCount = 0;
             player.playSound(player.getLocation(), "sushida:sushida.bgm", SoundCategory.RECORDS, 1, 1);

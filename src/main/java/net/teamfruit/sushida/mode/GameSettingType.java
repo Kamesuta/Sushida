@@ -5,11 +5,13 @@ import java.util.List;
 public class GameSettingType {
     public final String name;
     public final String title;
+    public final int defaultValue;
     public final List<Integer> candidates;
 
-    public GameSettingType(String name, String title, List<Integer> candidates) {
+    public GameSettingType(String name, String title, int defaultValue, List<Integer> candidates) {
         this.name = name;
         this.title = title;
+        this.defaultValue = defaultValue;
         this.candidates = candidates;
     }
 

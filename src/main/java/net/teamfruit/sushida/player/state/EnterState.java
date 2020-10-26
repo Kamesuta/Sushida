@@ -60,6 +60,9 @@ public class EnterState implements IState {
     public IState onTick(StateContainer state) {
         Player player = state.data.player;
 
+        if (state.data.getGroup().getMode().isGameOver(state))
+            return new ResultState();
+
         player.sendTitle(new Title(
                 new ComponentBuilder("Enter").bold(true).color(ChatColor.RED).create(),
                 new ComponentBuilder("エンターキーを押してください").bold(false).color(ChatColor.GREEN).create(),

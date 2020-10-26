@@ -4,6 +4,8 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import net.teamfruit.sushida.Sushida;
 import net.teamfruit.sushida.data.Word;
+import net.teamfruit.sushida.mode.GameMode;
+import net.teamfruit.sushida.mode.GameModes;
 import net.teamfruit.sushida.util.ShuffleCollectors;
 
 import java.util.HashSet;
@@ -13,7 +15,7 @@ import java.util.Set;
 public class Group {
     public PlayerData owner;
     private String wordName = "word";
-    private String wordName = "word";
+    private GameMode gameMode = GameModes.time.mode;
     private Word word = Sushida.logic.word.get(wordName);
     private Set<PlayerData> members = new HashSet<>();
     private ImmutableList<Map.Entry<String, String>> wordRequiredList;
@@ -35,6 +37,20 @@ public class Group {
         return true;
     }
 
+    public boolean setMode(String name) {
+        GameModes mode = GameModes.fromName(name);
+        if (mode == null)
+            return false;
+        return setMode(mode.mode);
+    }
+
+    public boolean setMode(GameMode mode) {
+        if (mode == null)
+            return false;
+        this.gameMode = mode;
+        return true;
+    }
+
     public Set<PlayerData> getMembers() {
         return members;
     }
@@ -45,6 +61,10 @@ public class Group {
 
     public String getWordName() {
         return wordName;
+    }
+
+    public GameMode getMode() {
+        return gameMode;
     }
 
     public ImmutableList<Map.Entry<String, String>> getWordList() {

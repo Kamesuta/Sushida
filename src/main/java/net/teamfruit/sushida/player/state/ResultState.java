@@ -28,7 +28,7 @@ public class ResultState implements IState {
         );
         player.sendMessage(new ComponentBuilder()
                 .append("スコア: ").color(ChatColor.WHITE)
-                .append(String.valueOf(state.scoreCount)).color(ChatColor.YELLOW)
+                .append(String.valueOf(state.data.getGroup().getMode().getScore(state))).color(ChatColor.YELLOW)
                 .create()
         );
         player.sendMessage(new ComponentBuilder()

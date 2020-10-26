@@ -3,6 +3,9 @@ package net.teamfruit.sushida.listener;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.*;
 import net.teamfruit.sushida.Sushida;
+import net.teamfruit.sushida.mode.GameMode;
+import net.teamfruit.sushida.mode.GameModes;
+import net.teamfruit.sushida.mode.GameSettingType;
 import net.teamfruit.sushida.player.Group;
 import net.teamfruit.sushida.player.PlayerData;
 import net.teamfruit.sushida.util.TitleUtils;
@@ -86,6 +89,8 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
 
         List<String> args = Arrays.asList(arg);
         String arg0 = get(args, 0);
+        String arg1 = get(args, 1);
+        String arg2 = get(args, 2);
         if (arg0 != null) {
             switch (arg0) {
                 case "assign": {
@@ -142,7 +147,6 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
                     break;
                 }
                 case "join": {
-                    String arg1 = get(args, 1);
                     if (arg1 == null) {
                         player.sendMessage(new ComponentBuilder()
                                 .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
@@ -201,7 +205,6 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
                         return true;
                     if (!validateSession(state, "辞書の変更"))
                         return true;
-                    String arg1 = get(args, 1);
                     if (!state.getGroup().setWord(arg1)) {
                         player.sendMessage(new ComponentBuilder()
                                 .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
@@ -216,6 +219,71 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
                             .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
                             .append("辞書を「").color(ChatColor.GREEN)
                             .append(arg1).color(ChatColor.WHITE)
+                            .append("」に設定しました").color(ChatColor.GREEN)
+                            .create()
+                    );
+                    break;
+                }
+                case "rule": {
+                    if (!validateGroupOwner(state, "ルールの変更"))
+                        return true;
+                    if (!validateSession(state, "ルールの変更"))
+                        return true;
+                    if (!state.getGroup().setMode(arg1)) {
+                        player.sendMessage(new ComponentBuilder()
+                                .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
+                                .append("ルール「").color(ChatColor.RED)
+                                .append(StringUtils.defaultString(arg1)).color(ChatColor.WHITE)
+                                .append("」は存在しません").color(ChatColor.RED)
+                                .create()
+                        );
+                        return true;
+                    }
+                    player.sendMessage(new ComponentBuilder()
+                            .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
+                            .append("ルールを「").color(ChatColor.GREEN)
+                            .append(state.getGroup().getMode().title()).color(ChatColor.WHITE)
+                            .append("」に設定しました").color(ChatColor.GREEN)
+                            .create()
+                    );
+                    break;
+                }
+                case "setting": {
+                    if (!validateGroupOwner(state, "詳細設定の変更"))
+                        return true;
+                    if (!validateSession(state, "詳細設定の変更"))
+                        return true;
+                    GameSettingType type = state.getGroup().getMode().getSettingType(arg1);
+                    if (type == null) {
+                        player.sendMessage(new ComponentBuilder()
+                                .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
+                                .append("設定「").color(ChatColor.RED)
+                                .append(StringUtils.defaultString(arg1)).color(ChatColor.WHITE)
+                                .append("」は存在しません").color(ChatColor.RED)
+                                .create()
+                        );
+                        return true;
+                    }
+                    int value;
+                    try {
+                        value = Integer.parseInt(arg2);
+                        if (value <= 0)
+                            throw new NumberFormatException();
+                    } catch (NumberFormatException e) {
+                        player.sendMessage(new ComponentBuilder()
+                                .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
+                                .append("数値が正しくありません").color(ChatColor.RED)
+                                .create()
+                        );
+                        return true;
+                    }
+                    state.getGroup().getMode().setSetting(type, value);
+                    player.sendMessage(new ComponentBuilder()
+                            .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
+                            .append("設定「").color(ChatColor.GREEN)
+                            .append(type.title).color(ChatColor.WHITE)
+                            .append("」を「").color(ChatColor.GREEN)
+                            .append(String.valueOf(value)).color(ChatColor.WHITE)
                             .append("」に設定しました").color(ChatColor.GREEN)
                             .create()
                     );
@@ -300,6 +368,56 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
                 player.sendMessage(cb.create());
             }
             {
+                ComponentBuilder cb = new ComponentBuilder()
+                        .append("ルール: ").color(ChatColor.WHITE);
+                GameMode currentMode = state.getGroup().getMode();
+                if (state.getGroup().hasPermission(state)) {
+                    cb.append(
+                            Arrays.stream(GameModes.values()).map(e -> {
+                                if (e.mode.equals(currentMode))
+                                    return new ComponentBuilder(new TextComponent(new ComponentBuilder(
+                                            new TextComponent(
+                                                    new ComponentBuilder("[✓]").color(ChatColor.GREEN).bold(true)
+                                                            .append(e.mode.title()).color(ChatColor.YELLOW).bold(false)
+                                                            .create()
+                                            ))
+                                            .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                                                    new ComponentBuilder().append("現在選択されています").create()))
+                                            .create())).create();
+                                else
+                                    return new ComponentBuilder(new TextComponent(new ComponentBuilder(
+                                            new TextComponent(
+                                                    new ComponentBuilder("[+]").color(ChatColor.BLUE).bold(true)
+                                                            .append(e.mode.title()).color(ChatColor.WHITE).bold(false)
+                                                            .create()
+                                            ))
+                                            .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                                                    new ComponentBuilder().append("クリックして選択").create()))
+                                            .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/sushida rule " + e.name()))
+                                            .create())).create();
+                            }).collect(TitleUtils.joining(new ComponentBuilder(", ").color(ChatColor.GRAY).create()))
+                    );
+                } else {
+                    cb.append(currentMode.title()).color(ChatColor.YELLOW);
+                }
+                player.sendMessage(cb.create());
+            }
+            for (GameSettingType type : state.getGroup().getMode().getSettingTypes()) {
+                ComponentBuilder cb = new ComponentBuilder()
+                        .append(type.title).color(ChatColor.WHITE)
+                        .append(": ").color(ChatColor.WHITE)
+                        .append(String.valueOf(state.getGroup().getMode().getSetting(type))).color(ChatColor.YELLOW);
+                if (state.getGroup().hasPermission(state))
+                    cb.append(new TextComponent(
+                            new ComponentBuilder("[+]").color(ChatColor.BLUE).bold(true)
+                                    .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                                            new ComponentBuilder().append("設定変更").create()))
+                                    .event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/sushida setting " + type.name + " "))
+                                    .create()
+                    ));
+                player.sendMessage(cb.create());
+            }
+            {
                 boolean hasPermission = state.getGroup().hasPermission(state);
                 ComponentBuilder cb = new ComponentBuilder()
                         .append("メンバー: ").color(ChatColor.WHITE);
@@ -368,9 +486,10 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
         List<String> args = Arrays.asList(arg);
         String arg0 = get(args, 0);
         String arg1 = get(args, 1);
+        String arg2 = get(args, 2);
         switch (args.size()) {
             case 1:
-                return Stream.of("assign", "kick", "join", "leave", "word", "start", "stop")
+                return Stream.of("assign", "kick", "join", "leave", "word", "rule", "setting", "start", "stop")
                         .filter(e -> !e.equals("assign") || player.hasPermission("sushida.other"))
                         .filter(e -> arg0 == null || e.startsWith(arg0))
                         .collect(Collectors.toList());
@@ -379,11 +498,31 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
                     return Sushida.logic.word.keySet().stream()
                             .filter(e -> arg1 == null || e.startsWith(arg1))
                             .collect(Collectors.toList());
+                } else if ("rule".equals(arg0)) {
+                    return Arrays.stream(GameModes.values())
+                            .map(Enum::name)
+                            .filter(e -> arg1 == null || e.startsWith(arg1))
+                            .collect(Collectors.toList());
+                } else if ("setting".equals(arg0)) {
+                    return state.getGroup().getMode().getSettingTypes().stream()
+                            .map(e -> e.name)
+                            .filter(e -> arg1 == null || e.startsWith(arg1))
+                            .collect(Collectors.toList());
                 } else if ("join".equals(arg0)) {
                     return Bukkit.getOnlinePlayers().stream()
                             .map(Player::getName)
                             .filter(e -> arg1 == null || e.startsWith(arg1))
                             .collect(Collectors.toList());
+                }
+                // Fall through
+            case 3:
+                if ("setting".equals(arg0)) {
+                    GameSettingType type = state.getGroup().getMode().getSettingType(arg1);
+                    if (type != null)
+                        return type.candidates.stream()
+                                .map(String::valueOf)
+                                .filter(e -> arg2 == null || e.startsWith(arg2))
+                                .collect(Collectors.toList());
                 }
                 // Fall through
             default:

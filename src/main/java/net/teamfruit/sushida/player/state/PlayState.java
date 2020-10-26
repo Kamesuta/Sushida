@@ -80,6 +80,9 @@ public class PlayState implements IState {
             }
         }
 
+        if (state.data.getGroup().getMode().isGameOver(state))
+            return new ResultState();
+
         if (state.typingLogic.isNextTiming()) {
             // Next
             player.playSound(player.getLocation(), "sushida:sushida.coin", SoundCategory.PLAYERS, 1, 1);
@@ -127,13 +130,16 @@ public class PlayState implements IState {
                         + ChatColor.GREEN + ChatColor.BOLD + String.format("%d回", state.missCount)
                         + ChatColor.GRAY + ", "
                         + ChatColor.WHITE + "加点"
-                        + ChatColor.GREEN + ChatColor.BOLD + String.format("%d点", state.scoreCount)
+                        + ChatColor.GREEN + ChatColor.BOLD + String.format("%d点", state.data.getGroup().getMode().getScore(state))
         );
     }
 
     @Override
     public IState onTick(StateContainer state) {
         Player player = state.data.player;
+
+        if (state.data.getGroup().getMode().isGameOver(state))
+            return new ResultState();
 
         updateActionBar(state);
 
