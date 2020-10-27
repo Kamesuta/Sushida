@@ -106,7 +106,9 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
                         );
                         return true;
                     }
-                    List<Player> players = getPlayers(player, getFrom(args, 1));
+                    List<Player> players = getPlayers(player, getFrom(args, 1)).stream()
+                            .filter(e -> !e.equals(player))
+                            .collect(Collectors.toList());
                     List<String> errored = players.stream().map(Sushida.logic.states::getPlayerState)
                             .filter(e -> !e.join(state.getGroup()))
                             .map(e -> e.player.getName())
@@ -123,7 +125,7 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
                     if (players.size() > errored.size())
                         player.sendMessage(new ComponentBuilder()
                                 .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
-                                .append((players.size() - errored.size()) + "人").color(ChatColor.WHITE)
+                                .append((players.size() - errored.size()) + "人のプレイヤー").color(ChatColor.WHITE)
                                 .append("を参加させました").color(ChatColor.GREEN)
                                 .create()
                         );
@@ -144,6 +146,62 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
                             .append("を退出させました").color(ChatColor.GREEN)
                             .create()
                     );
+                    break;
+                }
+                case "invite": {
+                    if (!validateSession(state, "招待"))
+                        return true;
+                    List<Player> players = getPlayers(player, getFrom(args, 1)).stream()
+                            .filter(e -> !e.equals(player))
+                            .collect(Collectors.toList());
+                    List<String> errored = players.stream().map(Sushida.logic.states::getPlayerState)
+                            .filter(PlayerData::hasSession)
+                            .map(e -> e.player.getName())
+                            .collect(Collectors.toList());
+                    if (!errored.isEmpty())
+                        player.sendMessage(new ComponentBuilder()
+                                .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
+                                .append(errored.stream()
+                                        .map(e -> new ComponentBuilder(e).color(ChatColor.YELLOW).create())
+                                        .collect(TitleUtils.joining(new ComponentBuilder(", ").color(ChatColor.GRAY).create()))).color(ChatColor.WHITE)
+                                .append("は既にプレイ中です").color(ChatColor.RED)
+                                .create()
+                        );
+                    List<PlayerData> invites = players.stream().map(Sushida.logic.states::getPlayerState)
+                            .filter(e -> !e.hasSession())
+                            .collect(Collectors.toList());
+                    invites.forEach(e -> {
+                        e.player.sendMessage(new ComponentBuilder()
+                                .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
+                                .append(player.getName()).color(ChatColor.WHITE)
+                                .append(" があなたを寿司打に招待しています。").color(ChatColor.GREEN)
+                                .create()
+                        );
+                        e.player.sendMessage(new ComponentBuilder()
+                                .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
+                                .append(new TextComponent(
+                                        new ComponentBuilder()
+                                                .append("[クリックで参加]").color(ChatColor.GOLD).bold(true)
+                                                .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                                                        new ComponentBuilder()
+                                                                .append("クリックで ").color(ChatColor.GREEN)
+                                                                .append(state.getGroup().owner.player.getName()).color(ChatColor.WHITE)
+                                                                .append(" の部屋に参加します").color(ChatColor.GREEN)
+                                                                .create()
+                                                ))
+                                                .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/sushida join " + state.getGroup().owner.player.getName()))
+                                                .create()
+                                )).create()
+                        );
+                    });
+                    if (invites.size() > 0)
+                        player.sendMessage(new ComponentBuilder()
+                                .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
+                                .append((players.size() - errored.size()) + "人のプレイヤー").color(ChatColor.WHITE)
+                                .append("を招待しました").color(ChatColor.GREEN)
+                                .create()
+                        );
+
                     break;
                 }
                 case "join": {
@@ -444,10 +502,17 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
                     cb.append(new TextComponent(
                             new ComponentBuilder("[+]").color(ChatColor.BLUE).bold(true)
                                     .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                                            new ComponentBuilder().append("を追加します").create()))
+                                            new ComponentBuilder().append("メンバーを追加します").create()))
                                     .event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/sushida assign "))
                                     .create()
                     ));
+                cb.append(new TextComponent(
+                        new ComponentBuilder("[↑]").color(ChatColor.BLUE).bold(true)
+                                .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                                        new ComponentBuilder().append("プレイヤーを招待します").create()))
+                                .event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/sushida invite "))
+                                .create()
+                ));
                 player.sendMessage(cb.create());
             }
             if (state.getGroup().hasPermission(state)) {
@@ -489,7 +554,7 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
         String arg2 = get(args, 2);
         switch (args.size()) {
             case 1:
-                return Stream.of("assign", "kick", "join", "leave", "word", "rule", "setting", "start", "stop")
+                return Stream.of("assign", "invite", "kick", "join", "leave", "word", "rule", "setting", "start", "stop")
                         .filter(e -> !e.equals("assign") || player.hasPermission("sushida.other"))
                         .filter(e -> arg0 == null || e.startsWith(arg0))
                         .collect(Collectors.toList());
@@ -526,7 +591,7 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
                 }
                 // Fall through
             default:
-                if ("assign".equals(arg0)) {
+                if ("assign".equals(arg0) || "invite".equals(arg0)) {
                     Set<PlayerData> members = state.getGroup().getPlayers();
                     return Stream.concat(
                             Stream.of("@a"),
