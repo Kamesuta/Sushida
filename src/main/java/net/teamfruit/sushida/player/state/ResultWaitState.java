@@ -17,7 +17,6 @@ public class ResultWaitState implements IState {
         // クリア
         player.sendTitle("", "", 0, 0, 0);
 
-        player.stopSound("sushida:sushida.op", SoundCategory.RECORDS);
         player.stopSound("sushida:sushida.bgm", SoundCategory.RECORDS);
 
         // 終了音

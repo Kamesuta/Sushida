@@ -11,6 +11,9 @@ public class ResultState implements IState {
     public IState onEnter(StateContainer state) {
         Player player = state.data.player;
 
+        // クリア
+        player.sendTitle("", "", 0, 0, 0);
+
         // ガッ
         player.playSound(player.getLocation(), "sushida:sushida.gan", SoundCategory.PLAYERS, 1, 1);
 

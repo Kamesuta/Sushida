@@ -30,7 +30,7 @@ public class TypingLogic {
     }
 
     public int wordDoneCount() {
-        return wordInitialCount - wordRequiredList.size();
+        return wordInitialCount - wordRequiredList.size() - 1;
     }
 
     public int wordRemainingCount() {
