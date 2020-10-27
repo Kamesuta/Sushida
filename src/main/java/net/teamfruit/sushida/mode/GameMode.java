@@ -31,4 +31,6 @@ public interface GameMode {
     boolean isGameOver(StateContainer state);
 
     int getScore(StateContainer state);
+
+    String getScoreString(StateContainer state);
 }

@@ -1,5 +1,6 @@
 package net.teamfruit.sushida.mode;
 
+import net.md_5.bungee.api.ChatColor;
 import net.teamfruit.sushida.player.StateContainer;
 
 import java.util.*;
@@ -32,5 +33,15 @@ public class TimeLimitMode implements GameMode {
     @Override
     public int getScore(StateContainer state) {
         return state.typingLogic.wordDoneCount();
+    }
+
+    @Override
+    public String getScoreString(StateContainer state) {
+        return ChatColor.WHITE + "残り時間:"
+                + (state.timer.getTime() < 10 ? ChatColor.YELLOW : ChatColor.GREEN)
+                + ChatColor.BOLD + String.format("%.0f秒", getSetting(SettingTime) - state.timer.getTime())
+                + ChatColor.GRAY + ", "
+                + ChatColor.WHITE + "金額:"
+                + ChatColor.GREEN + ChatColor.BOLD + String.format("%,d円", state.scoreCount);
     }
 }

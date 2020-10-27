@@ -16,7 +16,8 @@ public class TypingLogic {
     private String wordRemainingRequiredHiragana;
     private String wordTypedRomaji = "";
     private String wordTypedTotalRomaji = "";
-    private boolean nextTiming;
+    private boolean nextWordTiming;
+    private boolean nextCharacterTiming;
 
     public TypingLogic(Group group) {
         wordRequiredList = new ArrayList<>(group.getWordList());
@@ -66,8 +67,12 @@ public class TypingLogic {
         return wordTypedRomaji;
     }
 
-    public boolean isNextTiming() {
-        return nextTiming;
+    public boolean isNextWordTiming() {
+        return nextWordTiming;
+    }
+
+    public boolean isNextCharacterTiming() {
+        return nextCharacterTiming;
     }
 
     public void genNextWord() {
@@ -81,7 +86,8 @@ public class TypingLogic {
     }
 
     public boolean type(String typed) {
-        nextTiming = false;
+        nextWordTiming = false;
+        nextCharacterTiming = false;
         String wordTypedRomajiNext = wordTypedRomaji + typed;
         List<String> candidate = MojiExtractor.getRomajiCandidate(wordRemainingRequiredHiragana, Sushida.logic.hiraganaToRomaji);
         if (candidate.stream().anyMatch(s -> s.startsWith(wordTypedRomajiNext))) {
@@ -92,10 +98,11 @@ public class TypingLogic {
                 wordTypedTotalRomaji += wordTypedRomaji;
                 wordTypedRomaji = "";
                 wordRemainingRequiredHiragana = wordRemainingRequiredHiragana.substring(e.length());
+                nextCharacterTiming = true;
             });
             if (wordRemainingRequiredHiragana.isEmpty()) {
                 genNextWord();
-                nextTiming = true;
+                nextWordTiming = true;
             }
             return true;
         } else {

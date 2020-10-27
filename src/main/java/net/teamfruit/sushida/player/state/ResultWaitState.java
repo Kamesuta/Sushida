@@ -47,31 +47,14 @@ public class ResultWaitState implements IState {
     public IState onReady(StateContainer state, int total, int ready) {
         Player player = state.data.player;
 
-        boolean isOwner = state.data.getGroup().hasPermission(state.data);
         player.sendTitle(new Title(
                 new ComponentBuilder(String.format("他のプレイヤーを待機中 (%d/%d)", ready, total)).bold(true).color(ChatColor.BLUE).create(),
-                new ComponentBuilder(isOwner ? "スペースキーで全員に結果を表示" : "しばらくお待ち下さい").bold(false).color(ChatColor.GREEN).create(),
+                new ComponentBuilder("しばらくお待ち下さい").bold(false).color(ChatColor.GREEN).create(),
                 0, 10000, 0));
 
         // 人数が揃ったら開始
         if (ready >= total)
             return new ResultState();
-
-        return null;
-    }
-
-    @Override
-    public IState onType(StateContainer state, String typed, String buffer) {
-        boolean isOwner = state.data.getGroup().hasPermission(state.data);
-        if (isOwner && " ".equals(typed)) {
-            // 他プレイヤー開始
-            state.data.getGroup().getPlayers().stream()
-                    .filter(e -> e != state.data)
-                    .forEach(e -> e.getSession().apply(StateContainer.supply(ResultState::new)));
-
-            // 自プレイヤー開始
-            return new ResultState();
-        }
 
         return null;
     }

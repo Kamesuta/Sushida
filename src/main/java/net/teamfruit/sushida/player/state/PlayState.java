@@ -53,6 +53,8 @@ public class PlayState implements IState {
     public IState onType(StateContainer state, String typed, String buffer) {
         Player player = state.data.player;
 
+        String word = state.typingLogic.getRequiredHiragana();
+
         boolean type = state.typingLogic.type(typed);
         if (!"".equals(typed)) {
             if (type) {
@@ -63,13 +65,17 @@ public class PlayState implements IState {
 
                 if (state.scoreCombo % 30 == 0) {
                     player.playSound(player.getLocation(), "sushida:sushida.kin", SoundCategory.PLAYERS, 1, 1);
-
-                    state.scoreCount++;
-                }
-
-                if (state.scoreCombo >= 120) {
-                    state.scoreCombo = 0;
-                    state.scoreCount += 3;
+                    if (state.scoreCombo >= 120) {
+                        state.scoreCombo = 0;
+                        //state.scoreCount += 3;
+                        state.timer.set(state.timer.getTime() - 3);
+                    } else if (state.scoreCombo >= 90) {
+                        //state.scoreCount += 2;
+                        state.timer.set(state.timer.getTime() - 2);
+                    } else {
+                        //state.scoreCount++;
+                        state.timer.set(state.timer.getTime() - 1);
+                    }
                 }
             } else {
                 // NG
@@ -83,9 +89,11 @@ public class PlayState implements IState {
         if (state.data.getGroup().getMode().isGameOver(state))
             return new ResultWaitState();
 
-        if (state.typingLogic.isNextTiming()) {
+        if (state.typingLogic.isNextWordTiming()) {
             // Next
             player.playSound(player.getLocation(), "sushida:sushida.coin", SoundCategory.PLAYERS, 1, 1);
+
+            state.scoreCount += (word.length() >= 13) ? 500 : (word.length() >= 10) ? 380 : (word.length() >= 7) ? 240 : (word.length() >= 5) ? 180 : 100;
 
             if (buffer.length() > 220)
                 return new PlayEnterState();
@@ -121,17 +129,7 @@ public class PlayState implements IState {
     }
 
     private void updateActionBar(StateContainer state) {
-        state.data.player.sendActionBar(
-                ChatColor.WHITE + "残り"
-                        + (state.timer.getTime() < 10 ? ChatColor.YELLOW : ChatColor.GREEN)
-                        + ChatColor.BOLD + String.format("%.0f秒", state.timer.getTime())
-                        + ChatColor.GRAY + ", "
-                        + ChatColor.WHITE + "ミス"
-                        + ChatColor.GREEN + ChatColor.BOLD + String.format("%d回", state.missCount)
-                        + ChatColor.GRAY + ", "
-                        + ChatColor.WHITE + "加点"
-                        + ChatColor.GREEN + ChatColor.BOLD + String.format("%d点", state.data.getGroup().getMode().getScore(state))
-        );
+        state.data.player.sendActionBar(state.data.getGroup().getMode().getScoreString(state));
     }
 
     @Override

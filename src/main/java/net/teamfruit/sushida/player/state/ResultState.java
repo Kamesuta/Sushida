@@ -3,12 +3,16 @@ package net.teamfruit.sushida.player.state;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.teamfruit.sushida.player.StateContainer;
+import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 
 public class ResultState implements IState {
     @Override
     public IState onEnter(StateContainer state) {
         Player player = state.data.player;
+
+        // ガッ
+        player.playSound(player.getLocation(), "sushida:sushida.gan", SoundCategory.PLAYERS, 1, 1);
 
         player.sendMessage(new ComponentBuilder()
                 .append("▼結果").color(ChatColor.GOLD)
