@@ -70,7 +70,7 @@ public class TitleState implements IState {
     @Override
     public IState onType(StateContainer state, String typed, String buffer) {
         if ("".equals(typed))
-            return new ReadyState();
+            return new CountdownWaitState();
 
         return null;
     }

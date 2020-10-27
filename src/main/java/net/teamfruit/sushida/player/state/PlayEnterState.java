@@ -11,7 +11,7 @@ import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.KeyedBossBar;
 import org.bukkit.entity.Player;
 
-public class EnterState implements IState {
+public class PlayEnterState implements IState {
     private KeyedBossBar bossBar;
 
     @Override
@@ -53,7 +53,7 @@ public class EnterState implements IState {
 
     @Override
     public IState onPause(StateContainer state) {
-        return new PauseState();
+        return new PlayPauseState();
     }
 
     @Override
@@ -61,7 +61,7 @@ public class EnterState implements IState {
         Player player = state.data.player;
 
         if (state.data.getGroup().getMode().isGameOver(state))
-            return new ResultState();
+            return new ResultWaitState();
 
         player.sendTitle(new Title(
                 new ComponentBuilder("Enter").bold(true).color(ChatColor.RED).create(),

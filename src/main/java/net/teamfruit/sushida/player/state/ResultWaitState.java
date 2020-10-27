@@ -7,21 +7,31 @@ import net.teamfruit.sushida.player.StateContainer;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 
-public class ReadyState implements IState {
+public class ResultWaitState implements IState {
     @Override
     public IState onEnter(StateContainer state) {
         Player player = state.data.player;
 
+        state.timer.pause();
+
+        // クリア
+        player.sendTitle("", "", 0, 0, 0);
+
+        player.stopSound("sushida:sushida.op", SoundCategory.RECORDS);
+        player.stopSound("sushida:sushida.bgm", SoundCategory.RECORDS);
+
+        // 終了音
+        player.playSound(player.getLocation(), "sushida:sushida.whistle2", SoundCategory.PLAYERS, 1, 1);
+
         // シングルプレイのときは飛ばす
         if (state.data.getGroup().getMembers().isEmpty())
-            return new PlayState();
-
-        player.playSound(player.getLocation(), "sushida:sushida.open", SoundCategory.PLAYERS, 1, 1);
+            return new ResultState();
 
         // 準備状況計算
         int total = state.data.getGroup().getPlayers().size();
         int ready = (int) state.data.getGroup().getPlayers().stream()
-                .filter(e -> e.getSession().getState() instanceof ReadyState)
+                .map(e -> e.getSession().getState())
+                .filter(e -> e instanceof ResultWaitState || e instanceof ResultState)
                 .count();
 
         // 他プレイヤーにイベント通知
@@ -40,31 +50,27 @@ public class ReadyState implements IState {
         boolean isOwner = state.data.getGroup().hasPermission(state.data);
         player.sendTitle(new Title(
                 new ComponentBuilder(String.format("他のプレイヤーを待機中 (%d/%d)", ready, total)).bold(true).color(ChatColor.BLUE).create(),
-                new ComponentBuilder(isOwner ? "スペースキーで強制開始" : "しばらくお待ち下さい").bold(false).color(ChatColor.GREEN).create(),
+                new ComponentBuilder(isOwner ? "スペースキーで全員に結果を表示" : "しばらくお待ち下さい").bold(false).color(ChatColor.GREEN).create(),
                 0, 10000, 0));
 
         // 人数が揃ったら開始
         if (ready >= total)
-            return new CountdownState();
+            return new ResultState();
 
         return null;
     }
 
     @Override
     public IState onType(StateContainer state, String typed, String buffer) {
-        Player player = state.data.player;
-
         boolean isOwner = state.data.getGroup().hasPermission(state.data);
         if (isOwner && " ".equals(typed)) {
-            player.playSound(player.getLocation(), "sushida:sushida.open", SoundCategory.PLAYERS, 1, 1);
-
             // 他プレイヤー開始
             state.data.getGroup().getPlayers().stream()
                     .filter(e -> e != state.data)
-                    .forEach(e -> e.getSession().apply(StateContainer.supply(CountdownState::new)));
+                    .forEach(e -> e.getSession().apply(StateContainer.supply(ResultState::new)));
 
             // 自プレイヤー開始
-            return new CountdownState();
+            return new ResultState();
         }
 
         return null;

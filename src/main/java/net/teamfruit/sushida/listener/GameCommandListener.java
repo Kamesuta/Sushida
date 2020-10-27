@@ -6,8 +6,6 @@ import net.teamfruit.sushida.Sushida;
 import net.teamfruit.sushida.player.PlayerData;
 import net.teamfruit.sushida.player.StateContainer;
 import net.teamfruit.sushida.player.state.IState;
-import net.teamfruit.sushida.player.state.PauseState;
-import net.teamfruit.sushida.player.state.PlayState;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;

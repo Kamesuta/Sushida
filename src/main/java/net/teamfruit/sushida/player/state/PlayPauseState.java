@@ -7,7 +7,7 @@ import net.teamfruit.sushida.player.StateContainer;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 
-public class PauseState implements IState {
+public class PlayPauseState implements IState {
     @Override
     public IState onEnter(StateContainer state) {
         Player player = state.data.player;
@@ -40,7 +40,7 @@ public class PauseState implements IState {
         Player player = state.data.player;
 
         if (state.data.getGroup().getMode().isGameOver(state))
-            return new ResultState();
+            return new ResultWaitState();
 
         if (state.bgmCount++ >= 4) {
             state.bgmCount = 0;

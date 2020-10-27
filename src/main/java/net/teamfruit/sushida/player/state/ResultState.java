@@ -10,8 +10,6 @@ public class ResultState implements IState {
     public IState onEnter(StateContainer state) {
         Player player = state.data.player;
 
-        state.timer.pause();
-
         player.sendMessage(new ComponentBuilder()
                 .append("▼結果").color(ChatColor.GOLD)
                 .create()

@@ -81,14 +81,14 @@ public class PlayState implements IState {
         }
 
         if (state.data.getGroup().getMode().isGameOver(state))
-            return new ResultState();
+            return new ResultWaitState();
 
         if (state.typingLogic.isNextTiming()) {
             // Next
             player.playSound(player.getLocation(), "sushida:sushida.coin", SoundCategory.PLAYERS, 1, 1);
 
             if (buffer.length() > 220)
-                return new EnterState();
+                return new PlayEnterState();
         }
 
         progressBar.setTitle(String.format("%d / %d",
@@ -117,7 +117,7 @@ public class PlayState implements IState {
 
     @Override
     public IState onPause(StateContainer state) {
-        return new PauseState();
+        return new PlayPauseState();
     }
 
     private void updateActionBar(StateContainer state) {
@@ -139,7 +139,7 @@ public class PlayState implements IState {
         Player player = state.data.player;
 
         if (state.data.getGroup().getMode().isGameOver(state))
-            return new ResultState();
+            return new ResultWaitState();
 
         updateActionBar(state);
 
