@@ -16,13 +16,15 @@ public class StateContainer {
     public final NamespacedKey progressKey;
     private IState state = new TitleState();
     public Timer timer;
+    public Timer sushiTimer;
     public int scoreCombo;
     public int inputCursor;
     public TypingLogic typingLogic;
     public int titleBgmCount = 100;
     public int bgmCount = 100;
 
-    public int scoreCount;
+    public int moneyCount;
+    public int clearCount;
     public int missCount;
 
     public StateContainer(PlayerData data) {
@@ -34,6 +36,10 @@ public class StateContainer {
         timer = new Timer();
         timer.pause();
         timer.reset();
+
+        sushiTimer = new Timer();
+        sushiTimer.pause();
+        sushiTimer.reset();
     }
 
     public IState getState() {

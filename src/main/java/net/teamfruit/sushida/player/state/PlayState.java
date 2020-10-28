@@ -32,6 +32,7 @@ public class PlayState implements IState {
         bossBar.setVisible(true);
 
         state.timer.resume();
+        state.sushiTimer.resume();
 
         onType(state, "", "");
 
@@ -47,11 +48,23 @@ public class PlayState implements IState {
         bossBar.setVisible(false);
         bossBar.removeAll();
         Bukkit.removeBossBar(state.bossKey);
+
+        state.data.player.sendExperienceChange(state.data.player.getExp(), state.data.player.getLevel());
     }
 
     @Override
     public IState onType(StateContainer state, String typed, String buffer) {
         Player player = state.data.player;
+
+        // 寿司の時間制限
+        if (state.sushiTimer.getTime() >= 6) {
+            state.sushiTimer.reset();
+
+            state.typingLogic.genNextWord();
+
+            if (buffer.length() > 220)
+                return new PlayEnterState();
+        }
 
         String word = state.typingLogic.getRequiredHiragana();
 
@@ -93,7 +106,10 @@ public class PlayState implements IState {
             // Next
             player.playSound(player.getLocation(), "sushida:sushida.coin", SoundCategory.PLAYERS, 1, 1);
 
-            state.scoreCount += (word.length() >= 13) ? 500 : (word.length() >= 10) ? 380 : (word.length() >= 7) ? 240 : (word.length() >= 5) ? 180 : 100;
+            state.sushiTimer.reset();
+
+            state.clearCount++;
+            state.moneyCount += (word.length() >= 13) ? 500 : (word.length() >= 10) ? 380 : (word.length() >= 7) ? 240 : (word.length() >= 5) ? 180 : 100;
 
             if (buffer.length() > 220)
                 return new PlayEnterState();
@@ -146,6 +162,13 @@ public class PlayState implements IState {
             player.playSound(player.getLocation(), "sushida:sushida.bgm", SoundCategory.RECORDS, 1, 1);
         }
 
-        return null;
+        IState newState = null;
+
+        // 寿司の時間制限
+        if (state.sushiTimer.getTime() >= 6)
+            newState = onType(state, "", "");
+        state.data.player.sendExperienceChange(Math.min((float) Math.floor(state.sushiTimer.getTime() + .1f) / 6f, 1), 0);
+
+        return newState;
     }
 }

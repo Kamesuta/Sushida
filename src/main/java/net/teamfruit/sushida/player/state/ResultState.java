@@ -23,7 +23,7 @@ public class ResultState implements IState {
         );
         player.sendMessage(new ComponentBuilder()
                 .append("完了: ").color(ChatColor.WHITE)
-                .append(String.valueOf(state.typingLogic.wordDoneCount())).color(ChatColor.YELLOW)
+                .append(String.valueOf(state.clearCount)).color(ChatColor.YELLOW)
                 .create()
         );
         player.sendMessage(new ComponentBuilder()
