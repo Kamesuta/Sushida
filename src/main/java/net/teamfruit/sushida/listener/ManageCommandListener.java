@@ -363,6 +363,17 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
                     });
                     return true;
                 }
+                case "restart": {
+                    if (!validateGroupOwner(state, "ゲームの開始"))
+                        return true;
+                    state.getGroup().getPlayers().forEach(e -> {
+                        e.destroy();
+                        e.player.sendMessage("寿司打を終了しました。");
+                    });
+                    state.getGroup().init();
+                    state.getGroup().getPlayers().forEach(PlayerData::create);
+                    return true;
+                }
                 default: {
                     player.sendMessage(new ComponentBuilder()
                             .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
@@ -518,15 +529,15 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
             if (state.getGroup().hasPermission(state)) {
                 ComponentBuilder cb = new ComponentBuilder()
                         .append("ゲーム: ").color(ChatColor.WHITE);
-                if (!state.hasSession())
+                if (!state.hasSession()) {
                     cb.append(new TextComponent(
                             new ComponentBuilder("[スタート]").color(ChatColor.BLUE).bold(true)
                                     .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
                                             new ComponentBuilder().append("ゲームをスタートします").create()))
-                                    .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/sushida start"))
+                                    .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/sushida restart"))
                                     .create()
                     ));
-                else
+                } else {
                     cb.append(new TextComponent(
                             new ComponentBuilder("[ゲーム中止]").color(ChatColor.BLUE).bold(true)
                                     .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
@@ -534,6 +545,14 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
                                     .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/sushida stop"))
                                     .create()
                     ));
+                    cb.append(new TextComponent(
+                            new ComponentBuilder("[リスタート]").color(ChatColor.BLUE).bold(true)
+                                    .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                                            new ComponentBuilder().append("ゲームをリスタートします").create()))
+                                    .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/sushida restart"))
+                                    .create()
+                    ));
+                }
                 player.sendMessage(cb.create());
             }
         }
@@ -554,7 +573,7 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
         String arg2 = get(args, 2);
         switch (args.size()) {
             case 1:
-                return Stream.of("assign", "invite", "kick", "join", "leave", "word", "rule", "setting", "start", "stop")
+                return Stream.of("assign", "invite", "kick", "join", "leave", "word", "rule", "setting", "start", "stop", "restart")
                         .filter(e -> !e.equals("assign") || player.hasPermission("sushida.other"))
                         .filter(e -> arg0 == null || e.startsWith(arg0))
                         .collect(Collectors.toList());
