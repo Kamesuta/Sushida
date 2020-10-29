@@ -1,10 +1,14 @@
 package net.teamfruit.sushida.mode;
 
+import com.google.common.collect.ImmutableList;
+import net.teamfruit.sushida.player.Group;
 import net.teamfruit.sushida.player.StateContainer;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 public interface GameMode {
     String title();
@@ -33,4 +37,8 @@ public interface GameMode {
     int getScore(StateContainer state);
 
     String getScoreString(StateContainer state);
+
+    Iterator<Consumer<StateContainer>> getResultMessageTasks();
+
+    ImmutableList<Map.Entry<String, String>> getWords(Group group);
 }

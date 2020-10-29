@@ -57,6 +57,10 @@ public class Timer {
      * @see #resume()
      */
     public void pause() {
+        if (!paused) {
+            lastTime = currentTime() - startTime;
+        }
+
         paused = true;
     }
 

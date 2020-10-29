@@ -13,9 +13,12 @@ public class ResultWaitState implements IState {
         Player player = state.data.player;
 
         state.timer.pause();
+        state.realTimer.pause();
+        state.sushiTimer.pause();
 
         // クリア
         player.sendTitle("", "", 0, 0, 0);
+        player.sendActionBar(" ");
 
         player.stopSound("sushida:sushida.bgm", SoundCategory.RECORDS);
 

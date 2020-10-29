@@ -2,46 +2,55 @@ package net.teamfruit.sushida.player.state;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.teamfruit.sushida.mode.GameMode;
 import net.teamfruit.sushida.player.StateContainer;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
 public class ResultState implements IState {
+    private Iterator<Consumer<StateContainer>> showMessage;
+
     @Override
     public IState onEnter(StateContainer state) {
         Player player = state.data.player;
 
+        // ランキング算出
+        GameMode mode = state.data.getGroup().getMode();
+        List<Integer> board = state.data.getGroup().getPlayers().stream()
+                .map(e -> mode.getScore(e.getSession()))
+                .sorted(Comparator.reverseOrder())
+                .collect(Collectors.toList());
+        int myScore = mode.getScore(state);
+        state.ranking = board.indexOf(myScore) + 1;
+
         // クリア
         player.sendTitle("", "", 0, 0, 0);
+        IntStream.range(0, 20).forEachOrdered(e -> player.sendMessage(""));
 
         // ガッ
         player.playSound(player.getLocation(), "sushida:sushida.gan", SoundCategory.PLAYERS, 1, 1);
 
-        player.sendMessage(new ComponentBuilder()
-                .append("▼結果").color(ChatColor.GOLD)
-                .create()
-        );
-        player.sendMessage(new ComponentBuilder()
-                .append("完了: ").color(ChatColor.WHITE)
-                .append(String.valueOf(state.clearCount)).color(ChatColor.YELLOW)
-                .create()
-        );
-        player.sendMessage(new ComponentBuilder()
-                .append("ミス: ").color(ChatColor.WHITE)
-                .append(String.valueOf(state.missCount)).color(ChatColor.YELLOW)
-                .create()
-        );
-        player.sendMessage(new ComponentBuilder()
-                .append("スコア: ").color(ChatColor.WHITE)
-                .append(String.valueOf(state.data.getGroup().getMode().getScore(state))).color(ChatColor.YELLOW)
-                .create()
-        );
-        player.sendMessage(new ComponentBuilder()
-                .append("タイム").color(ChatColor.WHITE)
-                .append(String.valueOf(state.timer.getTime())).append("秒").color(ChatColor.YELLOW)
-                .create()
-        );
+        showMessage = state.data.getGroup().getMode().getResultMessageTasks();
 
+        return null;
+    }
+
+    @Override
+    public IState onTick(StateContainer state) {
+        if (showMessage.hasNext())
+            showMessage.next().accept(state);
+        else if (state.data.getGroup().hasPermission(state.data)) {
+            // ゲーム終了
+            state.data.destroy();
+            return new NoneState();
+        }
         return null;
     }
 }

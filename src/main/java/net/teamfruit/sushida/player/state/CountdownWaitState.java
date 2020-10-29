@@ -47,6 +47,8 @@ public class CountdownWaitState implements IState {
         if (ready >= total)
             return new CountdownState();
 
+        player.playSound(player.getLocation(), "sushida:sushida.open", SoundCategory.PLAYERS, 1, 1);
+
         return null;
     }
 

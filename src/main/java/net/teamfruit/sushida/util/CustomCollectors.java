@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
-public class ShuffleCollectors {
+public class CustomCollectors {
     private static final Collector<?, ?, ?> SHUFFLER = Collectors.collectingAndThen(
             Collectors.toCollection(ArrayList::new),
             list -> {

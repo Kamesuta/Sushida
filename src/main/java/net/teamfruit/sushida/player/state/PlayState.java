@@ -15,6 +15,8 @@ public class PlayState implements IState {
     private KeyedBossBar bossBar;
     private KeyedBossBar progressBar;
 
+    private boolean koto;
+
     @Override
     public IState onEnter(StateContainer state) {
         if (progressBar == null)
@@ -32,6 +34,7 @@ public class PlayState implements IState {
         bossBar.setVisible(true);
 
         state.timer.resume();
+        state.realTimer.resume();
         state.sushiTimer.resume();
 
         onType(state, "", "");
@@ -61,6 +64,7 @@ public class PlayState implements IState {
             state.sushiTimer.reset();
 
             state.typingLogic.genNextWord();
+            koto = true;
 
             if (buffer.length() > 220)
                 return new PlayEnterState();
@@ -90,6 +94,9 @@ public class PlayState implements IState {
                         state.timer.set(state.timer.getTime() - 1);
                     }
                 }
+
+                if (state.typingLogic.isNextCharacterTiming())
+                    state.typeCount++;
             } else {
                 // NG
                 player.playSound(player.getLocation(), "sushida:sushida.miss", SoundCategory.PLAYERS, 1, 1);
@@ -99,12 +106,10 @@ public class PlayState implements IState {
             }
         }
 
-        if (state.data.getGroup().getMode().isGameOver(state))
-            return new ResultWaitState();
-
         if (state.typingLogic.isNextWordTiming()) {
             // Next
             player.playSound(player.getLocation(), "sushida:sushida.coin", SoundCategory.PLAYERS, 1, 1);
+            koto = true;
 
             state.sushiTimer.reset();
 
@@ -115,8 +120,11 @@ public class PlayState implements IState {
                 return new PlayEnterState();
         }
 
+        if (state.data.getGroup().getMode().isGameOver(state))
+            return new ResultWaitState();
+
         progressBar.setTitle(String.format("%d / %d",
-                state.typingLogic.wordTotalCount() - state.typingLogic.wordRemainingCount(),
+                state.typingLogic.wordDoneCount(),
                 state.typingLogic.wordTotalCount()));
         progressBar.setProgress(state.typingLogic.wordDoneCount() / (double) state.typingLogic.wordTotalCount());
 
@@ -154,6 +162,11 @@ public class PlayState implements IState {
 
         if (state.data.getGroup().getMode().isGameOver(state))
             return new ResultWaitState();
+
+        if (koto) {
+            koto = false;
+            player.playSound(player.getLocation(), "sushida:sushida.koto", SoundCategory.PLAYERS, 1, 1);
+        }
 
         updateActionBar(state);
 

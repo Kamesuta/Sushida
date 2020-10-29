@@ -30,11 +30,11 @@ public class TypingLogic {
     }
 
     public int wordDoneCount() {
-        return wordInitialCount - wordRequiredList.size() - 1;
+        return wordTotalCount() - wordRemainingCount();
     }
 
     public int wordRemainingCount() {
-        return wordRequiredList.size();
+        return wordRequiredList.size() + (getRemainingRequiredHiragana().isEmpty() ? 0 : 1);
     }
 
     public void init() {
