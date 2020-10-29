@@ -11,10 +11,13 @@ import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class TimeAttackMode implements GameMode {
-    public static final GameSettingType SettingCount = new GameSettingType("count", "問題数", 30, Arrays.asList(10, 20, 30, 60, 120));
+    public static final GameSettingType SettingCount = new GameSettingType("count", "問題数", "問題数", 30, Arrays.asList(10, 20, 30, 60, 120));
 
     private final Map<GameSettingType, Integer> settings = new HashMap<>();
 
@@ -61,9 +64,11 @@ public class TimeAttackMode implements GameMode {
                         .create()
                 );
                 player.sendMessage("");
+                int count = getSetting(SettingCount);
                 player.sendMessage(new ComponentBuilder()
                         .append("      ").color(ChatColor.WHITE)
                         .append("      タイムアタックコース").color(ChatColor.BLUE)
+                        .append(String.format(" 【%d皿】", count)).color(ChatColor.GOLD)
                         .create()
                 );
                 player.sendMessage("");
@@ -145,9 +150,16 @@ public class TimeAttackMode implements GameMode {
 
     @Override
     public ImmutableList<Map.Entry<String, String>> getWords(Group group) {
-        return group.getWord().mappings.entrySet().stream()
+        int setting = getSetting(SettingCount);
+        List<Integer> splits = CustomCollectors.splitInt(setting, group.getWord().mappings.size());
+        List<Map.Entry<String, Map<String, String>>> wordRequiredListByLevel = group.getWord().mappings.entrySet().stream()
                 .sorted(Map.Entry.comparingByKey())
-                .flatMap(e -> e.getValue().entrySet().stream().collect(CustomCollectors.toShuffledList()).stream())
+                .collect(Collectors.toList());
+        return IntStream.range(0, splits.size())
+                .mapToObj(i ->
+                        wordRequiredListByLevel.get(i).getValue().entrySet().stream()
+                                .collect(CustomCollectors.toRandomPickList(splits.get(i)))
+                ).flatMap(Collection::stream)
                 .collect(ImmutableList.toImmutableList());
     }
 }

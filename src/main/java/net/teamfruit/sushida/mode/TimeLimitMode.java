@@ -1,5 +1,6 @@
 package net.teamfruit.sushida.mode;
 
+import com.google.common.base.CharMatcher;
 import com.google.common.collect.ImmutableList;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -7,14 +8,17 @@ import net.teamfruit.sushida.player.Group;
 import net.teamfruit.sushida.player.StateContainer;
 import net.teamfruit.sushida.util.CustomCollectors;
 import net.teamfruit.sushida.util.SimpleTask;
+import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class TimeLimitMode implements GameMode {
-    public static final GameSettingType SettingTime = new GameSettingType("time", "制限時間", 60, Arrays.asList(60, 90, 120));
+    public static final GameSettingType SettingTime = new GameSettingType("time", "制限時間", "ゲームの制限時間", 60, Arrays.asList(60, 90, 120));
+    public static final GameSettingType SettingLevel = new GameSettingType("level", "コース", "1:お手軽コース(2～7文字), 2:おすすめコース(5～10文字), 3:高級コース(9～14文字以上), 0:すべて", 0, Arrays.asList(0, 1, 2, 3));
 
     private final Map<GameSettingType, Integer> settings = new HashMap<>();
 
@@ -25,7 +29,7 @@ public class TimeLimitMode implements GameMode {
 
     @Override
     public List<GameSettingType> getSettingTypes() {
-        return Collections.singletonList(SettingTime);
+        return Arrays.asList(SettingTime, SettingLevel);
     }
 
     @Override
@@ -62,11 +66,16 @@ public class TimeLimitMode implements GameMode {
                         .create()
                 );
                 player.sendMessage("");
+                int time = getSetting(SettingTime);
+                int level = getSetting(SettingLevel);
+                int levelMoney = level == 1 ? 3000 : level == 3 ? 10000 : 5000;
+                String levelName = level == 1 ? ChatColor.GOLD + "お手軽" : level == 3 ? ChatColor.DARK_RED + "高級" : ChatColor.BLUE + "お勧め";
                 player.sendMessage(new ComponentBuilder()
                         .append("      ").color(ChatColor.WHITE)
-                        .append("お勧め ").color(ChatColor.BLUE)
-                        .append("5000円コース").color(ChatColor.WHITE)
-                        .append(" 【普通】").color(ChatColor.GOLD)
+                        .append(levelName).color(ChatColor.WHITE)
+                        .append(" ").color(ChatColor.WHITE)
+                        .append(String.format("%,d円コース", levelMoney)).color(ChatColor.WHITE)
+                        .append(String.format(" 【%d秒】", time)).color(ChatColor.GOLD)
                         .create()
                 );
                 player.sendMessage("");
@@ -84,32 +93,36 @@ public class TimeLimitMode implements GameMode {
                 player.playSound(player.getLocation(), "sushida:sushida.cacher", SoundCategory.PLAYERS, 1, 1);
                 player.sendMessage(new ComponentBuilder()
                         .append("      ").color(ChatColor.WHITE)
-                        .append(String.valueOf(state.moneyCount)).color(ChatColor.YELLOW)
+                        .append(String.format("%,d", state.moneyCount)).color(ChatColor.YELLOW)
                         .append(" 円分のお寿司をゲット！").color(ChatColor.WHITE)
                         .create()
                 );
             }).append(state -> {
                 Player player = state.data.player;
                 player.playSound(player.getLocation(), "sushida:sushida.cacher", SoundCategory.PLAYERS, 1, 1);
+                int level = getSetting(SettingLevel);
+                int levelMoney = level == 1 ? 3000 : level == 3 ? 10000 : 5000;
                 player.sendMessage(new ComponentBuilder()
                         .append("      ").color(ChatColor.WHITE)
-                        .append("5000 円 払って・・・").color(ChatColor.GRAY)
+                        .append(String.format("%,d 円 払って・・・", levelMoney)).color(ChatColor.GRAY)
                         .create()
                 );
             }).append(state -> {
                 Player player = state.data.player;
                 player.playSound(player.getLocation(), "sushida:sushida.chin", SoundCategory.PLAYERS, 1, 1);
-                if (state.moneyCount > 5000)
+                int level = getSetting(SettingLevel);
+                int levelMoney = level == 1 ? 3000 : level == 3 ? 10000 : 5000;
+                if (state.moneyCount > levelMoney)
                     player.sendMessage(new ComponentBuilder()
                             .append("      ").color(ChatColor.WHITE).underlined(false)
-                            .append(String.valueOf(state.moneyCount - 5000)).color(ChatColor.GREEN).underlined(true)
+                            .append(String.format("%,d", state.moneyCount - levelMoney)).color(ChatColor.GREEN).underlined(true)
                             .append(" 円分お得でした！").color(ChatColor.GREEN).underlined(true)
                             .create()
                     );
                 else
                     player.sendMessage(new ComponentBuilder()
                             .append("      ").color(ChatColor.WHITE).underlined(false)
-                            .append(String.valueOf(-(state.moneyCount - 5000))).color(ChatColor.GRAY).underlined(true)
+                            .append(String.format("%,d", -(state.moneyCount - levelMoney))).color(ChatColor.GRAY).underlined(true)
                             .append(" 円分損でした・・・").color(ChatColor.GRAY).underlined(true)
                             .create()
                     );
@@ -155,18 +168,45 @@ public class TimeLimitMode implements GameMode {
 
     @Override
     public ImmutableList<Map.Entry<String, String>> getWords(Group group) {
-        ImmutableList<Map.Entry<String, String>> wordRequiredList = group.getWord().mappings.entrySet().stream()
+        int level = getSetting(SettingLevel);
+        List<Map.Entry<String, Map<String, String>>> wordRequiredListByLevel = group.getWord().mappings.entrySet().stream()
                 .sorted(Map.Entry.comparingByKey())
-                .flatMap(e -> e.getValue().entrySet().stream().collect(CustomCollectors.toShuffledList()).stream())
-                .collect(ImmutableList.toImmutableList());
-        int setting = getSetting(TimeAttackMode.SettingCount);
-        if (setting < wordRequiredList.size()) {
-            wordRequiredList = wordRequiredList.stream()
-                    .collect(CustomCollectors.toShuffledList())
-                    .stream()
-                    .limit(setting)
-                    .collect(ImmutableList.toImmutableList());
+                .collect(Collectors.toList());
+        switch (level) {
+            case 1: {
+                // 60秒: 2～7文字
+                wordRequiredListByLevel = wordRequiredListByLevel.stream()
+                        .filter(e -> {
+                            int cnt = NumberUtils.toInt(CharMatcher.inRange('0', '9').retainFrom(e.getKey()), -1);
+                            return (cnt <= 7);
+                        })
+                        .collect(Collectors.toList());
+                break;
+            }
+            case 2: {
+                // 90秒: 5～10文字
+                wordRequiredListByLevel = wordRequiredListByLevel.stream()
+                        .filter(e -> {
+                            int cnt = NumberUtils.toInt(CharMatcher.inRange('0', '9').retainFrom(e.getKey()), -1);
+                            return (cnt < 0 || (5 <= cnt && cnt <= 10));
+                        })
+                        .collect(Collectors.toList());
+                break;
+            }
+            case 3: {
+                // 120秒: 9～文字
+                wordRequiredListByLevel = wordRequiredListByLevel.stream()
+                        .filter(e -> {
+                            int cnt = NumberUtils.toInt(CharMatcher.inRange('0', '9').retainFrom(e.getKey()), -1);
+                            return (cnt < 0 || (9 <= cnt));
+                        })
+                        .collect(Collectors.toList());
+                break;
+            }
         }
-        return wordRequiredList;
+        return wordRequiredListByLevel.stream()
+                .flatMap(e -> e.getValue().entrySet().stream())
+                .collect(CustomCollectors.toShuffledList()).stream()
+                .collect(ImmutableList.toImmutableList());
     }
 }

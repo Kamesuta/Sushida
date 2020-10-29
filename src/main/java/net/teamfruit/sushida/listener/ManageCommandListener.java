@@ -473,7 +473,8 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
             }
             for (GameSettingType type : state.getGroup().getMode().getSettingTypes()) {
                 ComponentBuilder cb = new ComponentBuilder()
-                        .append(type.title).color(ChatColor.WHITE)
+                        .append(type.title).color(ChatColor.WHITE).event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                                new ComponentBuilder().append(type.description).create()))
                         .append(": ").color(ChatColor.WHITE)
                         .append(String.valueOf(state.getGroup().getMode().getSetting(type))).color(ChatColor.YELLOW);
                 if (state.getGroup().hasPermission(state))
