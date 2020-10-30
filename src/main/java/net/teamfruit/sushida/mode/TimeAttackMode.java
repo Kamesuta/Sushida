@@ -67,7 +67,7 @@ public class TimeAttackMode implements GameMode {
                 int count = getSetting(SettingCount);
                 player.sendMessage(new ComponentBuilder()
                         .append("      ").color(ChatColor.WHITE)
-                        .append("      タイムアタックコース").color(ChatColor.BLUE)
+                        .append("タイムアタックコース").color(ChatColor.BLUE)
                         .append(String.format(" 【%d皿】", count)).color(ChatColor.GOLD)
                         .create()
                 );

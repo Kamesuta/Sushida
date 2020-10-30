@@ -76,13 +76,14 @@ public class TypingLogic {
     }
 
     public void genNextWord() {
-        if (wordRequiredList.isEmpty())
-            return;
-        wordRequired = wordRequiredList.remove(0);
-        //wordRequired = new AbstractMap.SimpleEntry<>("きんにくつう", "筋肉痛");
-        wordRemainingRequiredHiragana = wordRequired.getKey();
         wordTypedTotalRomaji = "";
         wordTypedRomaji = "";
+        if (wordRequiredList.isEmpty()) {
+            wordRemainingRequiredHiragana = "";
+        } else {
+            wordRequired = wordRequiredList.remove(0);
+            wordRemainingRequiredHiragana = wordRequired.getKey();
+        }
     }
 
     public boolean type(String typed) {

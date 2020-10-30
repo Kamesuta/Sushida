@@ -79,8 +79,11 @@ public class Timer {
      * @see #pause()
      */
     public void resume() {
+        if (paused) {
+            startTime = currentTime() - lastTime;
+        }
+
         paused = false;
-        startTime = currentTime() - lastTime;
     }
 
     /**

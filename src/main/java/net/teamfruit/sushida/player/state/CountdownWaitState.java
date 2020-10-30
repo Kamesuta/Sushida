@@ -14,7 +14,7 @@ public class CountdownWaitState implements IState {
 
         // シングルプレイのときは飛ばす
         if (state.data.getGroup().getMembers().isEmpty())
-            return new PlayState();
+            return new CountdownState();
 
         player.playSound(player.getLocation(), "sushida:sushida.open", SoundCategory.PLAYERS, 1, 1);
 

@@ -11,6 +11,20 @@ public class CountdownState implements IState {
     private int countdown = 6;
 
     @Override
+    public IState onEnter(StateContainer state) {
+        Player player = state.data.player;
+
+        // シングルプレイのときは飛ばす
+        if (state.data.getGroup().getMembers().isEmpty()) {
+            player.playSound(player.getLocation(), "sushida:sushida.whistle1", SoundCategory.PLAYERS, 1, 1);
+
+            return new PlayState();
+        }
+
+        return null;
+    }
+
+    @Override
     public IState onTick(StateContainer state) {
         Player player = state.data.player;
 
