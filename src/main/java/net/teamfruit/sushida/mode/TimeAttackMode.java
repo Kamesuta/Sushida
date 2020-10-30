@@ -11,7 +11,6 @@ import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -44,6 +43,11 @@ public class TimeAttackMode implements GameMode {
     @Override
     public int getScore(StateContainer state) {
         return (int) state.timer.getTime();
+    }
+
+    @Override
+    public Comparator<Integer> getScoreComparator() {
+        return Comparator.naturalOrder();
     }
 
     @Override

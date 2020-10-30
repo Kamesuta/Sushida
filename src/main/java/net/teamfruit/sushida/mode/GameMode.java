@@ -4,10 +4,10 @@ import com.google.common.collect.ImmutableList;
 import net.teamfruit.sushida.player.Group;
 import net.teamfruit.sushida.player.StateContainer;
 
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Consumer;
 
 public interface GameMode {
@@ -35,6 +35,8 @@ public interface GameMode {
     boolean isGameOver(StateContainer state);
 
     int getScore(StateContainer state);
+
+    Comparator<Integer> getScoreComparator();
 
     String getScoreString(StateContainer state);
 

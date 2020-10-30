@@ -4,8 +4,6 @@ import net.teamfruit.sushida.player.state.NoneState;
 import net.teamfruit.sushida.player.state.TitleState;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-
 public class PlayerData {
     public final Player player;
     private StateContainer session;

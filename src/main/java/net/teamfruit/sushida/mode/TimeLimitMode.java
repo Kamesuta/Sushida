@@ -48,6 +48,11 @@ public class TimeLimitMode implements GameMode {
     }
 
     @Override
+    public Comparator<Integer> getScoreComparator() {
+        return Comparator.reverseOrder();
+    }
+
+    @Override
     public String getScoreString(StateContainer state) {
         return ChatColor.WHITE + "残り時間:"
                 + (state.timer.getTime() < 10 ? ChatColor.YELLOW : ChatColor.GREEN)

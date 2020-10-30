@@ -1,13 +1,10 @@
 package net.teamfruit.sushida.player.state;
 
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.teamfruit.sushida.mode.GameMode;
 import net.teamfruit.sushida.player.StateContainer;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
@@ -25,7 +22,7 @@ public class ResultState implements IState {
         GameMode mode = state.data.getGroup().getMode();
         List<Integer> board = state.data.getGroup().getPlayers().stream()
                 .map(e -> mode.getScore(e.getSession()))
-                .sorted(Comparator.reverseOrder())
+                .sorted(mode.getScoreComparator())
                 .collect(Collectors.toList());
         int myScore = mode.getScore(state);
         state.ranking = board.indexOf(myScore) + 1;
