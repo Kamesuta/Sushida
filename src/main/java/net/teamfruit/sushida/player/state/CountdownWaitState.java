@@ -37,7 +37,7 @@ public class CountdownWaitState implements IState {
     public IState onReady(StateContainer state, int total, int ready) {
         Player player = state.data.player;
 
-        boolean isOwner = state.data.getGroup().hasPermission(state.data);
+        boolean isOwner = state.data.getGroup().isOwner(state.data);
         player.sendTitle(new Title(
                 new ComponentBuilder(String.format("他のプレイヤーを待機中 (%d/%d)", ready, total)).bold(true).color(ChatColor.BLUE).create(),
                 new ComponentBuilder(isOwner ? "スペースキーで強制開始" : "しばらくお待ち下さい").bold(false).color(ChatColor.GREEN).create(),
@@ -56,7 +56,7 @@ public class CountdownWaitState implements IState {
     public IState onType(StateContainer state, String typed, String buffer) {
         Player player = state.data.player;
 
-        boolean isOwner = state.data.getGroup().hasPermission(state.data);
+        boolean isOwner = state.data.getGroup().isOwner(state.data);
         if (isOwner && " ".equals(typed)) {
             player.playSound(player.getLocation(), "sushida:sushida.open", SoundCategory.PLAYERS, 1, 1);
 

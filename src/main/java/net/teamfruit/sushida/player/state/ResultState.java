@@ -48,7 +48,7 @@ public class ResultState implements IState {
     public IState onTick(StateContainer state) {
         if (showMessage.hasNext())
             showMessage.next().accept(state);
-        else if (state.data.getGroup().hasPermission(state.data)) {
+        else if (state.data.getGroup().isOwner(state.data)) {
             // ゲーム終了
             state.data.destroy();
             return new NoneState();

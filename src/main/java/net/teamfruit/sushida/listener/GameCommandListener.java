@@ -29,9 +29,10 @@ public class GameCommandListener implements CommandExecutor, TabCompleter {
         }
         Player player = (Player) sender;
 
-        PlayerData playerState = Sushida.logic.states.getPlayerState(player);
-        if (!playerState.hasSession()) {
-            sender.sendMessage(new ComponentBuilder()
+        PlayerData state = Sushida.logic.states.getPlayerState(player);
+
+        if (!state.hasSession()) {
+            player.sendMessage(new ComponentBuilder()
                     .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
                     .append("寿司打を始めるためには").color(ChatColor.GREEN)
                     .append(new ComponentBuilder(" /sushida ").color(ChatColor.GRAY).bold(true).create())
@@ -41,9 +42,9 @@ public class GameCommandListener implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        StateContainer state = playerState.getSession();
-        state.inputCursor = 0;
-        state.apply(IState::onPause);
+        StateContainer session = state.getSession();
+        session.inputCursor = 0;
+        session.apply(IState::onPause);
 
         return true;
     }

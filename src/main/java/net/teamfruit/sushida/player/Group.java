@@ -31,8 +31,19 @@ public class Group {
         this.groupScoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
     }
 
-    public boolean hasPermission(PlayerData player) {
+    public boolean isOwner(PlayerData player) {
         return player.equals(owner);
+    }
+
+    public boolean setOwner(PlayerData player) {
+        if (isOwner(player))
+            return false;
+        if (!members.contains(player))
+            return false;
+        members.remove(player);
+        members.add(owner);
+        owner = player;
+        return true;
     }
 
     public Scoreboard getGroupScoreboard() {

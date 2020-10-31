@@ -36,7 +36,7 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
     }
 
     private boolean validateGroupOwner(PlayerData state, String actionName) {
-        if (!state.getGroup().hasPermission(state)) {
+        if (!state.getGroup().isOwner(state)) {
             state.player.sendMessage(new ComponentBuilder()
                     .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
                     .append("グループのホストのみ" + actionName + "ができます").color(ChatColor.RED)
@@ -404,7 +404,7 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
                 ComponentBuilder cb = new ComponentBuilder()
                         .append("部屋: ").color(ChatColor.WHITE)
                         .append(state.getGroup().owner.player.getName()).color(ChatColor.YELLOW);
-                if (state.getGroup().hasPermission(state))
+                if (state.getGroup().isOwner(state))
                     cb.append(new TextComponent(
                             new ComponentBuilder("[+]").color(ChatColor.BLUE).bold(true)
                                     .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
@@ -426,7 +426,7 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
                 ComponentBuilder cb = new ComponentBuilder()
                         .append("辞書: ").color(ChatColor.WHITE)
                         .append(state.getGroup().getWordName()).color(ChatColor.YELLOW);
-                if (state.getGroup().hasPermission(state))
+                if (state.getGroup().isOwner(state))
                     cb.append(new TextComponent(
                             new ComponentBuilder("[+]").color(ChatColor.BLUE).bold(true)
                                     .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
@@ -440,7 +440,7 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
                 ComponentBuilder cb = new ComponentBuilder()
                         .append("ルール: ").color(ChatColor.WHITE);
                 GameMode currentMode = state.getGroup().getMode();
-                if (state.getGroup().hasPermission(state)) {
+                if (state.getGroup().isOwner(state)) {
                     cb.append(
                             Arrays.stream(GameModes.values()).map(e -> {
                                 if (e.mode.equals(currentMode))
@@ -477,7 +477,7 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
                                 new ComponentBuilder().append(type.description).create()))
                         .append(": ").color(ChatColor.WHITE)
                         .append(String.valueOf(state.getGroup().getMode().getSetting(type))).color(ChatColor.YELLOW);
-                if (state.getGroup().hasPermission(state))
+                if (state.getGroup().isOwner(state))
                     cb.append(new TextComponent(
                             new ComponentBuilder("[+]").color(ChatColor.BLUE).bold(true)
                                     .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
@@ -488,7 +488,7 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
                 player.sendMessage(cb.create());
             }
             {
-                boolean hasPermission = state.getGroup().hasPermission(state);
+                boolean hasPermission = state.getGroup().isOwner(state);
                 ComponentBuilder cb = new ComponentBuilder()
                         .append("メンバー: ").color(ChatColor.WHITE);
                 BaseComponent[] comps = state.getGroup().getMembers().stream()
@@ -527,7 +527,7 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
                 ));
                 player.sendMessage(cb.create());
             }
-            if (state.getGroup().hasPermission(state)) {
+            if (state.getGroup().isOwner(state)) {
                 ComponentBuilder cb = new ComponentBuilder()
                         .append("ゲーム: ").color(ChatColor.WHITE);
                 if (!state.hasSession()) {

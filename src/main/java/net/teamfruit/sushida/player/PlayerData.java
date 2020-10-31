@@ -8,6 +8,7 @@ import org.bukkit.scoreboard.Scoreboard;
 
 public class PlayerData {
     public final Player player;
+    public Player player;
     private StateContainer session;
     private Group group;
 
