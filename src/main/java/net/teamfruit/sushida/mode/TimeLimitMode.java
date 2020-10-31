@@ -44,7 +44,7 @@ public class TimeLimitMode implements GameMode {
 
     @Override
     public int getScore(StateContainer state) {
-        return state.clearCount;
+        return state.moneyCount;
     }
 
     @Override

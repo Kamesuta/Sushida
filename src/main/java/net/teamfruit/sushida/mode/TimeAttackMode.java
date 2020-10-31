@@ -1,5 +1,6 @@
 package net.teamfruit.sushida.mode;
 
+import com.google.common.base.CharMatcher;
 import com.google.common.collect.ImmutableList;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -7,6 +8,7 @@ import net.teamfruit.sushida.player.Group;
 import net.teamfruit.sushida.player.StateContainer;
 import net.teamfruit.sushida.util.CustomCollectors;
 import net.teamfruit.sushida.util.SimpleTask;
+import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 
@@ -157,7 +159,11 @@ public class TimeAttackMode implements GameMode {
         int setting = getSetting(SettingCount);
         List<Integer> splits = CustomCollectors.splitInt(setting, group.getWord().mappings.size());
         List<Map.Entry<String, Map<String, String>>> wordRequiredListByLevel = group.getWord().mappings.entrySet().stream()
-                .sorted(Map.Entry.comparingByKey())
+                .sorted((a, b) -> {
+                    int ai = NumberUtils.toInt(CharMatcher.inRange('0', '9').retainFrom(a.getKey()), -1);
+                    int bi = NumberUtils.toInt(CharMatcher.inRange('0', '9').retainFrom(b.getKey()), -1);
+                    return Comparator.<Integer>naturalOrder().compare(ai, bi);
+                })
                 .collect(Collectors.toList());
         return IntStream.range(0, splits.size())
                 .mapToObj(i ->

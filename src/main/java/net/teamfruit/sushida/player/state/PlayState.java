@@ -160,6 +160,10 @@ public class PlayState implements IState {
     public IState onTick(StateContainer state) {
         Player player = state.data.player;
 
+        state.data.getGroup().getScoreLeaderboard()
+                .getScore(state.data.player.getName())
+                .setScore(state.data.getGroup().getMode().getScore(state));
+
         if (state.data.getGroup().getMode().isGameOver(state))
             return new ResultWaitState();
 

@@ -6,6 +6,10 @@ import net.teamfruit.sushida.Sushida;
 import net.teamfruit.sushida.data.Word;
 import net.teamfruit.sushida.mode.GameMode;
 import net.teamfruit.sushida.mode.GameModes;
+import org.bukkit.Bukkit;
+import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Scoreboard;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -19,12 +23,24 @@ public class Group {
     private Set<PlayerData> members = new HashSet<>();
     private ImmutableList<Map.Entry<String, String>> wordRequiredList;
 
+    private Scoreboard groupScoreboard;
+    private Objective scoreLeaderboard;
+
     public Group(PlayerData owner) {
         this.owner = owner;
+        this.groupScoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
     }
 
     public boolean hasPermission(PlayerData player) {
         return player.equals(owner);
+    }
+
+    public Scoreboard getGroupScoreboard() {
+        return groupScoreboard;
+    }
+
+    public Objective getScoreLeaderboard() {
+        return scoreLeaderboard;
     }
 
     public boolean setWord(String name) {
@@ -76,5 +92,11 @@ public class Group {
 
     public void init() {
         wordRequiredList = getMode().getWords(this);
+
+        this.scoreLeaderboard = groupScoreboard.getObjective("score");
+        if (this.scoreLeaderboard != null)
+            this.scoreLeaderboard.unregister();
+        this.scoreLeaderboard = groupScoreboard.registerNewObjective("score", "dummy", "スコア");
+        this.scoreLeaderboard.setDisplaySlot(DisplaySlot.SIDEBAR);
     }
 }
