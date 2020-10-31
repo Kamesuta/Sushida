@@ -29,7 +29,7 @@ public class TimeLimitMode implements GameMode {
 
     @Override
     public List<GameSettingType> getSettingTypes() {
-        return Arrays.asList(SettingTime, SettingLevel);
+        return Arrays.asList(SettingTime, SettingLevel, SettingTimeout);
     }
 
     @Override
@@ -45,11 +45,6 @@ public class TimeLimitMode implements GameMode {
     @Override
     public int getScore(StateContainer state) {
         return state.moneyCount;
-    }
-
-    @Override
-    public Comparator<Integer> getScoreComparator() {
-        return Comparator.reverseOrder();
     }
 
     @Override

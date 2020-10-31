@@ -18,6 +18,11 @@ public class ResultState implements IState {
     public IState onEnter(StateContainer state) {
         Player player = state.data.player;
 
+        // リーダーボード更新
+        state.data.getGroup().getScoreLeaderboard()
+                .getScore(state.data.player.getName())
+                .setScore(state.data.getGroup().getMode().getScore(state));
+
         // ランキング算出
         GameMode mode = state.data.getGroup().getMode();
         List<Integer> board = state.data.getGroup().getPlayers().stream()

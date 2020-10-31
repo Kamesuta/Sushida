@@ -3,6 +3,7 @@ package net.teamfruit.sushida.player.state;
 import com.destroystokyo.paper.Title;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.teamfruit.sushida.mode.GameMode;
 import net.teamfruit.sushida.player.StateContainer;
 import org.bukkit.Bukkit;
 import org.bukkit.SoundCategory;
@@ -59,8 +60,10 @@ public class PlayState implements IState {
     public IState onType(StateContainer state, String typed, String buffer) {
         Player player = state.data.player;
 
+        int timeout = state.data.getGroup().getMode().getSetting(GameMode.SettingTimeout);
+
         // 寿司の時間制限
-        if (state.sushiTimer.getTime() >= 6) {
+        if (timeout > 0 && state.sushiTimer.getTime() >= timeout) {
             state.sushiTimer.reset();
 
             state.typingLogic.genNextWord();
@@ -162,7 +165,7 @@ public class PlayState implements IState {
 
         state.data.getGroup().getScoreLeaderboard()
                 .getScore(state.data.player.getName())
-                .setScore(state.data.getGroup().getMode().getScore(state));
+                .setScore(state.data.getGroup().getMode().getDynamicScore(state));
 
         if (state.data.getGroup().getMode().isGameOver(state))
             return new ResultWaitState();
@@ -181,10 +184,14 @@ public class PlayState implements IState {
 
         IState newState = null;
 
+        int timeout = state.data.getGroup().getMode().getSetting(GameMode.SettingTimeout);
+
         // 寿司の時間制限
-        if (state.sushiTimer.getTime() >= 6)
-            newState = onType(state, "", "");
-        state.data.player.sendExperienceChange(Math.min((float) Math.floor(state.sushiTimer.getTime() + .1f) / 6f, 1), 0);
+        if (timeout > 0) {
+            if (state.sushiTimer.getTime() >= timeout)
+                newState = onType(state, "", "");
+            state.data.player.sendExperienceChange(Math.min((float) Math.floor(state.sushiTimer.getTime() + .1f) / timeout, 1), 0);
+        }
 
         return newState;
     }

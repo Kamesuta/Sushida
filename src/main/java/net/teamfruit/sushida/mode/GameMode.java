@@ -4,13 +4,12 @@ import com.google.common.collect.ImmutableList;
 import net.teamfruit.sushida.player.Group;
 import net.teamfruit.sushida.player.StateContainer;
 
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 
 public interface GameMode {
+    GameSettingType SettingTimeout = new GameSettingType("timeout", "秒数", "一問に対する制限時間", 6, Arrays.asList(6, -1));
+
     String title();
 
     List<GameSettingType> getSettingTypes();
@@ -34,9 +33,15 @@ public interface GameMode {
 
     boolean isGameOver(StateContainer state);
 
+    default int getDynamicScore(StateContainer state) {
+        return getScore(state);
+    }
+
     int getScore(StateContainer state);
 
-    Comparator<Integer> getScoreComparator();
+    default Comparator<Integer> getScoreComparator() {
+        return Comparator.reverseOrder();
+    }
 
     String getScoreString(StateContainer state);
 

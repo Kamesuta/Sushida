@@ -29,7 +29,7 @@ public class TimeAttackMode implements GameMode {
 
     @Override
     public List<GameSettingType> getSettingTypes() {
-        return Collections.singletonList(SettingCount);
+        return Arrays.asList(SettingCount, SettingTimeout);
     }
 
     @Override
@@ -43,13 +43,19 @@ public class TimeAttackMode implements GameMode {
     }
 
     @Override
-    public int getScore(StateContainer state) {
-        return (int) state.timer.getTime();
+    public int getDynamicScore(StateContainer state) {
+        int timeout = state.data.getGroup().getMode().getSetting(GameMode.SettingTimeout);
+        if (timeout > 0)
+            return state.clearCount * timeout - Math.round(state.timer.getTime());
+        return state.clearCount;
     }
 
     @Override
-    public Comparator<Integer> getScoreComparator() {
-        return Comparator.naturalOrder();
+    public int getScore(StateContainer state) {
+        int timeout = state.data.getGroup().getMode().getSetting(GameMode.SettingTimeout);
+        if (timeout > 0)
+            return state.clearCount * timeout - Math.round(state.timer.getTime());
+        return - Math.round(state.timer.getTime());
     }
 
     @Override

@@ -14,10 +14,10 @@ public class StateContainer {
     public final PlayerData data;
     public final NamespacedKey bossKey;
     public final NamespacedKey progressKey;
+
     private IState state = new TitleState();
-    public int scoreCombo;
-    public int inputCursor;
     public TypingLogic typingLogic;
+
     public int titleBgmCount = 100;
     public int bgmCount = 100;
     public int ranking = -1;
@@ -25,6 +25,9 @@ public class StateContainer {
     public Timer timer;
     public Timer realTimer;
     public Timer sushiTimer;
+
+    public int scoreCombo;
+    public int inputCursor;
 
     public int moneyCount;
     public int clearCount;
