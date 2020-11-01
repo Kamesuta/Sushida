@@ -86,6 +86,10 @@ public class PlayerData {
             return;
         session = new StateContainer(this);
         session.apply(StateContainer.supply(TitleState::new));
+
+        // リソースパック
+        Sushida.resourcePack.apply(player);
+
         if (!getGroup().getMembers().isEmpty())
             joinScoreboard(getGroup().getGroupScoreboard());
         Sushida.belowName.spawn(this);

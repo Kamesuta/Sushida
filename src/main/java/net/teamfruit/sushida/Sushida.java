@@ -22,12 +22,19 @@ public final class Sushida extends JavaPlugin {
     public static GameLogic logic;
     public static Plugin plugin;
     public static BelowNameManager belowName;
+    public static ResourcePack resourcePack;
 
     @Override
     public void onEnable() {
         // Plugin startup logic
         logger = getLogger();
         plugin = this;
+
+        // リソースパック
+        saveDefaultConfig();
+        String url = getConfig().getString("resourcepack.url");
+        String hash = getConfig().getString("resourcepack.hash");
+        resourcePack = new ResourcePack(url, hash);
 
         saveResource("wordset/word.yml", false);
         File folder = new File(getDataFolder(), "wordset");
