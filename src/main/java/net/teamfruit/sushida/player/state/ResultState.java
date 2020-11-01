@@ -1,6 +1,7 @@
 package net.teamfruit.sushida.player.state;
 
 import net.teamfruit.sushida.mode.GameMode;
+import net.teamfruit.sushida.player.PlayerData;
 import net.teamfruit.sushida.player.StateContainer;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
@@ -53,7 +54,7 @@ public class ResultState implements IState {
             showMessage.next().accept(state);
         else if (state.data.getGroup().isOwner(state.data)) {
             // ゲーム終了
-            state.data.destroy();
+            state.data.getGroup().getPlayers().forEach(PlayerData::destroy);
             return new NoneState();
         }
         return null;

@@ -144,12 +144,12 @@ public class PlayState implements IState {
 
         player.sendTitle(new Title(
                 new ComponentBuilder()
-                        .append(state.typingLogic.getRequiredHiragana().substring(0, state.typingLogic.getRequiredHiragana().length() - state.typingLogic.getRemainingRequiredHiraganaVisual().length())).color(ChatColor.WHITE)
-                        .append(state.typingLogic.getRemainingRequiredHiraganaVisual()).color(ChatColor.GRAY)
+                        .append(state.typingLogic.getRequiredHiragana().substring(0, state.typingLogic.getRequiredHiragana().length() - state.typingLogic.getRemainingRequiredHiraganaVisual().length())).color(ChatColor.GRAY)
+                        .append(state.typingLogic.getRemainingRequiredHiraganaVisual()).color(ChatColor.WHITE)
                         .create(),
                 new ComponentBuilder()
-                        .append(state.typingLogic.getTypedTotalRomaji()).color(ChatColor.WHITE)
-                        .append(state.typingLogic.getTypedRomaji()).color(ChatColor.GRAY)
+                        .append(state.typingLogic.getTypedTotalRomaji()).color(ChatColor.GRAY)
+                        .append(state.typingLogic.getTypedRomaji()).color(ChatColor.WHITE)
                         .create(),
                 0, 10000, 0));
 

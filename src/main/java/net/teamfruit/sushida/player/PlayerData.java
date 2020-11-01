@@ -42,8 +42,10 @@ public class PlayerData {
             getGroup().getMembers().forEach(PlayerData::leave);
         // グループ変更
         this.group.getMembers().remove(this);
-        this.group = group;
+        if (this.group.getMembers().isEmpty())
+            this.group.owner.leaveScoreboard();
         leaveScoreboard();
+        this.group = group;
         return this.group.getMembers().add(this);
     }
 
@@ -51,11 +53,14 @@ public class PlayerData {
         // ゲーム中
         if (hasSession())
             return false;
+        // 解散
+        if (this.group.isOwner(this))
+            this.group.getMembers().forEach(PlayerData::leave);
         // グループ退出
+        boolean b = this.group.getMembers().remove(this);
         if (this.group.getMembers().isEmpty())
             this.group.owner.leaveScoreboard();
         leaveScoreboard();
-        boolean b = this.group.getMembers().remove(this);
         this.group = new Group(this);
         return b;
     }

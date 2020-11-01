@@ -370,7 +370,7 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
                         return true;
                     state.getGroup().getPlayers().forEach(e -> {
                         e.destroy();
-                        e.player.sendMessage("寿司打を終了しました。");
+                        e.player.sendMessage("寿司打をリスタートしました。");
                     });
                     state.getGroup().init();
                     state.getGroup().getPlayers().forEach(PlayerData::create);
@@ -406,7 +406,8 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
                 ComponentBuilder cb = new ComponentBuilder()
                         .append("部屋: ").color(ChatColor.WHITE)
                         .append(state.getGroup().owner.player.getName()).color(ChatColor.YELLOW);
-                if (state.getGroup().isOwner(state))
+                boolean owner = state.getGroup().isOwner(state);
+                if (owner && state.getGroup().getMembers().isEmpty())
                     cb.append(new TextComponent(
                             new ComponentBuilder("[+]").color(ChatColor.BLUE).bold(true)
                                     .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
@@ -418,7 +419,7 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
                     cb.append(new TextComponent(
                             new ComponentBuilder("[-]").color(ChatColor.BLUE).bold(true)
                                     .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                                            new ComponentBuilder().append("部屋から退出します").create()))
+                                            new ComponentBuilder().append(owner ? "部屋を解散します" : "部屋から退出します").create()))
                                     .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/sushida leave"))
                                     .create()
                     ));

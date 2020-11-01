@@ -11,6 +11,7 @@ commands:
     description: 寿司打開始
     usage: 寿司打開始
     permission: sushida
+    aliases: ["s"]
   " ":
     description: 寿司打
     usage: 「/」の後にスペースを押して寿司打を開始する。Enterキーで寿司打を中断する。
