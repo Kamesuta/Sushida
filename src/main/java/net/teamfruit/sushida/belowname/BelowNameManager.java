@@ -89,8 +89,10 @@ public class BelowNameManager {
     }
 
     public void checkAndRemove(Entity entity) {
-        if (entity.getPersistentDataContainer().has(NAME_TAG_ENTITY_KEY, PersistentDataType.BYTE))
+        if (entity.getPersistentDataContainer().has(NAME_TAG_ENTITY_KEY, PersistentDataType.BYTE)) {
+            entity.getPassengers().forEach(this::checkAndRemove);
             entity.remove();
+        }
     }
 
     public void clearManaged() {
