@@ -1,5 +1,7 @@
 package net.teamfruit.sushida.player;
 
+import net.teamfruit.sushida.Sushida;
+import net.teamfruit.sushida.belowname.BelowNameManager;
 import net.teamfruit.sushida.player.state.NoneState;
 import net.teamfruit.sushida.player.state.TitleState;
 import org.bukkit.Bukkit;
@@ -7,14 +9,16 @@ import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 
 public class PlayerData {
-    public final Player player;
     public Player player;
     private StateContainer session;
     private Group group;
 
+    public BelowNameManager.NameTagReference entity;
+
     public PlayerData(Player player) {
         this.player = player;
         this.group = new Group(this);
+        this.entity = new BelowNameManager.NameTagReference();
     }
 
     public Group getGroup() {
@@ -67,6 +71,7 @@ public class PlayerData {
         session.apply(StateContainer.supply(TitleState::new));
         if (!getGroup().getMembers().isEmpty())
             joinScoreboard(getGroup().getGroupScoreboard());
+        Sushida.belowName.spawn(this);
     }
 
     public void destroy() {
@@ -75,5 +80,6 @@ public class PlayerData {
         leaveScoreboard();
         session.apply(StateContainer.supply(NoneState::new));
         session = null;
+        Sushida.belowName.despawn(this);
     }
 }

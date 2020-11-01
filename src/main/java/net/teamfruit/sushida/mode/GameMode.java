@@ -33,6 +33,8 @@ public interface GameMode {
 
     boolean isGameOver(StateContainer state);
 
+    String getScoreBelowName(StateContainer state);
+
     default int getDynamicScore(StateContainer state) {
         return getScore(state);
     }

@@ -43,6 +43,18 @@ public class TimeLimitMode implements GameMode {
     }
 
     @Override
+    public String getScoreBelowName(StateContainer state) {
+        return String.format(
+                ChatColor.GREEN + "%,d円"
+                        + ChatColor.WHITE + "(" + ChatColor.GREEN + "✓%d "
+                        + ChatColor.RED + "✗%d" + ChatColor.WHITE + ")",
+                getDynamicScore(state),
+                state.clearCount,
+                state.typingLogic.wordDoneCount() - state.clearCount
+        );
+    }
+
+    @Override
     public int getScore(StateContainer state) {
         return state.moneyCount;
     }

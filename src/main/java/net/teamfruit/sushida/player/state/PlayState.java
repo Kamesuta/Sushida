@@ -134,6 +134,11 @@ public class PlayState implements IState {
         bossBar.setTitle(state.typingLogic.getRequiredKanji());
         bossBar.setProgress(state.scoreCombo / 30d / 4);
 
+        state.data.entity.setScoreText(state.data.getGroup().getMode().getScoreBelowName(state));
+        state.data.entity.setTypingText(
+                ChatColor.WHITE + state.typingLogic.getTypedHiragana()
+                        + ChatColor.GRAY + state.typingLogic.getTypedRomaji());
+
         player.sendTitle(new Title(
                 new ComponentBuilder()
                         .append(state.typingLogic.getRequiredHiragana().substring(0, state.typingLogic.getRequiredHiragana().length() - state.typingLogic.getRemainingRequiredHiraganaVisual().length())).color(ChatColor.WHITE)

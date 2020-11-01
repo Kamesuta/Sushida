@@ -49,6 +49,12 @@ public class TypingLogic {
         return wordRequired.getValue();
     }
 
+    public String getTypedHiragana() {
+        int remaining = getRemainingRequiredHiragana().length();
+        String hiragana = getRequiredHiragana();
+        return hiragana.substring(hiragana.length() - remaining);
+    }
+
     public String getRemainingRequiredHiragana() {
         return wordRemainingRequiredHiragana;
     }

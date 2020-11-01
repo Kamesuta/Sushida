@@ -1,5 +1,6 @@
 package net.teamfruit.sushida;
 
+import net.teamfruit.sushida.belowname.BelowNameManager;
 import net.teamfruit.sushida.data.ConversionTableLoader;
 import net.teamfruit.sushida.data.Word;
 import net.teamfruit.sushida.listener.*;
@@ -20,6 +21,7 @@ public final class Sushida extends JavaPlugin {
     public static Logger logger;
     public static GameLogic logic;
     public static Plugin plugin;
+    public static BelowNameManager belowName;
 
     @Override
     public void onEnable() {
@@ -37,6 +39,8 @@ public final class Sushida extends JavaPlugin {
                 .word(wordset)
                 .build();
 
+        belowName = new BelowNameManager();
+
         // Event
         getServer().getPluginManager().registerEvents(new TypeEventListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerEventListener(), this);
@@ -52,6 +56,7 @@ public final class Sushida extends JavaPlugin {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
+        belowName.clearManaged();
     }
 
 }

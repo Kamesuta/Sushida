@@ -7,13 +7,17 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.spigotmc.event.entity.EntityDismountEvent;
 
 public class PlayerEventListener implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         // player変数を新しいエンティティに更新
-        Sushida.logic.states.getPlayerState(event.getPlayer()).player = event.getPlayer();
+        PlayerData state = Sushida.logic.states.getPlayerState(event.getPlayer());
+        state.player = event.getPlayer();
+        // ネーム生成
+        Sushida.belowName.spawn(state);
     }
 
     @EventHandler
@@ -23,6 +27,14 @@ public class PlayerEventListener implements Listener {
         Group group = state.getGroup();
         if (group.isOwner(state))
             group.getMembers().stream().findFirst().ifPresent(group::setOwner);
+        // ネーム削除
+        Sushida.belowName.despawn(state);
+    }
+
+    @EventHandler
+    public void onDismount(EntityDismountEvent event) {
+        // ネーム削除
+        Sushida.belowName.checkAndRemove(event.getEntity());
     }
 
 }
