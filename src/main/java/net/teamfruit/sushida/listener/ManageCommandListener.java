@@ -35,9 +35,9 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
         return Collections.emptyList();
     }
 
-    private boolean validateGroupOwner(PlayerData state, String actionName) {
+    private boolean validateGroupOwner(CommandSender sender, PlayerData state, String actionName) {
         if (!state.getGroup().isOwner(state)) {
-            state.player.sendMessage(new ComponentBuilder()
+            sender.sendMessage(new ComponentBuilder()
                     .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
                     .append("グループのホストのみ" + actionName + "ができます").color(ChatColor.RED)
                     .create()
@@ -47,9 +47,9 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
         return true;
     }
 
-    private boolean validateSession(PlayerData state, String actionName) {
+    private boolean validateSession(CommandSender sender, PlayerData state, String actionName) {
         if (state.hasSession()) {
-            state.player.sendMessage(new ComponentBuilder()
+            sender.sendMessage(new ComponentBuilder()
                     .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
                     .append("プレイ中に" + actionName + "はできません").color(ChatColor.RED)
                     .create()
@@ -94,9 +94,9 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
         if (arg0 != null) {
             switch (arg0) {
                 case "assign": {
-                    if (!validateGroupOwner(state, "メンバーの変更"))
+                    if (!validateGroupOwner(player, state, "メンバーの変更"))
                         return true;
-                    if (!validateSession(state, "メンバーの変更"))
+                    if (!validateSession(player, state, "メンバーの変更"))
                         return true;
                     if (!player.hasPermission("sushida.other")) {
                         player.sendMessage(new ComponentBuilder()
@@ -132,9 +132,9 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
                     break;
                 }
                 case "kick": {
-                    if (!validateGroupOwner(state, "メンバーの変更"))
+                    if (!validateGroupOwner(player, state, "メンバーの変更"))
                         return true;
-                    if (!validateSession(state, "メンバーの変更"))
+                    if (!validateSession(player, state, "メンバーの変更"))
                         return true;
                     List<Player> players = getPlayers(player, getFrom(args, 1));
                     players.stream().map(Sushida.logic.states::getPlayerState)
@@ -149,7 +149,7 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
                     break;
                 }
                 case "invite": {
-                    if (!validateSession(state, "招待"))
+                    if (!validateSession(player, state, "招待"))
                         return true;
                     List<Player> players = getPlayers(player, getFrom(args, 1)).stream()
                             .filter(e -> !e.equals(player))
@@ -213,7 +213,7 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
                         );
                         return true;
                     }
-                    if (!validateSession(state, "メンバーの変更"))
+                    if (!validateSession(player, state, "メンバーの変更"))
                         return true;
                     Player groupPlayer = Bukkit.getPlayer(arg1);
                     if (groupPlayer == null) {
@@ -225,9 +225,11 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
                         return true;
                     }
                     PlayerData groupState = Sushida.logic.states.getPlayerState(groupPlayer);
-                    if (!validateSession(state, "部屋の変更"))
+                    if (!validateSession(player, state, "部屋の変更"))
                         return true;
                     Group group = groupState.getGroup();
+                    if (!validateSession(player, group.owner, "部屋の変更"))
+                        return true;
                     state.destroy();
                     if (state.join(group))
                         player.sendMessage(new ComponentBuilder()
@@ -246,7 +248,7 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
                     break;
                 }
                 case "leave": {
-                    if (!validateSession(state, "部屋の変更"))
+                    if (!validateSession(player, state, "部屋の変更"))
                         return true;
                     player.sendMessage(new ComponentBuilder()
                             .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
@@ -259,9 +261,9 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
                     break;
                 }
                 case "word": {
-                    if (!validateGroupOwner(state, "辞書の変更"))
+                    if (!validateGroupOwner(player, state, "辞書の変更"))
                         return true;
-                    if (!validateSession(state, "辞書の変更"))
+                    if (!validateSession(player, state, "辞書の変更"))
                         return true;
                     if (!state.getGroup().setWord(arg1)) {
                         player.sendMessage(new ComponentBuilder()
@@ -283,9 +285,9 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
                     break;
                 }
                 case "rule": {
-                    if (!validateGroupOwner(state, "ルールの変更"))
+                    if (!validateGroupOwner(player, state, "ルールの変更"))
                         return true;
-                    if (!validateSession(state, "ルールの変更"))
+                    if (!validateSession(player, state, "ルールの変更"))
                         return true;
                     if (!state.getGroup().setMode(arg1)) {
                         player.sendMessage(new ComponentBuilder()
@@ -307,9 +309,9 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
                     break;
                 }
                 case "setting": {
-                    if (!validateGroupOwner(state, "詳細設定の変更"))
+                    if (!validateGroupOwner(player, state, "詳細設定の変更"))
                         return true;
-                    if (!validateSession(state, "詳細設定の変更"))
+                    if (!validateSession(player, state, "詳細設定の変更"))
                         return true;
                     GameSettingType type = state.getGroup().getMode().getSettingType(arg1);
                     if (type == null) {
@@ -348,14 +350,14 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
                     break;
                 }
                 case "start": {
-                    if (!validateGroupOwner(state, "ゲームの開始"))
+                    if (!validateGroupOwner(player, state, "ゲームの開始"))
                         return true;
                     state.getGroup().init();
                     state.getGroup().getPlayers().forEach(PlayerData::create);
                     return true;
                 }
                 case "stop": {
-                    if (!validateGroupOwner(state, "ゲームの終了"))
+                    if (!validateGroupOwner(player, state, "ゲームの終了"))
                         return true;
                     state.getGroup().getPlayers().forEach(e -> {
                         e.destroy();
@@ -364,7 +366,7 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
                     return true;
                 }
                 case "restart": {
-                    if (!validateGroupOwner(state, "ゲームの開始"))
+                    if (!validateGroupOwner(player, state, "ゲームの開始"))
                         return true;
                     state.getGroup().getPlayers().forEach(e -> {
                         e.destroy();

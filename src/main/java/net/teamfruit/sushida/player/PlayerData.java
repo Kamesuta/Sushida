@@ -32,17 +32,29 @@ public class PlayerData {
         // すでに参加しているグループ
         if (group.equals(getGroup()))
             return false;
+        // ゲーム中
+        if (hasSession())
+            return false;
+        if (group.owner.hasSession())
+            return false;
         // 自分がオーナーな場合蹴る
         if (equals(getGroup().owner))
             getGroup().getMembers().forEach(PlayerData::leave);
         // グループ変更
         this.group.getMembers().remove(this);
         this.group = group;
+        leaveScoreboard();
         return this.group.getMembers().add(this);
     }
 
     public boolean leave() {
+        // ゲーム中
+        if (hasSession())
+            return false;
         // グループ退出
+        if (this.group.getMembers().isEmpty())
+            this.group.owner.leaveScoreboard();
+        leaveScoreboard();
         boolean b = this.group.getMembers().remove(this);
         this.group = new Group(this);
         return b;
@@ -77,7 +89,6 @@ public class PlayerData {
     public void destroy() {
         if (session == null)
             return;
-        leaveScoreboard();
         session.apply(StateContainer.supply(NoneState::new));
         session = null;
         Sushida.belowName.despawn(this);

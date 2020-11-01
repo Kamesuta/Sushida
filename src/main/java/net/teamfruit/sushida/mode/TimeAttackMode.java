@@ -45,8 +45,7 @@ public class TimeAttackMode implements GameMode {
     @Override
     public String getScoreBelowName(StateContainer state) {
         return String.format(
-                ChatColor.GREEN + "%d点"
-                        + ChatColor.WHITE + "(%d / %d)",
+                "%d点 (%d / %d)",
                 getDynamicScore(state),
                 state.typingLogic.wordDoneCount(),
                 state.typingLogic.wordTotalCount()

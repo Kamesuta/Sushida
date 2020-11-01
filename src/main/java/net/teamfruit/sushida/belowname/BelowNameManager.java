@@ -12,7 +12,6 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -73,17 +72,17 @@ public class BelowNameManager {
         glue1.addPassenger(line1);
         line1.addPassenger(glue2);
         glue2.addPassenger(line2);
-        playerData.entity.reference = new WeakReference<>(Arrays.asList(line0, line1, line2, glue0, glue1, glue2));
+        playerData.entity.reference = Arrays.asList(line0, line1, line2, glue0, glue1, glue2);
     }
 
     public void despawn(PlayerData playerData) {
-        List<Entity> entities = playerData.entity.reference.get();
+        List<Entity> entities = playerData.entity.reference;
         if (entities != null) {
             for (Entity entity : entities) {
                 managed.remove(entity);
                 entity.remove();
             }
-            playerData.entity.reference = new WeakReference<>(null);
+            playerData.entity.reference = null;
         }
         Player player = playerData.player;
         player.getPassengers().forEach(this::checkAndRemove);
@@ -100,16 +99,16 @@ public class BelowNameManager {
     }
 
     public static class NameTagReference {
-        public WeakReference<List<Entity>> reference = new WeakReference<>(null);
+        public List<Entity> reference = null;
 
         public void setTypingText(String text) {
-            List<Entity> entities = this.reference.get();
+            List<Entity> entities = this.reference;
             if (entities != null)
                 entities.get(0).setCustomName(ChatColor.WHITE + text);
         }
 
         public void setScoreText(String text) {
-            List<Entity> entities = this.reference.get();
+            List<Entity> entities = this.reference;
             if (entities != null)
                 entities.get(1).setCustomName(ChatColor.WHITE + text);
         }

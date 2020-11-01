@@ -6,11 +6,13 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.teamfruit.sushida.mode.GameMode;
 import net.teamfruit.sushida.player.StateContainer;
 import org.bukkit.Bukkit;
+import org.bukkit.Particle;
 import org.bukkit.SoundCategory;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.KeyedBossBar;
 import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
 
 public class PlayState implements IState {
     private KeyedBossBar bossBar;
@@ -114,6 +116,8 @@ public class PlayState implements IState {
             player.playSound(player.getLocation(), "sushida:sushida.coin", SoundCategory.PLAYERS, 1, 1);
             koto = true;
 
+            player.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, player.getLocation(), 30, .2, .1, .2);
+
             state.sushiTimer.reset();
 
             state.clearCount++;
@@ -134,10 +138,9 @@ public class PlayState implements IState {
         bossBar.setTitle(state.typingLogic.getRequiredKanji());
         bossBar.setProgress(state.scoreCombo / 30d / 4);
 
-        state.data.entity.setScoreText(state.data.getGroup().getMode().getScoreBelowName(state));
         state.data.entity.setTypingText(
                 ChatColor.WHITE + state.typingLogic.getTypedHiragana()
-                        + ChatColor.GRAY + state.typingLogic.getTypedRomaji());
+                        + ChatColor.WHITE + ChatColor.UNDERLINE + state.typingLogic.getTypedRomaji());
 
         player.sendTitle(new Title(
                 new ComponentBuilder()
@@ -162,6 +165,7 @@ public class PlayState implements IState {
 
     private void updateActionBar(StateContainer state) {
         state.data.player.sendActionBar(state.data.getGroup().getMode().getScoreString(state));
+        state.data.entity.setScoreText(state.data.getGroup().getMode().getScoreBelowName(state));
     }
 
     @Override

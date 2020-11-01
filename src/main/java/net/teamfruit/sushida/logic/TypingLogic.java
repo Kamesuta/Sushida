@@ -52,7 +52,7 @@ public class TypingLogic {
     public String getTypedHiragana() {
         int remaining = getRemainingRequiredHiragana().length();
         String hiragana = getRequiredHiragana();
-        return hiragana.substring(hiragana.length() - remaining);
+        return hiragana.substring(0, hiragana.length() - remaining);
     }
 
     public String getRemainingRequiredHiragana() {

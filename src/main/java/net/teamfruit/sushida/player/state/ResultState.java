@@ -22,6 +22,9 @@ public class ResultState implements IState {
         state.data.getGroup().getScoreLeaderboard()
                 .getScore(state.data.player.getName())
                 .setScore(state.data.getGroup().getMode().getScore(state));
+        state.data.getGroup().getTabLeaderboard()
+                .getScore(state.data.player.getName())
+                .setScore(state.data.getGroup().getMode().getScore(state));
 
         // ランキング算出
         GameMode mode = state.data.getGroup().getMode();

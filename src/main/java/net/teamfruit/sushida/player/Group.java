@@ -25,6 +25,7 @@ public class Group {
 
     private Scoreboard groupScoreboard;
     private Objective scoreLeaderboard;
+    private Objective tabLeaderboard;
 
     public Group(PlayerData owner) {
         this.owner = owner;
@@ -52,6 +53,10 @@ public class Group {
 
     public Objective getScoreLeaderboard() {
         return scoreLeaderboard;
+    }
+
+    public Objective getTabLeaderboard() {
+        return tabLeaderboard;
     }
 
     public boolean setWord(String name) {
@@ -109,5 +114,11 @@ public class Group {
             this.scoreLeaderboard.unregister();
         this.scoreLeaderboard = groupScoreboard.registerNewObjective("score", "dummy", "スコア");
         this.scoreLeaderboard.setDisplaySlot(DisplaySlot.SIDEBAR);
+
+        this.tabLeaderboard = groupScoreboard.getObjective("tab");
+        if (this.tabLeaderboard != null)
+            this.tabLeaderboard.unregister();
+        this.tabLeaderboard = groupScoreboard.registerNewObjective("tab", "dummy", "スコア");
+        this.tabLeaderboard.setDisplaySlot(DisplaySlot.PLAYER_LIST);
     }
 }
