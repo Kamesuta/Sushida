@@ -2,6 +2,7 @@ package net.teamfruit.sushida.mode;
 
 import com.google.common.base.CharMatcher;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.teamfruit.sushida.player.Group;
@@ -174,7 +175,7 @@ public class TimeAttackMode implements GameMode {
     public ImmutableList<Map.Entry<String, String>> getWords(Group group) {
         int setting = getSetting(SettingCount);
         List<Integer> splits = CustomCollectors.splitInt(setting, group.getWord().mappings.size());
-        List<Map.Entry<String, Map<String, String>>> wordRequiredListByLevel = group.getWord().mappings.entrySet().stream()
+        List<Map.Entry<String, ImmutableList<ImmutableList<Map.Entry<String, String>>>>> wordRequiredListByLevel = group.getWord().mappings.entrySet().stream()
                 .sorted((a, b) -> {
                     int ai = NumberUtils.toInt(CharMatcher.inRange('0', '9').retainFrom(a.getKey()), -1);
                     int bi = NumberUtils.toInt(CharMatcher.inRange('0', '9').retainFrom(b.getKey()), -1);
@@ -183,9 +184,11 @@ public class TimeAttackMode implements GameMode {
                 .collect(Collectors.toList());
         return IntStream.range(0, splits.size())
                 .mapToObj(i ->
-                        wordRequiredListByLevel.get(i).getValue().entrySet().stream()
+                        wordRequiredListByLevel.get(i).getValue().stream()
                                 .collect(CustomCollectors.toRandomPickList(splits.get(i)))
-                ).flatMap(Collection::stream)
+                )
+                .flatMap(Collection::stream)
+                .flatMap(Collection::stream)
                 .collect(ImmutableList.toImmutableList());
     }
 }

@@ -2,6 +2,7 @@ package net.teamfruit.sushida.mode;
 
 import com.google.common.base.CharMatcher;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.teamfruit.sushida.player.Group;
@@ -17,7 +18,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class TimeLimitMode implements GameMode {
-    public static final GameSettingType SettingTime = new GameSettingType("time", "制限時間", "ゲームの制限時間", 60, Arrays.asList(60, 90, 120));
+    public static final GameSettingType SettingTime = new GameSettingType("time", "制限時間", "ゲームの制限時間", 120, Arrays.asList(60, 90, 120));
     public static final GameSettingType SettingLevel = new GameSettingType("level", "コース", "1:お手軽コース(2～7文字), 2:おすすめコース(5～10文字), 3:高級コース(9～14文字以上), 0:すべて", 0, Arrays.asList(0, 1, 2, 3));
 
     private final Map<GameSettingType, Integer> settings = new HashMap<>();
@@ -180,7 +181,7 @@ public class TimeLimitMode implements GameMode {
     @Override
     public ImmutableList<Map.Entry<String, String>> getWords(Group group) {
         int level = getSetting(SettingLevel);
-        List<Map.Entry<String, Map<String, String>>> wordRequiredListByLevel = group.getWord().mappings.entrySet().stream()
+        List<Map.Entry<String, ImmutableList<ImmutableList<Map.Entry<String, String>>>>> wordRequiredListByLevel = group.getWord().mappings.entrySet().stream()
                 .sorted(Map.Entry.comparingByKey())
                 .collect(Collectors.toList());
         switch (level) {
@@ -216,8 +217,9 @@ public class TimeLimitMode implements GameMode {
             }
         }
         return wordRequiredListByLevel.stream()
-                .flatMap(e -> e.getValue().entrySet().stream())
+                .flatMap(e -> e.getValue().stream())
                 .collect(CustomCollectors.toShuffledList()).stream()
+                .flatMap(e -> e.stream())
                 .collect(ImmutableList.toImmutableList());
     }
 }

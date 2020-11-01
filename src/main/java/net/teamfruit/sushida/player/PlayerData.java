@@ -6,6 +6,7 @@ import net.teamfruit.sushida.player.state.NoneState;
 import net.teamfruit.sushida.player.state.TitleState;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerResourcePackStatusEvent;
 import org.bukkit.scoreboard.Scoreboard;
 
 public class PlayerData {
@@ -13,6 +14,7 @@ public class PlayerData {
     private StateContainer session;
     private Group group;
 
+    private boolean resourceLoaded;
     public BelowNameManager.NameTagReference entity;
 
     public PlayerData(Player player) {
@@ -88,7 +90,10 @@ public class PlayerData {
         session.apply(StateContainer.supply(TitleState::new));
 
         // リソースパック
-        Sushida.resourcePack.apply(player);
+        if (!resourceLoaded || !player.hasResourcePack()) {
+            Sushida.resourcePack.apply(player);
+            resourceLoaded = true;
+        }
 
         if (!getGroup().getMembers().isEmpty())
             joinScoreboard(getGroup().getGroupScoreboard());
