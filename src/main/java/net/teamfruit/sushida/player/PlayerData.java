@@ -13,7 +13,6 @@ public class PlayerData {
     private StateContainer session;
     private Group group;
 
-    private boolean resourceLoaded;
     public BelowNameManager.NameTagReference entity;
 
     public PlayerData(Player player) {
@@ -89,10 +88,8 @@ public class PlayerData {
         session.apply(StateContainer.supply(TitleState::new));
 
         // リソースパック
-        if (!resourceLoaded || !player.hasResourcePack()) {
+        if (!player.hasResourcePack())
             Sushida.resourcePack.apply(player);
-            resourceLoaded = true;
-        }
 
         if (!getGroup().getMembers().isEmpty())
             joinScoreboard(getGroup().getGroupScoreboard());

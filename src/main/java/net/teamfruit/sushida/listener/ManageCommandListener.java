@@ -422,6 +422,11 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
                     state.getGroup().getPlayers().forEach(PlayerData::create);
                     return true;
                 }
+                case "resourcepack": {
+                    // リソースパック
+                    Sushida.resourcePack.apply(player);
+                    return true;
+                }
                 default: {
                     player.sendMessage(new ComponentBuilder()
                             .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
@@ -650,7 +655,7 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
 
         switch (args.size()) {
             case 1:
-                return Stream.of("assign", "invite", "kick", "join", "leave", "ranking", "word", "rule", "setting", "start", "stop", "restart")
+                return Stream.of("assign", "invite", "kick", "join", "leave", "ranking", "word", "rule", "setting", "start", "stop", "restart", "resourcepack")
                         .filter(e -> {
                             if (e.equals("assign"))
                                 return player.hasPermission("sushida.other");
