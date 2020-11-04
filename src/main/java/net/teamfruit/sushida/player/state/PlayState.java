@@ -12,7 +12,6 @@ import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.KeyedBossBar;
 import org.bukkit.entity.Player;
-import org.bukkit.util.Vector;
 
 public class PlayState implements IState {
     private KeyedBossBar bossBar;
@@ -62,7 +61,7 @@ public class PlayState implements IState {
     public IState onType(StateContainer state, String typed, String buffer) {
         Player player = state.data.player;
 
-        int timeout = state.data.getGroup().getMode().getSetting(GameMode.SettingTimeout);
+        int timeout = state.data.getGroup().getMode().getSetting(state.data.getGroup().getSettings(), GameMode.SettingTimeout);
 
         // 寿司の時間制限
         if (timeout > 0 && state.sushiTimer.getTime() >= timeout) {
@@ -193,7 +192,7 @@ public class PlayState implements IState {
 
         IState newState = null;
 
-        int timeout = state.data.getGroup().getMode().getSetting(GameMode.SettingTimeout);
+        int timeout = state.data.getGroup().getMode().getSetting(state.data.getGroup().getSettings(), GameMode.SettingTimeout);
 
         // 寿司の時間制限
         if (timeout > 0) {

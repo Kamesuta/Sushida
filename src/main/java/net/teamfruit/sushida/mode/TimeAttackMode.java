@@ -9,8 +9,12 @@ import net.teamfruit.sushida.player.StateContainer;
 import net.teamfruit.sushida.util.CustomCollectors;
 import net.teamfruit.sushida.util.SimpleTask;
 import org.apache.commons.lang.math.NumberUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
+import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Score;
+import org.bukkit.scoreboard.Scoreboard;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -155,6 +159,31 @@ public class TimeAttackMode implements GameMode {
                             .append("人中)").color(ChatColor.GRAY)
                             .create()
                     );
+                // グローバルランキング算出
+                state.data.getGroup().getRanking().ifPresent(ranking -> {
+                    Scoreboard sc = Bukkit.getScoreboardManager().getMainScoreboard();
+                    Objective objective = ranking.getOrCreateObjective(sc);
+                    GameMode mode = state.data.getGroup().getMode();
+                    Set<String> entries = sc.getEntries();
+                    List<Integer> board = entries.stream()
+                            .map(objective::getScore)
+                            .filter(Score::isScoreSet)
+                            .map(Score::getScore)
+                            .sorted(mode.getScoreComparator())
+                            .collect(Collectors.toList());
+                    int myScore = objective.getScore(state.data.player.getName()).getScore();
+                    int rank = board.indexOf(myScore) + 1;
+                    player.sendMessage(new ComponentBuilder()
+                            .append("      グローバルランキング: ").color(ChatColor.WHITE)
+                            .append(String.valueOf(rank)).color(ChatColor.YELLOW)
+                            .append("位").color(ChatColor.GRAY)
+                            .append("(").color(ChatColor.GRAY)
+                            .append(String.valueOf(board.size())).color(ChatColor.WHITE)
+                            .append("人中)").color(ChatColor.GRAY)
+                            .create()
+                    );
+                });
+
                 player.sendMessage("");
             });
 

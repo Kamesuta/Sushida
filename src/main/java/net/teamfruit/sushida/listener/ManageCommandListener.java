@@ -59,6 +59,18 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
         return true;
     }
 
+    private boolean validateRanking(CommandSender sender, PlayerData state, String actionName) {
+        if (state.getGroup().hasRanking()) {
+            sender.sendMessage(new ComponentBuilder()
+                    .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
+                    .append("ランキングモードでは" + actionName + "はできません").color(ChatColor.RED)
+                    .create()
+            );
+            return false;
+        }
+        return true;
+    }
+
     private List<Player> getPlayers(CommandSender sender, List<String> args) {
         List<Player> players = new ArrayList<>();
         if (args.size() > 0) {
@@ -260,10 +272,37 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
                     state.leave();
                     break;
                 }
+                case "ranking": {
+                    if (!validateGroupOwner(player, state, "ランキングの変更"))
+                        return true;
+                    if (!validateSession(player, state, "ランキングの変更"))
+                        return true;
+                    if (!state.getGroup().setRanking(arg1)) {
+                        player.sendMessage(new ComponentBuilder()
+                                .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
+                                .append("ランキングを").color(ChatColor.GREEN)
+                                .append("なし").color(ChatColor.WHITE)
+                                .append("に設定しました").color(ChatColor.GREEN)
+                                .create()
+                        );
+                    } else {
+                        Optional<String> title = state.getGroup().getRanking().map(e -> e.title);
+                        player.sendMessage(new ComponentBuilder()
+                                .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
+                                .append("ランキングを「").color(ChatColor.GREEN)
+                                .append(title.orElse(arg1)).color(ChatColor.WHITE)
+                                .append("」に設定しました").color(ChatColor.GREEN)
+                                .create()
+                        );
+                    }
+                    break;
+                }
                 case "word": {
                     if (!validateGroupOwner(player, state, "辞書の変更"))
                         return true;
                     if (!validateSession(player, state, "辞書の変更"))
+                        return true;
+                    if (!validateRanking(player, state, "辞書の変更"))
                         return true;
                     if (!state.getGroup().setWord(arg1)) {
                         player.sendMessage(new ComponentBuilder()
@@ -275,10 +314,11 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
                         );
                         return true;
                     }
+                    String title = state.getGroup().getWord().title;
                     player.sendMessage(new ComponentBuilder()
                             .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
                             .append("辞書を「").color(ChatColor.GREEN)
-                            .append(arg1).color(ChatColor.WHITE)
+                            .append(Optional.ofNullable(title).orElse(arg1)).color(ChatColor.WHITE)
                             .append("」に設定しました").color(ChatColor.GREEN)
                             .create()
                     );
@@ -288,6 +328,8 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
                     if (!validateGroupOwner(player, state, "ルールの変更"))
                         return true;
                     if (!validateSession(player, state, "ルールの変更"))
+                        return true;
+                    if (!validateRanking(player, state, "ルールの変更"))
                         return true;
                     if (!state.getGroup().setMode(arg1)) {
                         player.sendMessage(new ComponentBuilder()
@@ -313,6 +355,8 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
                         return true;
                     if (!validateSession(player, state, "詳細設定の変更"))
                         return true;
+                    if (!validateRanking(player, state, "詳細設定の変更"))
+                        return true;
                     GameSettingType type = state.getGroup().getMode().getSettingType(arg1);
                     if (type == null) {
                         player.sendMessage(new ComponentBuilder()
@@ -326,6 +370,8 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
                     }
                     int value;
                     try {
+                        if (arg2 == null)
+                            throw new NumberFormatException();
                         value = Integer.parseInt(arg2);
                         if (value <= 0)
                             throw new NumberFormatException();
@@ -337,7 +383,7 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
                         );
                         return true;
                     }
-                    state.getGroup().getMode().setSetting(type, value);
+                    state.getGroup().getMode().setSetting(state.getGroup().getSettings(), type, value);
                     player.sendMessage(new ComponentBuilder()
                             .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
                             .append("設定「").color(ChatColor.GREEN)
@@ -427,9 +473,32 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
             }
             {
                 ComponentBuilder cb = new ComponentBuilder()
+                        .append("ランキング: ").color(ChatColor.WHITE)
+                        .append(state.getGroup().getRanking().map(e -> e.title).orElse("なし")).color(ChatColor.YELLOW);
+                if (state.getGroup().isOwner(state)) {
+                    cb.append(new TextComponent(
+                            new ComponentBuilder("[+]").color(ChatColor.BLUE).bold(true)
+                                    .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                                            new ComponentBuilder().append("ランキングを選択します").create()))
+                                    .event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/sushida ranking "))
+                                    .create()
+                    ));
+                    if (state.getGroup().hasRanking())
+                        cb.append(new TextComponent(
+                                new ComponentBuilder("[-]").color(ChatColor.BLUE).bold(true)
+                                        .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                                                new ComponentBuilder().append("カスタム設定を使用します").create()))
+                                        .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/sushida ranking"))
+                                        .create()
+                        ));
+                }
+                player.sendMessage(cb.create());
+            }
+            {
+                ComponentBuilder cb = new ComponentBuilder()
                         .append("辞書: ").color(ChatColor.WHITE)
-                        .append(state.getGroup().getWordName()).color(ChatColor.YELLOW);
-                if (state.getGroup().isOwner(state))
+                        .append(Optional.ofNullable(state.getGroup().getWord().title).orElse(state.getGroup().getWordName())).color(ChatColor.YELLOW);
+                if (state.getGroup().isOwner(state) && !state.getGroup().hasRanking())
                     cb.append(new TextComponent(
                             new ComponentBuilder("[+]").color(ChatColor.BLUE).bold(true)
                                     .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
@@ -443,7 +512,7 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
                 ComponentBuilder cb = new ComponentBuilder()
                         .append("ルール: ").color(ChatColor.WHITE);
                 GameMode currentMode = state.getGroup().getMode();
-                if (state.getGroup().isOwner(state)) {
+                if (state.getGroup().isOwner(state) && !state.getGroup().hasRanking()) {
                     cb.append(
                             Arrays.stream(GameModes.values()).map(e -> {
                                 if (e.mode.equals(currentMode))
@@ -479,8 +548,8 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
                         .append(type.title).color(ChatColor.WHITE).event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
                                 new ComponentBuilder().append(type.description).create()))
                         .append(": ").color(ChatColor.WHITE)
-                        .append(String.valueOf(state.getGroup().getMode().getSetting(type))).color(ChatColor.YELLOW);
-                if (state.getGroup().isOwner(state))
+                        .append(String.valueOf(state.getGroup().getMode().getSetting(state.getGroup().getSettings(), type))).color(ChatColor.YELLOW);
+                if (state.getGroup().isOwner(state) && !state.getGroup().hasRanking())
                     cb.append(new TextComponent(
                             new ComponentBuilder("[+]").color(ChatColor.BLUE).bold(true)
                                     .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
@@ -575,59 +644,76 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
         String arg0 = get(args, 0);
         String arg1 = get(args, 1);
         String arg2 = get(args, 2);
+
+        if (arg0 == null)
+            return Collections.emptyList();
+
         switch (args.size()) {
             case 1:
-                return Stream.of("assign", "invite", "kick", "join", "leave", "word", "rule", "setting", "start", "stop", "restart")
-                        .filter(e -> !e.equals("assign") || player.hasPermission("sushida.other"))
-                        .filter(e -> arg0 == null || e.startsWith(arg0))
+                return Stream.of("assign", "invite", "kick", "join", "leave", "ranking", "word", "rule", "setting", "start", "stop", "restart")
+                        .filter(e -> {
+                            if (e.equals("assign"))
+                                return player.hasPermission("sushida.other");
+                            return true;
+                        })
+                        .filter(e -> e.startsWith(arg0))
                         .collect(Collectors.toList());
             case 2:
-                if ("word".equals(arg0)) {
-                    return Sushida.logic.word.keySet().stream()
-                            .filter(e -> arg1 == null || e.startsWith(arg1))
-                            .collect(Collectors.toList());
-                } else if ("rule".equals(arg0)) {
-                    return Arrays.stream(GameModes.values())
-                            .map(Enum::name)
-                            .filter(e -> arg1 == null || e.startsWith(arg1))
-                            .collect(Collectors.toList());
-                } else if ("setting".equals(arg0)) {
-                    return state.getGroup().getMode().getSettingTypes().stream()
-                            .map(e -> e.name)
-                            .filter(e -> arg1 == null || e.startsWith(arg1))
-                            .collect(Collectors.toList());
-                } else if ("join".equals(arg0)) {
-                    return Bukkit.getOnlinePlayers().stream()
-                            .map(Player::getName)
-                            .filter(e -> arg1 == null || e.startsWith(arg1))
-                            .collect(Collectors.toList());
-                }
-                // Fall through
-            case 3:
-                if ("setting".equals(arg0)) {
-                    GameSettingType type = state.getGroup().getMode().getSettingType(arg1);
-                    if (type != null)
-                        return type.candidates.stream()
-                                .map(String::valueOf)
-                                .filter(e -> arg2 == null || e.startsWith(arg2))
+                switch (arg0) {
+                    case "word":
+                        return Sushida.logic.word.keySet().stream()
+                                .filter(e -> arg1 == null || e.startsWith(arg1))
+                                .collect(Collectors.toList());
+                    case "ranking":
+                        return Sushida.logic.ranking.keySet().stream()
+                                .filter(e -> arg1 == null || e.startsWith(arg1))
+                                .collect(Collectors.toList());
+                    case "rule":
+                        return Arrays.stream(GameModes.values())
+                                .map(Enum::name)
+                                .filter(e -> arg1 == null || e.startsWith(arg1))
+                                .collect(Collectors.toList());
+                    case "setting":
+                        return state.getGroup().getMode().getSettingTypes().stream()
+                                .map(e -> e.name)
+                                .filter(e -> arg1 == null || e.startsWith(arg1))
+                                .collect(Collectors.toList());
+                    case "join":
+                        return Bukkit.getOnlinePlayers().stream()
+                                .map(Player::getName)
+                                .filter(e -> arg1 == null || e.startsWith(arg1))
                                 .collect(Collectors.toList());
                 }
                 // Fall through
+            case 3:
+                switch (arg0) {
+                    case "setting":
+                        GameSettingType type = state.getGroup().getMode().getSettingType(arg1);
+                        if (type != null)
+                            return type.candidates.stream()
+                                    .map(String::valueOf)
+                                    .filter(e -> arg2 == null || e.startsWith(arg2))
+                                    .collect(Collectors.toList());
+                        break;
+                }
+                // Fall through
             default:
-                if ("assign".equals(arg0) || "invite".equals(arg0)) {
-                    Set<PlayerData> members = state.getGroup().getPlayers();
-                    return Stream.concat(
-                            Stream.of("@a"),
-                            Bukkit.getOnlinePlayers().stream()
-                                    .filter(e -> members.stream().noneMatch(x -> x.player.equals(e)))
-                                    .map(Player::getName)
-                                    .filter(e -> arg1 == null || e.startsWith(arg1))
-                    ).collect(Collectors.toList());
-                } else if ("kick".equals(arg0)) {
-                    return state.getGroup().getMembers().stream()
-                            .map(e -> e.player.getName())
-                            .filter(e -> arg1 == null || e.startsWith(arg1))
-                            .collect(Collectors.toList());
+                switch (arg0) {
+                    case "assign":
+                    case "invite":
+                        Set<PlayerData> members = state.getGroup().getPlayers();
+                        return Stream.concat(
+                                Stream.of("@a"),
+                                Bukkit.getOnlinePlayers().stream()
+                                        .filter(e -> members.stream().noneMatch(x -> x.player.equals(e)))
+                                        .map(Player::getName)
+                                        .filter(e -> arg1 == null || e.startsWith(arg1))
+                        ).collect(Collectors.toList());
+                    case "kick":
+                        return state.getGroup().getMembers().stream()
+                                .map(e -> e.player.getName())
+                                .filter(e -> arg1 == null || e.startsWith(arg1))
+                                .collect(Collectors.toList());
                 }
                 return Collections.emptyList();
         }

@@ -6,13 +6,15 @@ import net.teamfruit.sushida.data.ConversionTableLoader;
 import net.teamfruit.sushida.data.Word;
 import net.teamfruit.sushida.listener.*;
 import net.teamfruit.sushida.logic.GameLogic;
+import net.teamfruit.sushida.ranking.RankingSetting;
 import org.apache.commons.lang.StringUtils;
+import org.bukkit.configuration.Configuration;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Map;
@@ -37,10 +39,22 @@ public final class Sushida extends JavaPlugin {
 
         // リソースパック
         saveDefaultConfig();
-        String url = getConfig().getString("resourcepack.url");
-        String hash = getConfig().getString("resourcepack.hash");
+        Configuration config = getConfig();
+        String url = config.getString("resourcepack.url");
+        String hash = config.getString("resourcepack.hash");
         resourcePack = new ResourcePack(url, hash);
 
+        // ランキング
+        ConfigurationSection rankingSection = config.getConfigurationSection("rankings");
+        ImmutableMap<String, RankingSetting> rankings = Optional.ofNullable(rankingSection)
+                .map(r -> r.getKeys(false).stream()
+                        .map(name -> RankingSetting.fromConfig(name, rankingSection.getConfigurationSection(name)))
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
+                        .collect(ImmutableMap.toImmutableMap(e -> e.name, f -> f))
+                ).orElseGet(ImmutableMap::of);
+
+        // 辞書
         File folder = new File(getDataFolder(), "wordset");
         if (!new File(folder, "word.yml").exists())
             saveResource("wordset/word.yml", false);
@@ -54,12 +68,15 @@ public final class Sushida extends JavaPlugin {
                             } catch (Exception ex) {
                                 Sushida.logger.log(Level.SEVERE, String.format("Failed to load word [%s]", e.getName()), ex);
                             }
-                            return new Word(ImmutableMap.of());
+                            return new Word("壊れた辞書", ImmutableMap.of());
                         }
                 ));
+
+        // ロジック
         logic = new GameLogic.GameLogicBuilder()
                 .romaji(ConversionTableLoader.createFromStream(getResource("romaji.csv")))
                 .word(wordset)
+                .ranking(rankings)
                 .build();
 
         belowName = new BelowNameManager();

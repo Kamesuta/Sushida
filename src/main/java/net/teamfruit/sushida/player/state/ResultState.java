@@ -3,8 +3,10 @@ package net.teamfruit.sushida.player.state;
 import net.teamfruit.sushida.mode.GameMode;
 import net.teamfruit.sushida.player.PlayerData;
 import net.teamfruit.sushida.player.StateContainer;
+import org.bukkit.Bukkit;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
+import org.bukkit.scoreboard.Scoreboard;
 
 import java.util.Iterator;
 import java.util.List;
@@ -20,12 +22,18 @@ public class ResultState implements IState {
         Player player = state.data.player;
 
         // リーダーボード更新
+        String name = player.getName();
+        int score = state.data.getGroup().getMode().getScore(state);
         state.data.getGroup().getScoreLeaderboard()
-                .getScore(state.data.player.getName())
-                .setScore(state.data.getGroup().getMode().getScore(state));
+                .getScore(name)
+                .setScore(score);
         state.data.getGroup().getTabLeaderboard()
-                .getScore(state.data.player.getName())
-                .setScore(state.data.getGroup().getMode().getScore(state));
+                .getScore(name)
+                .setScore(score);
+
+        // グローバルランキング更新
+        Scoreboard sc = Bukkit.getScoreboardManager().getMainScoreboard();
+        state.data.getGroup().getRanking().ifPresent(ranking -> ranking.getOrCreateObjective(sc).getScore(name).setScore(score));
 
         // ランキング算出
         GameMode mode = state.data.getGroup().getMode();

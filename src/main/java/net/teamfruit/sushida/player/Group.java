@@ -7,18 +7,18 @@ import net.teamfruit.sushida.data.Word;
 import net.teamfruit.sushida.mode.GameMode;
 import net.teamfruit.sushida.mode.GameModes;
 import net.teamfruit.sushida.mode.GameSettingType;
+import net.teamfruit.sushida.ranking.RankingSetting;
 import org.bukkit.Bukkit;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import javax.annotation.Nullable;
+import java.util.*;
 
 public class Group {
     public PlayerData owner;
+    private RankingSetting ranking;
     private String wordName = "word";
     private GameMode gameMode = GameModes.time.mode;
     private Word word = Sushida.logic.word.get(wordName);
@@ -54,6 +54,14 @@ public class Group {
         return settings;
     }
 
+    public Optional<RankingSetting> getRanking() {
+        return Optional.ofNullable(ranking);
+    }
+
+    public boolean hasRanking() {
+        return ranking != null;
+    }
+
     public Scoreboard getGroupScoreboard() {
         return groupScoreboard;
     }
@@ -86,6 +94,21 @@ public class Group {
         if (mode == null)
             return false;
         this.gameMode = mode;
+        return true;
+    }
+
+    public boolean setRanking(@Nullable String name) {
+        return setRanking(Sushida.logic.ranking.get(name));
+    }
+
+    public boolean setRanking(@Nullable RankingSetting ranking) {
+        this.ranking = ranking;
+        if (ranking == null)
+            return false;
+        setWord(ranking.word);
+        setMode(ranking.mode);
+        getSettings().clear();
+        getSettings().putAll(ranking.settings);
         return true;
     }
 
