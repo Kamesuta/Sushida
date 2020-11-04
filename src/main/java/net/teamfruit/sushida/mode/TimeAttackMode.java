@@ -2,7 +2,6 @@ package net.teamfruit.sushida.mode;
 
 import com.google.common.base.CharMatcher;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.teamfruit.sushida.player.Group;
@@ -21,8 +20,6 @@ import java.util.stream.IntStream;
 public class TimeAttackMode implements GameMode {
     public static final GameSettingType SettingCount = new GameSettingType("count", "問題数", "問題数", 30, Arrays.asList(10, 20, 30, 60, 120));
 
-    private final Map<GameSettingType, Integer> settings = new HashMap<>();
-
     @Override
     public String title() {
         return "タイムアタック";
@@ -31,11 +28,6 @@ public class TimeAttackMode implements GameMode {
     @Override
     public List<GameSettingType> getSettingTypes() {
         return Arrays.asList(SettingCount, SettingTimeout);
-    }
-
-    @Override
-    public Map<GameSettingType, Integer> getSettings() {
-        return settings;
     }
 
     @Override
@@ -55,7 +47,7 @@ public class TimeAttackMode implements GameMode {
 
     @Override
     public int getDynamicScore(StateContainer state) {
-        int timeout = state.data.getGroup().getMode().getSetting(GameMode.SettingTimeout);
+        int timeout = state.data.getGroup().getMode().getSetting(state.data.getGroup().getSettings(), SettingTimeout);
         if (timeout > 0)
             return state.clearCount * timeout - Math.round(state.timer.getTime());
         return state.clearCount;
@@ -63,10 +55,10 @@ public class TimeAttackMode implements GameMode {
 
     @Override
     public int getScore(StateContainer state) {
-        int timeout = state.data.getGroup().getMode().getSetting(GameMode.SettingTimeout);
+        int timeout = state.data.getGroup().getMode().getSetting(state.data.getGroup().getSettings(), SettingTimeout);
         if (timeout > 0)
             return state.clearCount * timeout - Math.round(state.timer.getTime());
-        return - Math.round(state.timer.getTime());
+        return -Math.round(state.timer.getTime());
     }
 
     @Override
@@ -87,7 +79,7 @@ public class TimeAttackMode implements GameMode {
                         .create()
                 );
                 player.sendMessage("");
-                int count = getSetting(SettingCount);
+                int count = getSetting(state.data.getGroup().getSettings(), SettingCount);
                 player.sendMessage(new ComponentBuilder()
                         .append("      ").color(ChatColor.WHITE)
                         .append("タイムアタックコース").color(ChatColor.BLUE)
@@ -173,7 +165,7 @@ public class TimeAttackMode implements GameMode {
 
     @Override
     public ImmutableList<Map.Entry<String, String>> getWords(Group group) {
-        int setting = getSetting(SettingCount);
+        int setting = getSetting(group.getSettings(), SettingCount);
         List<Integer> splits = CustomCollectors.splitInt(setting, group.getWord().mappings.size());
         List<Map.Entry<String, ImmutableList<ImmutableList<Map.Entry<String, String>>>>> wordRequiredListByLevel = group.getWord().mappings.entrySet().stream()
                 .sorted((a, b) -> {

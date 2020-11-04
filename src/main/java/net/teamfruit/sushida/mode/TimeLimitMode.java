@@ -2,7 +2,6 @@ package net.teamfruit.sushida.mode;
 
 import com.google.common.base.CharMatcher;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.teamfruit.sushida.player.Group;
@@ -13,15 +12,16 @@ import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class TimeLimitMode implements GameMode {
     public static final GameSettingType SettingTime = new GameSettingType("time", "制限時間", "ゲームの制限時間", 120, Arrays.asList(60, 90, 120));
     public static final GameSettingType SettingLevel = new GameSettingType("level", "コース", "1:お手軽コース(2～7文字), 2:おすすめコース(5～10文字), 3:高級コース(9～14文字以上), 0:すべて", 0, Arrays.asList(0, 1, 2, 3));
-
-    private final Map<GameSettingType, Integer> settings = new HashMap<>();
 
     @Override
     public String title() {
@@ -34,13 +34,8 @@ public class TimeLimitMode implements GameMode {
     }
 
     @Override
-    public Map<GameSettingType, Integer> getSettings() {
-        return settings;
-    }
-
-    @Override
     public boolean isGameOver(StateContainer state) {
-        return state.timer.getTime() > getSetting(SettingTime);
+        return state.timer.getTime() > getSetting(state.data.getGroup().getSettings(), SettingTime);
     }
 
     @Override
@@ -63,7 +58,7 @@ public class TimeLimitMode implements GameMode {
     public String getScoreString(StateContainer state) {
         return ChatColor.WHITE + "残り時間:"
                 + (state.timer.getTime() < 10 ? ChatColor.YELLOW : ChatColor.GREEN)
-                + ChatColor.BOLD + String.format("%.0f秒", getSetting(SettingTime) - state.timer.getTime())
+                + ChatColor.BOLD + String.format("%.0f秒", getSetting(state.data.getGroup().getSettings(), SettingTime) - state.timer.getTime())
                 + ChatColor.GRAY + ", "
                 + ChatColor.WHITE + "金額:"
                 + ChatColor.GREEN + ChatColor.BOLD + String.format("%,d円", state.moneyCount);
@@ -78,8 +73,8 @@ public class TimeLimitMode implements GameMode {
                         .create()
                 );
                 player.sendMessage("");
-                int time = getSetting(SettingTime);
-                int level = getSetting(SettingLevel);
+                int time = getSetting(state.data.getGroup().getSettings(), SettingTime);
+                int level = getSetting(state.data.getGroup().getSettings(), SettingLevel);
                 int levelMoney = level == 1 ? 3000 : level == 3 ? 10000 : 5000;
                 String levelName = level == 1 ? ChatColor.GOLD + "お手軽" : level == 3 ? ChatColor.DARK_RED + "高級" : ChatColor.BLUE + "お勧め";
                 player.sendMessage(new ComponentBuilder()
@@ -112,7 +107,7 @@ public class TimeLimitMode implements GameMode {
             }).append(state -> {
                 Player player = state.data.player;
                 player.playSound(player.getLocation(), "sushida:sushida.cacher", SoundCategory.PLAYERS, 1, 1);
-                int level = getSetting(SettingLevel);
+                int level = getSetting(state.data.getGroup().getSettings(), SettingLevel);
                 int levelMoney = level == 1 ? 3000 : level == 3 ? 10000 : 5000;
                 player.sendMessage(new ComponentBuilder()
                         .append("      ").color(ChatColor.WHITE)
@@ -122,7 +117,7 @@ public class TimeLimitMode implements GameMode {
             }).append(state -> {
                 Player player = state.data.player;
                 player.playSound(player.getLocation(), "sushida:sushida.chin", SoundCategory.PLAYERS, 1, 1);
-                int level = getSetting(SettingLevel);
+                int level = getSetting(state.data.getGroup().getSettings(), SettingLevel);
                 int levelMoney = level == 1 ? 3000 : level == 3 ? 10000 : 5000;
                 if (state.moneyCount > levelMoney)
                     player.sendMessage(new ComponentBuilder()
@@ -180,7 +175,7 @@ public class TimeLimitMode implements GameMode {
 
     @Override
     public ImmutableList<Map.Entry<String, String>> getWords(Group group) {
-        int level = getSetting(SettingLevel);
+        int level = getSetting(group.getSettings(), SettingLevel);
         List<Map.Entry<String, ImmutableList<ImmutableList<Map.Entry<String, String>>>>> wordRequiredListByLevel = group.getWord().mappings.entrySet().stream()
                 .sorted(Map.Entry.comparingByKey())
                 .collect(Collectors.toList());

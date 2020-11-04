@@ -6,7 +6,6 @@ import net.teamfruit.sushida.player.state.NoneState;
 import net.teamfruit.sushida.player.state.TitleState;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerResourcePackStatusEvent;
 import org.bukkit.scoreboard.Scoreboard;
 
 public class PlayerData {

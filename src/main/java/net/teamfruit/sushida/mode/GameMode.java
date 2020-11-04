@@ -14,14 +14,12 @@ public interface GameMode {
 
     List<GameSettingType> getSettingTypes();
 
-    Map<GameSettingType, Integer> getSettings();
-
-    default void setSetting(GameSettingType settingType, int value) {
-        getSettings().put(settingType, value);
+    default void setSetting(Map<GameSettingType, Integer> settings, GameSettingType settingType, int value) {
+        settings.put(settingType, value);
     }
 
-    default int getSetting(GameSettingType settingType) {
-        return getSettings().getOrDefault(settingType, settingType.defaultValue);
+    default int getSetting(Map<GameSettingType, Integer> settings, GameSettingType settingType) {
+        return settings.getOrDefault(settingType, settingType.defaultValue);
     }
 
     default GameSettingType getSettingType(String name) {

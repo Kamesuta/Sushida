@@ -6,11 +6,13 @@ import net.teamfruit.sushida.Sushida;
 import net.teamfruit.sushida.data.Word;
 import net.teamfruit.sushida.mode.GameMode;
 import net.teamfruit.sushida.mode.GameModes;
+import net.teamfruit.sushida.mode.GameSettingType;
 import org.bukkit.Bukkit;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -20,6 +22,7 @@ public class Group {
     private String wordName = "word";
     private GameMode gameMode = GameModes.time.mode;
     private Word word = Sushida.logic.word.get(wordName);
+    private Map<GameSettingType, Integer> settings = new HashMap<>();
     private Set<PlayerData> members = new HashSet<>();
     private ImmutableList<Map.Entry<String, String>> wordRequiredList;
 
@@ -45,6 +48,10 @@ public class Group {
         members.add(owner);
         owner = player;
         return true;
+    }
+
+    public Map<GameSettingType, Integer> getSettings() {
+        return settings;
     }
 
     public Scoreboard getGroupScoreboard() {
