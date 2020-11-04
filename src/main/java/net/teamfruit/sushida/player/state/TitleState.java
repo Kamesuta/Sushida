@@ -10,7 +10,6 @@ import net.teamfruit.sushida.player.StateContainer;
 import net.teamfruit.sushida.util.TitleUtils;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerResourcePackStatusEvent;
 
 import java.util.stream.IntStream;
 
@@ -43,28 +42,11 @@ public class TitleState implements IState {
                 .append("を押すことを推奨します").color(ChatColor.GOLD)
                 .create()
         );
-        boolean declined = player.getResourcePackStatus() == PlayerResourcePackStatusEvent.Status.DECLINED;
         player.sendMessage(new ComponentBuilder()
                 .append("    ")
-                .append(new TextComponent(
-                        declined
-                                ? new ComponentBuilder("[").reset()
-                                .append("(").color(ChatColor.YELLOW).bold(true)
-                                .append("(").color(ChatColor.RED).bold(true)
-                                .append("!").color(ChatColor.YELLOW).bold(true)
-                                .append(")").color(ChatColor.RED).bold(true)
-                                .append(")").color(ChatColor.YELLOW).bold(true)
-                                .append("音がならない場合はこちら").reset()
-                                .append("]").create()
-                                : new ComponentBuilder("[音がならない場合はこちら]").create()
-                )).color(ChatColor.BLUE).underlined(declined)
+                .append("[音がならない場合はこちら]").color(ChatColor.BLUE)
                 .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                        declined
-                                ? new ComponentBuilder()
-                                .append("あなたはサーバーリソースパックを無効にしています。").color(ChatColor.RED)
-                                .append("一旦ログアウトし、サーバーのアドレスを入力する画面でサーバーリソースパックを有効にしてください。").color(ChatColor.GREEN)
-                                .create()
-                                : new ComponentBuilder()
+                        new ComponentBuilder()
                                 .append("クリックでサーバーリソースパックを読み込みます。").color(ChatColor.GREEN)
                                 .create()
                 ))
