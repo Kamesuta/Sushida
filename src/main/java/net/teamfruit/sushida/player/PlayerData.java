@@ -8,6 +8,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 
+import java.util.ArrayList;
+
 public class PlayerData {
     public Player player;
     private StateContainer session;
@@ -30,7 +32,7 @@ public class PlayerData {
         if (equals(group.owner))
             return false;
         // すでに参加しているグループ
-        if (group.equals(getGroup()))
+        if (group.equals(this.group))
             return false;
         // ゲーム中
         if (hasSession())
@@ -38,8 +40,8 @@ public class PlayerData {
         if (group.owner.hasSession())
             return false;
         // 自分がオーナーな場合蹴る
-        if (equals(getGroup().owner))
-            getGroup().getMembers().forEach(PlayerData::leave);
+        if (equals(this.group.owner))
+            new ArrayList<>(this.group.getMembers()).forEach(PlayerData::leave);
         // グループ変更
         this.group.getMembers().remove(this);
         if (this.group.getMembers().isEmpty())
@@ -55,7 +57,7 @@ public class PlayerData {
             return false;
         // 解散
         if (this.group.isOwner(this))
-            this.group.getMembers().forEach(PlayerData::leave);
+            new ArrayList<>(this.group.getMembers()).forEach(PlayerData::leave);
         // グループ退出
         boolean b = this.group.getMembers().remove(this);
         if (this.group.getMembers().isEmpty())
@@ -91,8 +93,8 @@ public class PlayerData {
         if (!player.hasResourcePack())
             Sushida.resourcePack.apply(player);
 
-        if (!getGroup().getMembers().isEmpty())
-            joinScoreboard(getGroup().getGroupScoreboard());
+        if (!this.group.getMembers().isEmpty())
+            joinScoreboard(this.group.getGroupScoreboard());
         Sushida.belowName.spawn(this);
     }
 
