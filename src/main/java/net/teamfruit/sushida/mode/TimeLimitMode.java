@@ -188,6 +188,9 @@ public class TimeLimitMode implements GameMode {
                             .append("(").color(ChatColor.GRAY)
                             .append(String.valueOf(board.size())).color(ChatColor.WHITE)
                             .append("人中)").color(ChatColor.GRAY)
+                            .append(state.rankingUpdated
+                                    ? new ComponentBuilder(" 自己新記録！").color(ChatColor.YELLOW).create()
+                                    : new ComponentBuilder("").create())
                             .create()
                     );
                 });

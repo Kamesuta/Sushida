@@ -34,7 +34,16 @@ public class ResultState implements IState {
 
         // グローバルランキング更新
         Scoreboard sc = Bukkit.getScoreboardManager().getMainScoreboard();
-        state.data.getGroup().getRanking().ifPresent(ranking -> ranking.getOrCreateObjective(sc).getScore(name).setScore(score));
+        state.rankingUpdated = state.data.getGroup().getRanking()
+                .map(ranking -> ranking.getOrCreateObjective(sc).getScore(name))
+                .map(scoreObject -> {
+                    if (scoreObject.getScore() < score) {
+                        scoreObject.setScore(score);
+                        return true;
+                    }
+                    return false;
+                })
+                .orElse(false);
 
         // ランキング算出
         GameMode mode = state.data.getGroup().getMode();

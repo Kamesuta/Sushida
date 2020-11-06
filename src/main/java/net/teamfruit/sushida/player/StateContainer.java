@@ -21,6 +21,7 @@ public class StateContainer {
     public int titleBgmCount = 100;
     public int bgmCount = 100;
     public int ranking = -1;
+    public boolean rankingUpdated = false;
 
     public Timer timer;
     public Timer realTimer;
