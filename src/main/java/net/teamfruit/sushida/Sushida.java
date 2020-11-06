@@ -1,7 +1,6 @@
 package net.teamfruit.sushida;
 
 import com.google.common.collect.ImmutableMap;
-import net.teamfruit.sushida.belowname.BelowNameManager;
 import net.teamfruit.sushida.data.ConversionTableLoader;
 import net.teamfruit.sushida.data.Word;
 import net.teamfruit.sushida.listener.*;
@@ -18,6 +17,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -86,11 +86,12 @@ public final class Sushida extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PlayerEventListener(), this);
 
         // Tick
-        new TickEventGenerator().runTaskTimerAsynchronously(this, 0, 20);
+        new TickEventGenerator().runTaskTimer(this, 0, 20);
+        new AsyncTickEventGenerator().runTaskTimerAsynchronously(this, 0, 20);
 
         // Command
-        getCommand("sushida").setExecutor(new ManageCommandListener());
-        getCommand("").setExecutor(new GameCommandListener());
+        Objects.requireNonNull(getCommand("sushida")).setExecutor(new ManageCommandListener());
+        Objects.requireNonNull(getCommand("")).setExecutor(new GameCommandListener());
     }
 
     @Override

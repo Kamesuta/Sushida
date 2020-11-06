@@ -4,6 +4,7 @@ import com.google.common.base.CharMatcher;
 import com.google.common.collect.ImmutableList;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.teamfruit.sushida.SoundManager;
 import net.teamfruit.sushida.player.Group;
 import net.teamfruit.sushida.player.StateContainer;
 import net.teamfruit.sushida.util.CustomCollectors;
@@ -98,7 +99,7 @@ public class TimeLimitMode implements GameMode {
                 );
             }).append(state -> {
                 Player player = state.data.player;
-                player.playSound(player.getLocation(), "sushida:sushida.cacher", SoundCategory.PLAYERS, 1, 1);
+                SoundManager.playSound(player, "sushida:sushida.cacher", SoundCategory.PLAYERS, 1, 1);
                 player.sendMessage(new ComponentBuilder()
                         .append("      ").color(ChatColor.WHITE)
                         .append(String.format("%,d", state.moneyCount)).color(ChatColor.YELLOW)
@@ -107,7 +108,7 @@ public class TimeLimitMode implements GameMode {
                 );
             }).append(state -> {
                 Player player = state.data.player;
-                player.playSound(player.getLocation(), "sushida:sushida.cacher", SoundCategory.PLAYERS, 1, 1);
+                SoundManager.playSound(player, "sushida:sushida.cacher", SoundCategory.PLAYERS, 1, 1);
                 int level = getSetting(state.data.getGroup().getSettings(), SettingLevel);
                 int levelMoney = level == 1 ? 3000 : level == 3 ? 10000 : 5000;
                 player.sendMessage(new ComponentBuilder()
@@ -117,7 +118,7 @@ public class TimeLimitMode implements GameMode {
                 );
             }).append(state -> {
                 Player player = state.data.player;
-                player.playSound(player.getLocation(), "sushida:sushida.chin", SoundCategory.PLAYERS, 1, 1);
+                SoundManager.playSound(player, "sushida:sushida.chin", SoundCategory.PLAYERS, 1, 1);
                 int level = getSetting(state.data.getGroup().getSettings(), SettingLevel);
                 int levelMoney = level == 1 ? 3000 : level == 3 ? 10000 : 5000;
                 if (state.moneyCount > levelMoney)

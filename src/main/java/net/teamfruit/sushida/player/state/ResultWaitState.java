@@ -3,6 +3,7 @@ package net.teamfruit.sushida.player.state;
 import com.destroystokyo.paper.Title;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.teamfruit.sushida.SoundManager;
 import net.teamfruit.sushida.player.StateContainer;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
@@ -23,7 +24,7 @@ public class ResultWaitState implements IState {
         player.stopSound("sushida:sushida.bgm", SoundCategory.RECORDS);
 
         // 終了音
-        player.playSound(player.getLocation(), "sushida:sushida.whistle2", SoundCategory.PLAYERS, 1, 1);
+        SoundManager.playSoundAround(player, "sushida:sushida.whistle2", SoundCategory.PLAYERS, 1, 1);
 
         // シングルプレイのときは飛ばす
         if (state.data.getGroup().getMembers().isEmpty())

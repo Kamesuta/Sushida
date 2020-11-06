@@ -3,6 +3,7 @@ package net.teamfruit.sushida.player.state;
 import com.destroystokyo.paper.Title;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.teamfruit.sushida.SoundManager;
 import net.teamfruit.sushida.mode.GameMode;
 import net.teamfruit.sushida.player.StateContainer;
 import org.bukkit.Bukkit;
@@ -80,12 +81,12 @@ public class PlayState implements IState {
         if (!"".equals(typed)) {
             if (type) {
                 // OK
-                player.playSound(player.getLocation(), "sushida:sushida.k", SoundCategory.PLAYERS, 1, 1);
+                SoundManager.playSoundAround(player, "sushida:sushida.k", SoundCategory.PLAYERS, 1, 1);
 
                 state.scoreCombo++;
 
                 if (state.scoreCombo % 30 == 0) {
-                    player.playSound(player.getLocation(), "sushida:sushida.kin", SoundCategory.PLAYERS, 1, 1);
+                    SoundManager.playSoundAround(player, "sushida:sushida.kin", SoundCategory.PLAYERS, 1, 1);
                     if (state.scoreCombo >= 120) {
                         state.scoreCombo = 0;
                         //state.scoreCount += 3;
@@ -103,7 +104,7 @@ public class PlayState implements IState {
                     state.typeCount++;
             } else {
                 // NG
-                player.playSound(player.getLocation(), "sushida:sushida.miss", SoundCategory.PLAYERS, 1, 1);
+                SoundManager.playSoundAround(player, "sushida:sushida.miss", SoundCategory.PLAYERS, 1, 1);
 
                 state.scoreCombo = 0;
                 state.missCount++;
@@ -112,7 +113,7 @@ public class PlayState implements IState {
 
         if (state.typingLogic.isNextWordTiming()) {
             // Next
-            player.playSound(player.getLocation(), "sushida:sushida.coin", SoundCategory.PLAYERS, 1, 1);
+            SoundManager.playSoundAround(player, "sushida:sushida.coin", SoundCategory.PLAYERS, 1, 1);
             koto = true;
 
             player.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, player.getLocation(), 30, .2, .1, .2);
@@ -180,14 +181,14 @@ public class PlayState implements IState {
 
         if (koto) {
             koto = false;
-            player.playSound(player.getLocation(), "sushida:sushida.koto", SoundCategory.PLAYERS, 1, 1);
+            SoundManager.playSoundAround(player, "sushida:sushida.koto", SoundCategory.PLAYERS, 1, 1);
         }
 
         updateActionBar(state);
 
         if (state.bgmCount++ >= 4) {
             state.bgmCount = 0;
-            player.playSound(player.getLocation(), "sushida:sushida.bgm", SoundCategory.RECORDS, 1, 1);
+            SoundManager.playSound(player, "sushida:sushida.bgm", SoundCategory.RECORDS, 1, 1);
         }
 
         IState newState = null;

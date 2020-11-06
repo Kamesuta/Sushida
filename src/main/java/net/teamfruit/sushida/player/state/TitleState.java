@@ -6,6 +6,7 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.teamfruit.sushida.SoundManager;
 import net.teamfruit.sushida.player.StateContainer;
 import net.teamfruit.sushida.util.TitleUtils;
 import org.bukkit.SoundCategory;
@@ -55,7 +56,7 @@ public class TitleState implements IState {
         );
         player.sendMessage("");
 
-        player.playSound(player.getLocation(), "sushida:sushida.open", SoundCategory.PLAYERS, 1, 1);
+        SoundManager.playSound(player, "sushida:sushida.open", SoundCategory.PLAYERS, 1, 1);
 
         return null;
     }
@@ -99,7 +100,7 @@ public class TitleState implements IState {
 
         if (state.titleBgmCount++ >= 7) {
             state.titleBgmCount = 0;
-            player.playSound(player.getLocation(), "sushida:sushida.op", SoundCategory.RECORDS, 1, 1);
+            SoundManager.playSound(player, "sushida:sushida.op", SoundCategory.RECORDS, 1, 1);
         }
 
         return null;

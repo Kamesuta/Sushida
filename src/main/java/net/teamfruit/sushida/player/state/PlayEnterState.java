@@ -3,6 +3,7 @@ package net.teamfruit.sushida.player.state;
 import com.destroystokyo.paper.Title;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.teamfruit.sushida.SoundManager;
 import net.teamfruit.sushida.player.StateContainer;
 import org.bukkit.Bukkit;
 import org.bukkit.SoundCategory;
@@ -31,7 +32,7 @@ public class PlayEnterState implements IState {
                 new ComponentBuilder("エンターキーを押してください").bold(false).color(ChatColor.GREEN).create(),
                 0, 10000, 0));
 
-        player.playSound(player.getLocation(), "sushida:sushida.poke", SoundCategory.PLAYERS, 1, 1);
+        SoundManager.playSound(player, "sushida:sushida.poke", SoundCategory.PLAYERS, 1, 1);
 
         return null;
     }
@@ -70,7 +71,7 @@ public class PlayEnterState implements IState {
 
         if (state.bgmCount++ >= 4) {
             state.bgmCount = 0;
-            player.playSound(player.getLocation(), "sushida:sushida.bgm", SoundCategory.RECORDS, 1, 1);
+            SoundManager.playSound(player, "sushida:sushida.bgm", SoundCategory.RECORDS, 1, 1);
         }
 
         return null;

@@ -3,6 +3,7 @@ package net.teamfruit.sushida.player.state;
 import com.destroystokyo.paper.Title;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.teamfruit.sushida.SoundManager;
 import net.teamfruit.sushida.player.StateContainer;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
@@ -16,7 +17,7 @@ public class CountdownState implements IState {
 
         // シングルプレイのときは飛ばす
         if (state.data.getGroup().getMembers().isEmpty()) {
-            player.playSound(player.getLocation(), "sushida:sushida.whistle1", SoundCategory.PLAYERS, 1, 1);
+            SoundManager.playSoundAround(player, "sushida:sushida.whistle1", SoundCategory.PLAYERS, 1, 1);
 
             return new PlayState();
         }
@@ -30,11 +31,11 @@ public class CountdownState implements IState {
 
         countdown--;
         if (countdown <= 0) {
-            player.playSound(player.getLocation(), "sushida:sushida.whistle1", SoundCategory.PLAYERS, 1, 1);
+            SoundManager.playSoundAround(player, "sushida:sushida.whistle1", SoundCategory.PLAYERS, 1, 1);
 
             return new PlayState();
         } else {
-            player.playSound(player.getLocation(), "sushida:sushida.kclick", SoundCategory.PLAYERS, 1, 1);
+            SoundManager.playSoundAround(player, "sushida:sushida.kclick", SoundCategory.PLAYERS, 1, 1);
         }
 
         player.sendTitle(new Title(

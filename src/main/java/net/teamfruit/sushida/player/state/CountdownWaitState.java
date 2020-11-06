@@ -3,6 +3,7 @@ package net.teamfruit.sushida.player.state;
 import com.destroystokyo.paper.Title;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.teamfruit.sushida.SoundManager;
 import net.teamfruit.sushida.player.StateContainer;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
@@ -16,7 +17,7 @@ public class CountdownWaitState implements IState {
         if (state.data.getGroup().getMembers().isEmpty())
             return new CountdownState();
 
-        player.playSound(player.getLocation(), "sushida:sushida.open", SoundCategory.PLAYERS, 1, 1);
+        SoundManager.playSound(player, "sushida:sushida.open", SoundCategory.PLAYERS, 1, 1);
 
         // 準備状況計算
         int total = state.data.getGroup().getPlayers().size();
@@ -47,7 +48,7 @@ public class CountdownWaitState implements IState {
         if (ready >= total)
             return new CountdownState();
 
-        player.playSound(player.getLocation(), "sushida:sushida.open", SoundCategory.PLAYERS, 1, 1);
+        SoundManager.playSound(player, "sushida:sushida.open", SoundCategory.PLAYERS, 1, 1);
 
         return null;
     }
@@ -58,7 +59,7 @@ public class CountdownWaitState implements IState {
 
         boolean isOwner = state.data.getGroup().isOwner(state.data);
         if (isOwner && " ".equals(typed)) {
-            player.playSound(player.getLocation(), "sushida:sushida.open", SoundCategory.PLAYERS, 1, 1);
+            SoundManager.playSound(player, "sushida:sushida.open", SoundCategory.PLAYERS, 1, 1);
 
             // 他プレイヤー開始
             state.data.getGroup().getPlayers().stream()

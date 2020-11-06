@@ -4,6 +4,7 @@ import com.google.common.base.CharMatcher;
 import com.google.common.collect.ImmutableList;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.teamfruit.sushida.SoundManager;
 import net.teamfruit.sushida.player.Group;
 import net.teamfruit.sushida.player.StateContainer;
 import net.teamfruit.sushida.util.CustomCollectors;
@@ -102,7 +103,7 @@ public class TimeAttackMode implements GameMode {
                 );
             }).append(state -> {
                 Player player = state.data.player;
-                player.playSound(player.getLocation(), "sushida:sushida.cacher", SoundCategory.PLAYERS, 1, 1);
+                SoundManager.playSound(player, "sushida:sushida.cacher", SoundCategory.PLAYERS, 1, 1);
                 player.sendMessage(new ComponentBuilder()
                         .append("      ").color(ChatColor.WHITE)
                         .append(String.valueOf(state.typingLogic.wordTotalCount())).color(ChatColor.GRAY)
@@ -111,7 +112,7 @@ public class TimeAttackMode implements GameMode {
                 );
             }).append(state -> {
                 Player player = state.data.player;
-                player.playSound(player.getLocation(), "sushida:sushida.cacher", SoundCategory.PLAYERS, 1, 1);
+                SoundManager.playSound(player, "sushida:sushida.cacher", SoundCategory.PLAYERS, 1, 1);
                 player.sendMessage(new ComponentBuilder()
                         .append("      ").color(ChatColor.WHITE)
                         .append(String.valueOf(state.clearCount)).color(ChatColor.YELLOW)
@@ -120,7 +121,7 @@ public class TimeAttackMode implements GameMode {
                 );
             }).append(state -> {
                 Player player = state.data.player;
-                player.playSound(player.getLocation(), "sushida:sushida.chin", SoundCategory.PLAYERS, 1, 1);
+                SoundManager.playSound(player, "sushida:sushida.chin", SoundCategory.PLAYERS, 1, 1);
                 player.sendMessage(new ComponentBuilder()
                         .append("      ").color(ChatColor.WHITE).underlined(false)
                         .append(String.format("%.1f", state.timer.getTime())).color(ChatColor.GREEN).underlined(true)

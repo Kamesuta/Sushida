@@ -1,5 +1,6 @@
 package net.teamfruit.sushida.player.state;
 
+import net.teamfruit.sushida.SoundManager;
 import net.teamfruit.sushida.mode.GameMode;
 import net.teamfruit.sushida.player.PlayerData;
 import net.teamfruit.sushida.player.StateContainer;
@@ -49,7 +50,7 @@ public class ResultState implements IState {
         IntStream.range(0, 20).forEachOrdered(e -> player.sendMessage(""));
 
         // ガッ
-        player.playSound(player.getLocation(), "sushida:sushida.gan", SoundCategory.PLAYERS, 1, 1);
+        SoundManager.playSound(player, "sushida:sushida.gan", SoundCategory.PLAYERS, 1, 1);
 
         showMessage = state.data.getGroup().getMode().getResultMessageTasks();
 

@@ -1,4 +1,4 @@
-package net.teamfruit.sushida.belowname;
+package net.teamfruit.sushida;
 
 import net.teamfruit.sushida.Sushida;
 import net.teamfruit.sushida.player.PlayerData;

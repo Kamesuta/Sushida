@@ -1,16 +1,26 @@
 package net.teamfruit.sushida.listener;
 
+import net.teamfruit.sushida.SoundManager;
 import net.teamfruit.sushida.Sushida;
 import net.teamfruit.sushida.player.PlayerData;
-import net.teamfruit.sushida.player.state.IState;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class TickEventGenerator extends BukkitRunnable {
     @Override
     public void run() {
-        Sushida.logic.states.getPlayers().stream()
+        Set<Player> playing = Sushida.logic.states.getPlayers().stream()
                 .filter(PlayerData::hasSession)
-                .map(PlayerData::getSession)
-                .forEach(e -> e.apply(IState::onTick));
+                .map(e -> e.player)
+                .collect(Collectors.toSet());
+        SoundManager.nearbyPlayers = playing.stream()
+                .collect(Collectors.toMap(e -> e,
+                        e -> e.getWorld().getNearbyPlayers(e.getLocation(), 16).stream()
+                                .filter(f -> !playing.contains(f))
+                                .collect(Collectors.toList())
+                ));
     }
 }

@@ -1,7 +1,7 @@
 package net.teamfruit.sushida.player;
 
 import net.teamfruit.sushida.Sushida;
-import net.teamfruit.sushida.belowname.BelowNameManager;
+import net.teamfruit.sushida.BelowNameManager;
 import net.teamfruit.sushida.player.state.NoneState;
 import net.teamfruit.sushida.player.state.TitleState;
 import org.bukkit.Bukkit;
