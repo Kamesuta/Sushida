@@ -4,10 +4,7 @@ import net.teamfruit.sushida.Sushida;
 import net.teamfruit.sushida.player.PlayerData;
 import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Slime;
+import org.bukkit.entity.*;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -22,7 +19,7 @@ public class BelowNameManager {
 
     private Set<Entity> managed = new HashSet<>();
 
-    private ArmorStand spawnTemplate(Player player) {
+    private Entity spawnLineTemplate(Player player) {
         return player.getWorld().spawn(player.getLocation(), ArmorStand.class, e -> {
             e.setGravity(false);
             e.setVisible(false);
@@ -30,17 +27,17 @@ public class BelowNameManager {
             e.setCustomName(ChatColor.WHITE + "");
             e.setCustomNameVisible(true);
             e.setSmall(true);
+            e.setMarker(true);
             e.getPersistentDataContainer().set(NAME_TAG_ENTITY_KEY, PersistentDataType.BYTE, (byte) 1);
             managed.add(e);
         });
     }
 
-    private Slime spawnSlimeTemplate(Player player) {
-        return player.getWorld().spawn(player.getLocation(), Slime.class, e -> {
+    private <T extends LivingEntity> T spawnGlueTemplate(Player player, Class<T> entityClass) {
+        return player.getWorld().spawn(player.getLocation(), entityClass, e -> {
             e.setPersistent(true);
             e.setCollidable(false);
             e.setRotation(0, 0);
-            e.setSize(1);
             e.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 1));
             e.setInvulnerable(true);
             e.setSilent(true);
@@ -56,23 +53,22 @@ public class BelowNameManager {
         if (!playerData.hasSession())
             return;
         Player player = playerData.player;
-        Slime glue0 = spawnSlimeTemplate(player);
-        Slime glue1 = spawnSlimeTemplate(player);
-        Slime glue2 = spawnSlimeTemplate(player);
-        ArmorStand line0 = spawnTemplate(player);
-        ArmorStand line1 = spawnTemplate(player);
-        ArmorStand line2 = spawnTemplate(player);
-        line0.setMarker(true);
-        line1.setMarker(true);
-        line2.setMarker(true);
-        line2.setCustomName(playerData.player.getName());
+        Entity glue0 = spawnGlueTemplate(player, Bee.class);
+        Entity glue1 = spawnGlueTemplate(player, Salmon.class);
+        Entity glue2 = spawnGlueTemplate(player, Salmon.class);
+        //Entity glue3 = spawnGlueTemplate(player, Salmon.class);
+        Entity line0 = spawnLineTemplate(player);
+        Entity line1 = spawnLineTemplate(player);
+        //Entity line2 = spawnLineTemplate(player);
+        //line2.setCustomName(playerData.player.getName());
         player.addPassenger(glue0);
-        glue0.addPassenger(line0);
-        line0.addPassenger(glue1);
-        glue1.addPassenger(line1);
-        line1.addPassenger(glue2);
-        glue2.addPassenger(line2);
-        playerData.entity.reference = Arrays.asList(line0, line1, line2, glue0, glue1, glue2);
+        glue0.addPassenger(glue1);
+        glue1.addPassenger(line0);
+        line0.addPassenger(glue2);
+        glue2.addPassenger(line1);
+        //line1.addPassenger(glue3);
+        //glue3.addPassenger(line2);
+        playerData.entity.reference = Arrays.asList(line0, line1, /*line2, */glue0, glue1, glue2/*, glue3*/);
     }
 
     public void despawn(PlayerData playerData) {
