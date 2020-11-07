@@ -11,10 +11,9 @@ import net.teamfruit.sushida.player.PlayerData;
 import net.teamfruit.sushida.util.TitleUtils;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
+import org.bukkit.Location;
+import org.bukkit.command.*;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import java.util.*;
@@ -73,19 +72,54 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
 
     private List<Player> getPlayers(CommandSender sender, List<String> args) {
         List<Player> players = new ArrayList<>();
-        if (args.size() > 0) {
-            if ("@a".equals(args.get(0)))
-                players.addAll(Bukkit.getOnlinePlayers());
-            else
-                players.addAll(args.stream().map(Bukkit::getPlayer).filter(Objects::nonNull).collect(Collectors.toList()));
-        } else {
+        String arg0 = get(args, 0);
+        if (arg0 == null)
             players.add((Player) sender);
-        }
+        else if ("@a".equals(arg0))
+            players.addAll(Bukkit.getOnlinePlayers());
+        else if ("@p".equals(arg0)) {
+            Location loc = (sender instanceof BlockCommandSender)
+                    ? ((BlockCommandSender) sender).getBlock().getLocation()
+                    : (sender instanceof Entity)
+                    ? ((Entity) sender).getLocation()
+                    : null;
+            if (loc != null)
+                loc.getNearbyPlayers(32, e -> !e.equals(sender)).stream()
+                        .min(Comparator.comparing(e -> loc.distanceSquared(e.getLocation())))
+                        .ifPresent(players::add);
+        } else
+            players.addAll(args.stream().map(Bukkit::getPlayer).filter(Objects::nonNull).collect(Collectors.toList()));
         return players;
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] arg) {
+        List<String> args = Arrays.asList(arg);
+        String arg0 = get(args, 0);
+        String arg1 = get(args, 1);
+        String arg2 = get(args, 2);
+
+        if ("execute".equals(arg0)) {
+            if (!sender.hasPermission("sushida.other")) {
+                sender.sendMessage(new ComponentBuilder()
+                        .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
+                        .append("他人としてコマンドを実行するためには権限が足りません").color(ChatColor.RED)
+                        .create()
+                );
+                return true;
+            }
+            if (arg2 == null) {
+                sender.sendMessage(new ComponentBuilder()
+                        .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
+                        .append("引数が足りません。 例「/sushida execute @p ranking regular」").color(ChatColor.RED)
+                        .create()
+                );
+                return true;
+            }
+            return getPlayers(sender, Collections.singletonList(arg1))
+                .stream().anyMatch(e -> onCommand(e, command, s, getFrom(args, 2).toArray(new String[0])));
+        }
+
         if (!(sender instanceof Player)) {
             sender.sendMessage(new ComponentBuilder()
                     .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
@@ -99,10 +133,6 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
 
         player.sendMessage("");
 
-        List<String> args = Arrays.asList(arg);
-        String arg0 = get(args, 0);
-        String arg1 = get(args, 1);
-        String arg2 = get(args, 2);
         if (arg0 != null) {
             switch (arg0) {
                 case "assign": {
@@ -113,7 +143,7 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
                     if (!player.hasPermission("sushida.other")) {
                         player.sendMessage(new ComponentBuilder()
                                 .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
-                                .append("他人の強制追加するためには権限が足りません").color(ChatColor.RED)
+                                .append("他人を強制追加するためには権限が足りません").color(ChatColor.RED)
                                 .create()
                         );
                         return true;
@@ -655,9 +685,9 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
 
         switch (args.size()) {
             case 1:
-                return Stream.of("assign", "invite", "kick", "join", "leave", "ranking", "word", "rule", "setting", "start", "stop", "restart", "resourcepack")
+                return Stream.of("assign", "invite", "kick", "join", "leave", "ranking", "word", "rule", "setting", "start", "stop", "restart", "resourcepack", "execute")
                         .filter(e -> {
-                            if (e.equals("assign"))
+                            if (e.equals("assign") || e.equals("execute"))
                                 return player.hasPermission("sushida.other");
                             return true;
                         })
@@ -688,6 +718,13 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
                                 .map(Player::getName)
                                 .filter(e -> arg1 == null || e.startsWith(arg1))
                                 .collect(Collectors.toList());
+                    case "execute":
+                        return Stream.concat(
+                                Stream.of("@a"),
+                                Bukkit.getOnlinePlayers().stream()
+                                        .map(Player::getName)
+                                        .filter(e -> arg1 == null || e.startsWith(arg1))
+                        ).collect(Collectors.toList());
                 }
                 // Fall through
             case 3:
@@ -719,6 +756,8 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
                                 .map(e -> e.player.getName())
                                 .filter(e -> arg1 == null || e.startsWith(arg1))
                                 .collect(Collectors.toList());
+                    case "execute":
+                        return onTabComplete(sender, command, s, getFrom(args, 2).toArray(new String[0]));
                 }
                 return Collections.emptyList();
         }

@@ -18,9 +18,7 @@ public class TickEventGenerator extends BukkitRunnable {
                 .collect(Collectors.toSet());
         SoundManager.nearbyPlayers = playing.stream()
                 .collect(Collectors.toMap(e -> e,
-                        e -> e.getWorld().getNearbyPlayers(e.getLocation(), 16).stream()
-                                .filter(f -> !playing.contains(f))
-                                .collect(Collectors.toList())
+                        e -> e.getWorld().getNearbyPlayers(e.getLocation(), 16, f -> !playing.contains(f))
                 ));
     }
 }

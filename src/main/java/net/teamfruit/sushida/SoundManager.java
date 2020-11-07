@@ -4,13 +4,13 @@ import org.bukkit.Location;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 public class SoundManager {
-    public static Map<Player, List<Player>> nearbyPlayers = new HashMap<>();
+    public static Map<Player, Collection<Player>> nearbyPlayers = new HashMap<>();
 
     public static void playSound(Player player, String sound, SoundCategory category, float volume, float pitch) {
         Location loc = player.getLocation();
