@@ -1,8 +1,8 @@
 package net.teamfruit.sushida.player;
 
+import net.teamfruit.sushida.BelowNameManager;
 import net.teamfruit.sushida.SoundManager;
 import net.teamfruit.sushida.Sushida;
-import net.teamfruit.sushida.BelowNameManager;
 import net.teamfruit.sushida.player.state.NoneState;
 import net.teamfruit.sushida.player.state.TitleState;
 import org.bukkit.Bukkit;
@@ -69,8 +69,9 @@ public class PlayerData {
         return b;
     }
 
-    public void joinScoreboard(Scoreboard newScoreboard) {
-        player.setScoreboard(newScoreboard);
+    public void joinScoreboard(Group group) {
+        player.setScoreboard(group.getGroupScoreboard());
+        group.getGroupTeam().addEntry(player.getName());
     }
 
     public void leaveScoreboard() {
@@ -104,8 +105,7 @@ public class PlayerData {
             }
         }.runTaskLaterAsynchronously(Sushida.plugin, 40);
 
-        if (!this.group.getMembers().isEmpty())
-            joinScoreboard(this.group.getGroupScoreboard());
+        joinScoreboard(this.group);
         Sushida.belowName.spawn(this);
     }
 
@@ -114,6 +114,9 @@ public class PlayerData {
             return;
         session.apply(StateContainer.supply(NoneState::new));
         session = null;
+
+        if (this.group.getMembers().isEmpty())
+            leaveScoreboard();
         Sushida.belowName.despawn(this);
     }
 }

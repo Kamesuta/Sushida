@@ -95,7 +95,7 @@ public class TitleState implements IState {
 
         player.sendTitle(new Title(
                 new ComponentBuilder("ⓘ チャット画面を使います").bold(true).color(ChatColor.BLUE).create(),
-                new ComponentBuilder("「/ 」スラッシュを押してからスペースを押すとスタートします").bold(false).color(ChatColor.AQUA).create(),
+                new ComponentBuilder("「/␣」スラッシュを押してからスペースを押すとスタートします").bold(false).color(ChatColor.AQUA).create(),
                 10, 0, 10));
 
         if (state.titleBgmCount++ >= 7) {

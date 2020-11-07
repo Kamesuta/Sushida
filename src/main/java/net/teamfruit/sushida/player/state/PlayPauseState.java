@@ -14,7 +14,7 @@ public class PlayPauseState implements IState {
         Player player = state.data.player;
 
         player.sendTitle(new Title(
-                new ComponentBuilder("「/ 」").bold(true).color(ChatColor.GREEN).create(),
+                new ComponentBuilder("「/␣」").bold(true).color(ChatColor.GREEN).create(),
                 new ComponentBuilder("スラッシュ＋スペースで続行").bold(false).color(ChatColor.GREEN).create(),
                 0, 10000, 0));
 

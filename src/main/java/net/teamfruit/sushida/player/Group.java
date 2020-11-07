@@ -9,12 +9,15 @@ import net.teamfruit.sushida.mode.GameModes;
 import net.teamfruit.sushida.mode.GameSettingType;
 import net.teamfruit.sushida.ranking.RankingSetting;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.Team;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Group {
     public PlayerData owner;
@@ -27,6 +30,7 @@ public class Group {
     private ImmutableList<Map.Entry<String, String>> wordRequiredList;
 
     private Scoreboard groupScoreboard;
+    private Team groupTeam;
     private Objective scoreLeaderboard;
     private Objective tabLeaderboard;
 
@@ -60,6 +64,10 @@ public class Group {
 
     public boolean hasRanking() {
         return ranking != null;
+    }
+
+    public Team getGroupTeam() {
+        return groupTeam;
     }
 
     public Scoreboard getGroupScoreboard() {
@@ -138,6 +146,13 @@ public class Group {
 
     public void init() {
         wordRequiredList = getMode().getWords(this);
+
+        groupTeam = groupScoreboard.getTeam("sushida");
+        if (this.groupTeam != null)
+            this.groupTeam.unregister();
+        this.groupTeam = groupScoreboard.registerNewTeam("sushida");
+        this.groupTeam.setPrefix(ChatColor.RED + "[␣]" + ChatColor.RESET);
+        this.groupTeam.setColor(ChatColor.WHITE);
 
         this.scoreLeaderboard = groupScoreboard.getObjective("score");
         if (this.scoreLeaderboard != null)
