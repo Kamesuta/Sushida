@@ -13,6 +13,9 @@ public class CountdownWaitState implements IState {
     public IState onEnter(StateContainer state) {
         Player player = state.data.player;
 
+        // チーム
+        state.data.getGroup().getGroupTeamCountdownWait().addEntry(player.getName());
+
         // シングルプレイのときは飛ばす
         if (state.data.getGroup().getMembers().isEmpty())
             return new CountdownState();

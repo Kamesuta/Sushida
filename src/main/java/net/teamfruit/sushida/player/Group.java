@@ -17,7 +17,6 @@ import org.bukkit.scoreboard.Team;
 
 import javax.annotation.Nullable;
 import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class Group {
     public PlayerData owner;
@@ -30,7 +29,11 @@ public class Group {
     private ImmutableList<Map.Entry<String, String>> wordRequiredList;
 
     private Scoreboard groupScoreboard;
-    private Team groupTeam;
+    private Team groupTeamTitle;
+
+    private Team groupTeamCountdownWait;
+    private Team groupTeamPlay;
+    private Team groupTeamResultWait;
     private Objective scoreLeaderboard;
     private Objective tabLeaderboard;
 
@@ -66,8 +69,20 @@ public class Group {
         return ranking != null;
     }
 
-    public Team getGroupTeam() {
-        return groupTeam;
+    public Team getGroupTeamTitle() {
+        return groupTeamTitle;
+    }
+
+    public Team getGroupTeamCountdownWait() {
+        return groupTeamCountdownWait;
+    }
+
+    public Team getGroupTeamPlay() {
+        return groupTeamPlay;
+    }
+
+    public Team getGroupTeamResultWait() {
+        return groupTeamResultWait;
     }
 
     public Scoreboard getGroupScoreboard() {
@@ -144,26 +159,34 @@ public class Group {
         return wordRequiredList;
     }
 
+    private Team initTeam(String name, String prefix) {
+        Team team = groupScoreboard.getTeam(name);
+        if (team != null)
+            team.unregister();
+        team = groupScoreboard.registerNewTeam(name);
+        team.setPrefix(prefix);
+        team.setColor(ChatColor.AQUA);
+        return team;
+    }
+
+    private Objective initObjective(String name, String title, DisplaySlot slot) {
+        Objective objective = groupScoreboard.getObjective("score");
+        if (objective != null)
+            objective.unregister();
+        objective = groupScoreboard.registerNewObjective("score", "dummy", "スコア");
+        objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+        return objective;
+    }
+
     public void init() {
         wordRequiredList = getMode().getWords(this);
 
-        groupTeam = groupScoreboard.getTeam("sushida");
-        if (this.groupTeam != null)
-            this.groupTeam.unregister();
-        this.groupTeam = groupScoreboard.registerNewTeam("sushida");
-        this.groupTeam.setPrefix(ChatColor.RED + "[␣]" + ChatColor.RESET);
-        this.groupTeam.setColor(ChatColor.WHITE);
+        groupTeamTitle = initTeam("sushida.title", ChatColor.BLUE + "[␣]" + ChatColor.RESET);
+        groupTeamCountdownWait = initTeam("sushida.wait", ChatColor.GOLD + "[⏸]" + ChatColor.RESET);
+        groupTeamPlay = initTeam("sushida.play", ChatColor.RED + "[▶]" + ChatColor.RESET);
+        groupTeamResultWait = initTeam("sushida.goal", ChatColor.GREEN + "[✔]" + ChatColor.RESET);
 
-        this.scoreLeaderboard = groupScoreboard.getObjective("score");
-        if (this.scoreLeaderboard != null)
-            this.scoreLeaderboard.unregister();
-        this.scoreLeaderboard = groupScoreboard.registerNewObjective("score", "dummy", "スコア");
-        this.scoreLeaderboard.setDisplaySlot(DisplaySlot.SIDEBAR);
-
-        this.tabLeaderboard = groupScoreboard.getObjective("tab");
-        if (this.tabLeaderboard != null)
-            this.tabLeaderboard.unregister();
-        this.tabLeaderboard = groupScoreboard.registerNewObjective("tab", "dummy", "スコア");
-        this.tabLeaderboard.setDisplaySlot(DisplaySlot.PLAYER_LIST);
+        this.scoreLeaderboard = initObjective("score", "スコア", DisplaySlot.SIDEBAR);
+        this.tabLeaderboard = initObjective("tab", "スコア", DisplaySlot.PLAYER_LIST);
     }
 }

@@ -22,6 +22,11 @@ public class PlayState implements IState {
 
     @Override
     public IState onEnter(StateContainer state) {
+        Player player = state.data.player;
+
+        // チーム
+        state.data.getGroup().getGroupTeamPlay().addEntry(player.getName());
+
         if (progressBar == null)
             progressBar = Bukkit.getBossBar(state.progressKey);
         if (progressBar == null)

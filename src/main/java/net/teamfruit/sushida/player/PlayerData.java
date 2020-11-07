@@ -8,9 +8,9 @@ import net.teamfruit.sushida.player.state.TitleState;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scoreboard.Scoreboard;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 public class PlayerData {
     public Player player;
@@ -69,9 +69,8 @@ public class PlayerData {
         return b;
     }
 
-    public void joinScoreboard(Group group) {
+    public void joinScoreboard() {
         player.setScoreboard(group.getGroupScoreboard());
-        group.getGroupTeam().addEntry(player.getName());
     }
 
     public void leaveScoreboard() {
@@ -105,7 +104,7 @@ public class PlayerData {
             }
         }.runTaskLaterAsynchronously(Sushida.plugin, 40);
 
-        joinScoreboard(this.group);
+        joinScoreboard();
         Sushida.belowName.spawn(this);
     }
 
@@ -114,6 +113,9 @@ public class PlayerData {
             return;
         session.apply(StateContainer.supply(NoneState::new));
         session = null;
+
+        // チームをリセット
+        Optional.ofNullable(group.getGroupScoreboard().getEntryTeam(player.getName())).ifPresent(e -> e.removeEntry(player.getName()));
 
         if (this.group.getMembers().isEmpty())
             leaveScoreboard();

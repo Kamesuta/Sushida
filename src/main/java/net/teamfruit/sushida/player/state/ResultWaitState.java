@@ -13,6 +13,9 @@ public class ResultWaitState implements IState {
     public IState onEnter(StateContainer state) {
         Player player = state.data.player;
 
+        // チーム
+        state.data.getGroup().getGroupTeamResultWait().addEntry(player.getName());
+
         state.timer.pause();
         state.realTimer.pause();
         state.sushiTimer.pause();

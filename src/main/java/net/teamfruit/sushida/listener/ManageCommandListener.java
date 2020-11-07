@@ -553,7 +553,7 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
                                 if (e.mode.equals(currentMode))
                                     return new ComponentBuilder(new TextComponent(new ComponentBuilder(
                                             new TextComponent(
-                                                    new ComponentBuilder("[✓]").color(ChatColor.GREEN).bold(true)
+                                                    new ComponentBuilder("[✔]").color(ChatColor.GREEN).bold(true)
                                                             .append(e.mode.title()).color(ChatColor.YELLOW).bold(false)
                                                             .create()
                                             ))

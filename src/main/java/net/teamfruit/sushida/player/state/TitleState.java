@@ -19,6 +19,9 @@ public class TitleState implements IState {
     public IState onEnter(StateContainer state) {
         Player player = state.data.player;
 
+        // チーム
+        state.data.getGroup().getGroupTeamTitle().addEntry(player.getName());
+
         IntStream.range(0, 9).forEachOrdered(e -> player.sendMessage(""));
 
         TitleUtils.showTitle(player);
