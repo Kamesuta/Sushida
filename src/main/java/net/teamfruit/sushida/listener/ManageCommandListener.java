@@ -720,7 +720,7 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
                                 .collect(Collectors.toList());
                     case "execute":
                         return Stream.concat(
-                                Stream.of("@a"),
+                                Stream.of("@a", "@p"),
                                 Bukkit.getOnlinePlayers().stream()
                                         .map(Player::getName)
                                         .filter(e -> arg1 == null || e.startsWith(arg1))
@@ -745,7 +745,7 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
                     case "invite":
                         Set<PlayerData> members = state.getGroup().getPlayers();
                         return Stream.concat(
-                                Stream.of("@a"),
+                                Stream.of("@a", "@p"),
                                 Bukkit.getOnlinePlayers().stream()
                                         .filter(e -> members.stream().noneMatch(x -> x.player.equals(e)))
                                         .map(Player::getName)

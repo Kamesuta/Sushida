@@ -40,7 +40,7 @@ public class TitleUtils {
                 .append("  -  ").color(ChatColor.GRAY)
                 .append("制作: かめすた").color(ChatColor.LIGHT_PURPLE)
                 .append(" / ").color(ChatColor.GRAY)
-                .append("制作時間: 60時間").color(ChatColor.RED)
+                .append("制作時間: 85時間").color(ChatColor.RED)
                 .create()
         );
         player.sendMessage("");
