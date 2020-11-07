@@ -3,6 +3,7 @@ package net.teamfruit.sushida;
 import org.bukkit.Location;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerResourcePackStatusEvent;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -21,5 +22,13 @@ public class SoundManager {
         Location loc = player.getLocation();
         player.playSound(loc, sound, category, volume, pitch);
         Optional.ofNullable(nearbyPlayers.get(player)).ifPresent(e -> e.forEach(f -> f.playSound(loc, sound, category, volume / 2, pitch)));
+    }
+
+    public static void resourcePackAround(Player player) {
+        Optional.ofNullable(nearbyPlayers.get(player))
+                .ifPresent(e -> e.stream()
+                        .filter(f -> !f.hasResourcePack() && f.getResourcePackStatus() != PlayerResourcePackStatusEvent.Status.DECLINED)
+                        .forEach(f -> Sushida.resourcePack.apply(f))
+                );
     }
 }

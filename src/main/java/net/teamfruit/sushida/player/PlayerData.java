@@ -1,11 +1,13 @@
 package net.teamfruit.sushida.player;
 
+import net.teamfruit.sushida.SoundManager;
 import net.teamfruit.sushida.Sushida;
 import net.teamfruit.sushida.BelowNameManager;
 import net.teamfruit.sushida.player.state.NoneState;
 import net.teamfruit.sushida.player.state.TitleState;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Scoreboard;
 
 import java.util.ArrayList;
@@ -92,6 +94,15 @@ public class PlayerData {
         // リソースパック
         if (!player.hasResourcePack())
             Sushida.resourcePack.apply(player);
+
+        // 周囲にリソースパック
+        // 周囲のプレイヤーが更新される1秒後以降に実行
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                SoundManager.resourcePackAround(player);
+            }
+        }.runTaskLaterAsynchronously(Sushida.plugin, 40);
 
         if (!this.group.getMembers().isEmpty())
             joinScoreboard(this.group.getGroupScoreboard());
