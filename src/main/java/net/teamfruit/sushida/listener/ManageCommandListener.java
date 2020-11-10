@@ -432,7 +432,7 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
                         if (arg2 == null)
                             throw new NumberFormatException();
                         value = Integer.parseInt(arg2);
-                        if (value <= 0)
+                        if (value < 0)
                             throw new NumberFormatException();
                     } catch (NumberFormatException e) {
                         player.sendMessage(new ComponentBuilder()

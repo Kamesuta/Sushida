@@ -20,6 +20,7 @@ import org.bukkit.scoreboard.Scoreboard;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class TimeLimitMode implements GameMode {
     public static final GameSettingType SettingTime = new GameSettingType("time", "制限時間", "ゲームの制限時間", 120, Arrays.asList(60, 90, 120));
@@ -238,6 +239,10 @@ public class TimeLimitMode implements GameMode {
                         })
                         .collect(Collectors.toList());
                 break;
+            }
+            case 100: {
+                // デバッグ用
+                return Stream.of("かっぱ", "にっぱー", "っ", "っぱ", "ぴっ").map(e -> new AbstractMap.SimpleEntry<>(e, e)).collect(ImmutableList.toImmutableList());
             }
         }
         return wordRequiredListByLevel.stream()
