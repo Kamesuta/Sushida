@@ -170,11 +170,11 @@ public class Group {
     }
 
     private Objective initObjective(String name, String title, DisplaySlot slot) {
-        Objective objective = groupScoreboard.getObjective("score");
+        Objective objective = groupScoreboard.getObjective(name);
         if (objective != null)
             objective.unregister();
-        objective = groupScoreboard.registerNewObjective("score", "dummy", "スコア");
-        objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+        objective = groupScoreboard.registerNewObjective(name, "dummy", title);
+        objective.setDisplaySlot(slot);
         return objective;
     }
 
