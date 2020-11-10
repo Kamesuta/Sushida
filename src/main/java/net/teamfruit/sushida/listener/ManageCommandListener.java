@@ -98,26 +98,55 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
         String arg0 = get(args, 0);
         String arg1 = get(args, 1);
         String arg2 = get(args, 2);
+        String arg3 = get(args, 3);
 
-        if ("execute".equals(arg0)) {
-            if (!sender.hasPermission("sushida.other")) {
+        if (arg0 != null) {
+            if ("execute".equals(arg0)) {
+                if (!sender.hasPermission("sushida.other")) {
+                    sender.sendMessage(new ComponentBuilder()
+                            .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
+                            .append("他人としてコマンドを実行するためには権限が足りません").color(ChatColor.RED)
+                            .create()
+                    );
+                    return true;
+                }
+                if (arg2 == null) {
+                    sender.sendMessage(new ComponentBuilder()
+                            .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
+                            .append("引数が足りません。 例「/sushida execute @p ranking regular」").color(ChatColor.RED)
+                            .create()
+                    );
+                    return true;
+                }
+                return getPlayers(sender, Collections.singletonList(arg1))
+                        .stream().anyMatch(e -> onCommand(e, command, s, getFrom(args, 2).toArray(new String[0])));
+            }
+            if ("admin".equals(arg0)) {
+                if (!sender.hasPermission("sushida.other")) {
+                    sender.sendMessage(new ComponentBuilder()
+                            .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
+                            .append("他人としてコマンドを実行するためには権限が足りません").color(ChatColor.RED)
+                            .create()
+                    );
+                    return true;
+                }
+                if ("config".equals(arg1) && "aroundyou".equals(arg2)) {
+                    boolean value = Boolean.parseBoolean(arg3);
+                    Sushida.enableAroundYou.set(value);
+                    sender.sendMessage(new ComponentBuilder()
+                            .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
+                            .append(String.format("コンフィグ(周りの音)を(%s)にセットしました", value)).color(ChatColor.GREEN)
+                            .create()
+                    );
+                    return true;
+                }
                 sender.sendMessage(new ComponentBuilder()
                         .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
-                        .append("他人としてコマンドを実行するためには権限が足りません").color(ChatColor.RED)
+                        .append("コマンドが見つかりません").color(ChatColor.RED)
                         .create()
                 );
                 return true;
             }
-            if (arg2 == null) {
-                sender.sendMessage(new ComponentBuilder()
-                        .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
-                        .append("引数が足りません。 例「/sushida execute @p ranking regular」").color(ChatColor.RED)
-                        .create()
-                );
-                return true;
-            }
-            return getPlayers(sender, Collections.singletonList(arg1))
-                .stream().anyMatch(e -> onCommand(e, command, s, getFrom(args, 2).toArray(new String[0])));
         }
 
         if (!(sender instanceof Player)) {
@@ -679,13 +708,14 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
         String arg0 = get(args, 0);
         String arg1 = get(args, 1);
         String arg2 = get(args, 2);
+        String arg3 = get(args, 3);
 
         if (arg0 == null)
             return Collections.emptyList();
 
         switch (args.size()) {
             case 1:
-                return Stream.of("assign", "invite", "kick", "join", "leave", "ranking", "word", "rule", "setting", "start", "stop", "restart", "resourcepack", "execute")
+                return Stream.of("assign", "invite", "kick", "join", "leave", "ranking", "word", "rule", "setting", "start", "stop", "restart", "resourcepack", "execute", "admin")
                         .filter(e -> {
                             if (e.equals("assign") || e.equals("execute"))
                                 return player.hasPermission("sushida.other");
@@ -725,6 +755,10 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
                                         .map(Player::getName)
                                         .filter(e -> arg1 == null || e.startsWith(arg1))
                         ).collect(Collectors.toList());
+                    case "admin":
+                        return Stream.of("config")
+                                .filter(e -> arg1 == null || e.startsWith(arg1))
+                                .collect(Collectors.toList());
                 }
                 // Fall through
             case 3:
@@ -735,6 +769,22 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
                             return type.candidates.stream()
                                     .map(String::valueOf)
                                     .filter(e -> arg2 == null || e.startsWith(arg2))
+                                    .collect(Collectors.toList());
+                        break;
+                    case "admin":
+                        if ("config".equals(arg1))
+                            return Stream.of("aroundyou")
+                                    .filter(e -> arg2 == null || e.startsWith(arg2))
+                                    .collect(Collectors.toList());
+                        break;
+                }
+                // Fall through
+            case 4:
+                switch (arg0) {
+                    case "admin":
+                        if ("config".equals(arg1) && "aroundyou".equals(arg2))
+                            return Stream.of("true", "false")
+                                    .filter(e -> arg3 == null || e.startsWith(arg3))
                                     .collect(Collectors.toList());
                         break;
                 }

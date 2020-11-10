@@ -21,10 +21,14 @@ public class SoundManager {
     public static void playSoundAround(Player player, String sound, SoundCategory category, float volume, float pitch) {
         Location loc = player.getLocation();
         player.playSound(loc, sound, category, volume, pitch);
+        if (!Sushida.enableAroundYou.get())
+            return;
         Optional.ofNullable(nearbyPlayers.get(player)).ifPresent(e -> e.forEach(f -> f.playSound(loc, sound, category, volume / 2, pitch)));
     }
 
     public static void resourcePackAround(Player player) {
+        if (!Sushida.enableAroundYou.get())
+            return;
         Optional.ofNullable(nearbyPlayers.get(player))
                 .ifPresent(e -> e.stream()
                         .filter(f -> !f.hasResourcePack() && f.getResourcePackStatus() != PlayerResourcePackStatusEvent.Status.DECLINED)

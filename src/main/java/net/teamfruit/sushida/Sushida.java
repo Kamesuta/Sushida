@@ -6,6 +6,7 @@ import net.teamfruit.sushida.data.Word;
 import net.teamfruit.sushida.listener.*;
 import net.teamfruit.sushida.logic.GameLogic;
 import net.teamfruit.sushida.ranking.RankingSetting;
+import net.teamfruit.sushida.util.ConfigProperty;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
@@ -19,6 +20,10 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -30,6 +35,7 @@ public final class Sushida extends JavaPlugin {
     public static Plugin plugin;
     public static BelowNameManager belowName;
     public static ResourcePack resourcePack;
+    public static ConfigProperty<Boolean> enableAroundYou;
 
     @Override
     public void onEnable() {
@@ -43,6 +49,7 @@ public final class Sushida extends JavaPlugin {
         String url = config.getString("resourcepack.url");
         String hash = config.getString("resourcepack.hash");
         resourcePack = new ResourcePack(url, hash);
+        enableAroundYou = new ConfigProperty<>("aroundyou.enabled", getConfig()::getBoolean, getConfig()::set);
 
         // ランキング
         ConfigurationSection rankingSection = config.getConfigurationSection("rankings");
