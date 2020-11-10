@@ -49,7 +49,7 @@ public final class Sushida extends JavaPlugin {
         String url = config.getString("resourcepack.url");
         String hash = config.getString("resourcepack.hash");
         resourcePack = new ResourcePack(url, hash);
-        enableAroundYou = new ConfigProperty<>("aroundyou.enabled", getConfig()::getBoolean, getConfig()::set);
+        enableAroundYou = new ConfigProperty<>("aroundyou.enabled", getConfig()::getBoolean, getConfig()::set, this::saveConfig);
 
         // ランキング
         ConfigurationSection rankingSection = config.getConfigurationSection("rankings");

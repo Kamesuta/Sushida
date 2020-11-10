@@ -12,3 +12,6 @@ rankings:
       level: 2
       time: 120
       timeout: 6
+
+aroundyou:
+  enabled: true

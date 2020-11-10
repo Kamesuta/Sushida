@@ -23,3 +23,6 @@ permissions:
   sushida.other:
     description: 他人の寿司打をコントロール
     default: op
+  sushida.admin:
+    description: コンフィグを変更
+    default: op

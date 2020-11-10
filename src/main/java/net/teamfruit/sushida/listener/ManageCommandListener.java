@@ -122,10 +122,10 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
                         .stream().anyMatch(e -> onCommand(e, command, s, getFrom(args, 2).toArray(new String[0])));
             }
             if ("admin".equals(arg0)) {
-                if (!sender.hasPermission("sushida.other")) {
+                if (!sender.hasPermission("sushida.admin")) {
                     sender.sendMessage(new ComponentBuilder()
                             .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
-                            .append("他人としてコマンドを実行するためには権限が足りません").color(ChatColor.RED)
+                            .append("コンフィグを変更するためには権限が足りません").color(ChatColor.RED)
                             .create()
                     );
                     return true;
@@ -719,6 +719,8 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
                         .filter(e -> {
                             if (e.equals("assign") || e.equals("execute"))
                                 return player.hasPermission("sushida.other");
+                            if (e.equals("admin"))
+                                return player.hasPermission("sushida.admin");
                             return true;
                         })
                         .filter(e -> e.startsWith(arg0))
