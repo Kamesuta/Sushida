@@ -71,25 +71,19 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
     }
 
     private List<Player> getPlayers(CommandSender sender, List<String> args) {
-        List<Player> players = new ArrayList<>();
-        String arg0 = get(args, 0);
-        if (arg0 == null)
-            players.add((Player) sender);
-        else if ("@a".equals(arg0))
-            players.addAll(Bukkit.getOnlinePlayers());
-        else if ("@p".equals(arg0)) {
-            Location loc = (sender instanceof BlockCommandSender)
-                    ? ((BlockCommandSender) sender).getBlock().getLocation()
-                    : (sender instanceof Entity)
-                    ? ((Entity) sender).getLocation()
-                    : null;
-            if (loc != null)
-                loc.getNearbyPlayers(32, e -> !e.equals(sender)).stream()
-                        .min(Comparator.comparing(e -> loc.distanceSquared(e.getLocation())))
-                        .ifPresent(players::add);
-        } else
-            players.addAll(args.stream().map(Bukkit::getPlayer).filter(Objects::nonNull).collect(Collectors.toList()));
-        return players;
+        try {
+            return Bukkit.selectEntities(sender, String.join(" ", args)).stream()
+                    .filter(Player.class::isInstance)
+                    .map(Player.class::cast)
+                    .collect(Collectors.toList());
+        } catch (IllegalArgumentException e) {
+            sender.sendMessage(new ComponentBuilder()
+                    .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
+                    .append("セレクターが間違っています").color(ChatColor.RED)
+                    .create()
+            );
+        }
+        return Collections.emptyList();
     }
 
     @Override
