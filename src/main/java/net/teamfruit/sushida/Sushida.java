@@ -7,23 +7,19 @@ import net.teamfruit.sushida.listener.*;
 import net.teamfruit.sushida.logic.GameLogic;
 import net.teamfruit.sushida.ranking.RankingSetting;
 import net.teamfruit.sushida.util.ConfigProperty;
-import org.apache.commons.lang.StringUtils;
+import net.teamfruit.sushida.util.StringUtils;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -70,7 +66,7 @@ public final class Sushida extends JavaPlugin {
                 .collect(Collectors.toMap(
                         e -> StringUtils.substringBeforeLast(e.getName(), ".yml"),
                         e -> {
-                            try (InputStream in = new FileInputStream(e)) {
+                            try (InputStream in = Files.newInputStream(e.toPath())) {
                                 return Word.load(in);
                             } catch (Exception ex) {
                                 Sushida.logger.log(Level.SEVERE, String.format("Failed to load word [%s]", e.getName()), ex);
