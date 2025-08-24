@@ -119,6 +119,13 @@ public class PlayerData {
 
         if (this.group.getMembers().isEmpty())
             leaveScoreboard();
-        Sushida.belowName.despawn(this);
+
+        // デスポーン
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                Sushida.belowName.despawn(PlayerData.this);
+            }
+        }.runTask(Sushida.plugin);
     }
 }
