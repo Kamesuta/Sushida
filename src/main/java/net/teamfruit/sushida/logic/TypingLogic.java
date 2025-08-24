@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.Map;
 
 public class TypingLogic {
-    private int wordInitialCount;
-    private List<Map.Entry<String, String>> wordRequiredList;
+    private final int wordInitialCount;
+    private final List<Map.Entry<String, String>> wordRequiredList;
     private Map.Entry<String, String> wordRequired;
     private String wordRemainingRequiredHiragana;
     private String wordTypedRomaji = "";

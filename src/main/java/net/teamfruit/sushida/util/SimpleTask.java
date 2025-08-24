@@ -16,7 +16,7 @@ public class SimpleTask<T> {
     }
 
     public static <T> SimpleTask<T> builder() {
-        return new SimpleTask<T>();
+        return new SimpleTask<>();
     }
 
     public SimpleTask<T> append(Consumer<T> consumer) {

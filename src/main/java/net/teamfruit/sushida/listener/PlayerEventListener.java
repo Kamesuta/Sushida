@@ -48,9 +48,6 @@ public class PlayerEventListener implements Listener {
         Group group = state.getGroup();
         if (group.isOwner(state))
             group.getMembers().stream().findFirst().ifPresent(group::setOwner);
-
-        // ネーム削除
-        //Sushida.belowName.despawn(state);
     }
 
     @EventHandler

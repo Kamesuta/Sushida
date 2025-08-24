@@ -18,7 +18,7 @@ import java.util.Set;
 public class BelowNameManager {
     public static final NamespacedKey NAME_TAG_ENTITY_KEY = new NamespacedKey(Sushida.plugin, "sushida_tag");
 
-    private Set<Entity> managed = new HashSet<>();
+    private final Set<Entity> managed = new HashSet<>();
 
     private Entity spawnLineTemplate(Player player) {
         return player.getWorld().spawn(player.getLocation(), ArmorStand.class, e -> {
@@ -63,18 +63,13 @@ public class BelowNameManager {
         Entity glue0 = spawnGlueTemplate(player, Bee.class);
         Entity glue1 = spawnGlueTemplate(player, Salmon.class);
         Entity glue2 = spawnGlueTemplate(player, Salmon.class);
-        //Entity glue3 = spawnGlueTemplate(player, Salmon.class);
         Entity line0 = spawnLineTemplate(player);
         Entity line1 = spawnLineTemplate(player);
-        //Entity line2 = spawnLineTemplate(player);
-        //line2.setCustomName(playerData.player.getName());
         player.addPassenger(glue0);
         glue0.addPassenger(glue1);
         glue1.addPassenger(line0);
         line0.addPassenger(glue2);
         glue2.addPassenger(line1);
-        //line1.addPassenger(glue3);
-        //glue3.addPassenger(line2);
         playerData.entity.reference = Arrays.asList(line0, line1, /*line2, */glue0, glue1, glue2/*, glue3*/);
     }
 
