@@ -44,13 +44,6 @@ public class Timer {
     }
 
     /**
-     * @return whether this timer is paused
-     */
-    public boolean isPaused() {
-        return paused;
-    }
-
-    /**
      * Pause the timer. Whilst paused the time will not change for this timer
      * when tick() is called.
      *

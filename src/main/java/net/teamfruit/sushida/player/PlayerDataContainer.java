@@ -15,16 +15,6 @@ public class PlayerDataContainer {
         return data.computeIfAbsent(player.getUniqueId(), e -> new PlayerData(player));
     }
 
-    public void removeOfflinePlayers() {
-        data.values().removeIf(e -> {
-            if (!e.player.isOnline()) {
-                e.destroy();
-                return true;
-            }
-            return false;
-        });
-    }
-
     public Collection<PlayerData> getPlayers() {
         return data.values();
     }

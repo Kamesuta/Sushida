@@ -1,20 +1,11 @@
 package net.teamfruit.sushida.util;
 
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
-import org.bukkit.entity.Player;
 
 import java.util.stream.Collector;
 
 public class TitleUtils {
-    public static Collector<BaseComponent[], ?, BaseComponent[]> joining() {
-        return Collector.of(
-                ComponentBuilder::new,
-                ComponentBuilder::append,
-                (r1, r2) -> r1.append(r2.create()),
-                ComponentBuilder::create);
-    }
 
     public static Collector<BaseComponent[], ?, BaseComponent[]> joining(BaseComponent[] joiner) {
         return Collector.of(

@@ -4,8 +4,6 @@ import com.google.common.collect.ImmutableMap;
 import net.teamfruit.sushida.mode.GameMode;
 import net.teamfruit.sushida.mode.GameModes;
 import net.teamfruit.sushida.mode.GameSettingType;
-import net.teamfruit.sushida.player.Group;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
@@ -53,7 +51,4 @@ public class RankingSetting {
         return Optional.of(new RankingSetting(name, title, scoreboard, word, modes.mode, settings));
     }
 
-    public static RankingSetting fromGroup(String name, String title, String scoreboard, Group group) {
-        return new RankingSetting(name, title, scoreboard, group.getWordName(), group.getMode(), ImmutableMap.copyOf(group.getSettings()));
-    }
 }
