@@ -9,7 +9,7 @@ import net.teamfruit.sushida.player.Group;
 import net.teamfruit.sushida.player.StateContainer;
 import net.teamfruit.sushida.util.CustomCollectors;
 import net.teamfruit.sushida.util.SimpleTask;
-import org.apache.commons.lang.math.NumberUtils;
+import net.teamfruit.sushida.util.NumberUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
