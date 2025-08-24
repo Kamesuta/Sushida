@@ -30,3 +30,8 @@
 ## ダウンロード
 
 [ダウンロードはこちら](https://github.com/TeamKun/Sushida/releases)
+
+## 動作環境
+
+Paper 1.16.5 ～ 1.21.7 で動作確認済み  
+※ 動作には[Paper](https://papermc.io/downloads/paper)サーバーが必要です。SpigotやCraftBukkitでは動きません。
