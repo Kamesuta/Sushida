@@ -8,6 +8,7 @@ import org.bukkit.entity.*;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -49,7 +50,13 @@ public class BelowNameManager {
     }
 
     public void spawn(PlayerData playerData) {
-        despawn(playerData);
+        // デスポーン
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                despawn(playerData);
+            }
+        }.runTask(Sushida.plugin);
         if (!playerData.hasSession())
             return;
         Player player = playerData.player;
