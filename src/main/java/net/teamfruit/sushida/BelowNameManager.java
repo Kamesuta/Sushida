@@ -1,8 +1,8 @@
 package net.teamfruit.sushida;
 
-import net.teamfruit.sushida.Sushida;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
 import net.teamfruit.sushida.player.PlayerData;
-import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.*;
 import org.bukkit.persistence.PersistentDataType;
@@ -25,7 +25,7 @@ public class BelowNameManager {
             e.setGravity(false);
             e.setVisible(false);
             e.setInvulnerable(true);
-            e.setCustomName(ChatColor.WHITE + "");
+            e.customName(Component.text().content("").color(TextColor.color(255, 255, 255)).build());
             e.setCustomNameVisible(true);
             e.setSmall(true);
             e.setMarker(true);
@@ -103,14 +103,16 @@ public class BelowNameManager {
 
         public void setTypingText(String text) {
             List<Entity> entities = this.reference;
-            if (entities != null)
-                entities.get(0).setCustomName(ChatColor.WHITE + text);
+            if (entities != null) {
+                entities.get(0).customName(Component.text().content(text).color(TextColor.color(255, 255, 255)).build());
+            }
         }
 
         public void setScoreText(String text) {
             List<Entity> entities = this.reference;
-            if (entities != null)
-                entities.get(1).setCustomName(ChatColor.WHITE + text);
+            if (entities != null) {
+                entities.get(1).customName(Component.text().content(text).color(TextColor.color(255, 255, 255)).build());
+            }
         }
     }
 }
