@@ -46,15 +46,14 @@ public class Group {
         return player.equals(owner);
     }
 
-    public boolean setOwner(PlayerData player) {
+    public void setOwner(PlayerData player) {
         if (isOwner(player))
-            return false;
+            return;
         if (!members.contains(player))
-            return false;
+            return;
         members.remove(player);
         members.add(owner);
         owner = player;
-        return true;
     }
 
     public Map<GameSettingType, Integer> getSettings() {

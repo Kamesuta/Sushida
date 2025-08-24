@@ -53,20 +53,19 @@ public class PlayerData {
         return this.group.getMembers().add(this);
     }
 
-    public boolean leave() {
+    public void leave() {
         // ゲーム中
         if (hasSession())
-            return false;
+            return;
         // 解散
         if (this.group.isOwner(this))
             new ArrayList<>(this.group.getMembers()).forEach(PlayerData::leave);
         // グループ退出
-        boolean b = this.group.getMembers().remove(this);
+        this.group.getMembers().remove(this);
         if (this.group.getMembers().isEmpty())
             this.group.owner.leaveScoreboard();
         leaveScoreboard();
         this.group = new Group(this);
-        return b;
     }
 
     public void joinScoreboard() {
