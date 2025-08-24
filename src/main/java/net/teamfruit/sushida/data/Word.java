@@ -28,7 +28,15 @@ public class Word {
     public static Word load(InputStream input) {
         try {
 
-            Yaml cfg = new Yaml(new CustomClassLoaderConstructor(Word.class.getClassLoader(), new LoaderOptions()));
+            CustomClassLoaderConstructor ctor;
+            try {
+                ctor = new CustomClassLoaderConstructor(Word.class.getClassLoader(), new LoaderOptions());
+            } catch (NoSuchMethodError e) {
+                // 旧Minecraft互換 (1.16.5)
+                ctor = CustomClassLoaderConstructor.class.getConstructor(ClassLoader.class).newInstance(Word.class.getClassLoader());
+            }
+
+            Yaml cfg = new Yaml(ctor);
             WordData data = cfg.loadAs(new InputStreamReader(input, Charsets.UTF_8), WordData.class);
             return new Word(
                     data.title,

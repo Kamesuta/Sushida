@@ -100,7 +100,9 @@ public final class Sushida extends JavaPlugin {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
-        belowName.clearManaged();
+        if (belowName != null) {
+            belowName.clearManaged();
+        }
     }
 
 }
