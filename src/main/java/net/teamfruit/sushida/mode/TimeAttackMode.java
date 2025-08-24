@@ -210,7 +210,7 @@ public class TimeAttackMode implements GameMode {
         return IntStream.range(0, splits.size())
                 .mapToObj(i ->
                         wordRequiredListByLevel.get(i).getValue().stream()
-                                .collect(CustomCollectors.toRandomPickList(splits.get(i)))
+                                .collect(CustomCollectors.toCyclingShuffledList(splits.get(i)))
                 )
                 .flatMap(Collection::stream)
                 .flatMap(Collection::stream)
