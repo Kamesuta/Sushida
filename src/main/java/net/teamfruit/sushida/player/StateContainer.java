@@ -74,14 +74,6 @@ public class StateContainer {
         return this.state;
     }
 
-    public static BiFunction<IState, StateContainer, IState> exclude(Class<?> stateClass, BiFunction<IState, StateContainer, IState> func) {
-        return (state, container) -> {
-            if (state.getClass().equals(stateClass))
-                return null;
-            return func.apply(state, container);
-        };
-    }
-
     public static <T extends IState> BiFunction<IState, StateContainer, IState> ifClass(Class<T> stateClass, BiFunction<T, StateContainer, IState> func) {
         return (state, container) -> {
             if (stateClass.isInstance(state)) {

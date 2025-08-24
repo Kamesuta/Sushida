@@ -53,18 +53,6 @@ public class MojiExtractor {
         return getCandidate(string, romajiToHiragana);
     }
 
-    public static ImmutableList<String> getHiraganaEarlyCandidate(String string, ConversionTable romajiToHiragana) {
-
-        string = string.toLowerCase();
-
-        if (hasDoubleConsonantWithSokuon(string))
-            return ImmutableList.of("っ");
-        else if (hasConsonantNextToN(string))
-            return ImmutableList.of("ん");
-
-        return getCandidate(string, romajiToHiragana);
-    }
-
     public static ImmutableList<String> getCandidate(String string, ConversionTable conversionTable) {
 
         ImmutableList.Builder<String> resultBuilder = ImmutableList.builder();
