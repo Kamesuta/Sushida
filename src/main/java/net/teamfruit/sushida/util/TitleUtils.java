@@ -27,27 +27,4 @@ public class TitleUtils {
                 (r1, r2) -> r1.append(r2.create()),
                 ComponentBuilder::create);
     }
-
-    public static void showTitle(Player player) {
-        player.sendMessage(new ComponentBuilder()
-                .append("  ≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)≡)").color(ChatColor.GRAY)
-                .create()
-        );
-        player.sendMessage("");
-        player.sendMessage(new ComponentBuilder()
-                .append("      ")
-                .append(new ComponentBuilder("寿司打").bold(true).create()).color(ChatColor.YELLOW)
-                .append("  -  ").color(ChatColor.GRAY)
-                .append("制作: かめすた").color(ChatColor.LIGHT_PURPLE)
-                .append(" / ").color(ChatColor.GRAY)
-                .append("制作時間: 85時間").color(ChatColor.RED)
-                .create()
-        );
-        player.sendMessage("");
-        player.sendMessage(new ComponentBuilder()
-                .append("  (≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡(≡").color(ChatColor.GRAY)
-                .create()
-        );
-        player.sendMessage("");
-    }
 }

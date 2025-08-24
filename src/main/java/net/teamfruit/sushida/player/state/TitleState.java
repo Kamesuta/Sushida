@@ -8,7 +8,6 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.teamfruit.sushida.SoundManager;
 import net.teamfruit.sushida.player.StateContainer;
-import net.teamfruit.sushida.util.TitleUtils;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 
@@ -24,7 +23,6 @@ public class TitleState implements IState {
 
         IntStream.range(0, 9).forEachOrdered(e -> player.sendMessage(""));
 
-        TitleUtils.showTitle(player);
         player.sendMessage(new ComponentBuilder()
                 .append("    画面中央の文字の指示に従ってください").color(ChatColor.GREEN)
                 .create()
