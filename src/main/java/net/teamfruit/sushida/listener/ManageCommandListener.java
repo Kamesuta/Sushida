@@ -499,9 +499,6 @@ public class ManageCommandListener implements CommandExecutor, TabCompleter {
             }
         }
 
-        // タイトル表示
-        TitleUtils.showTitle(player);
-
         {
             player.sendMessage(new ComponentBuilder()
                     .append("▼ゲーム設定").color(ChatColor.GOLD).bold(true)
