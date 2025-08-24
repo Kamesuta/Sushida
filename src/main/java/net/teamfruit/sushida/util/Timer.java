@@ -1,7 +1,7 @@
 package net.teamfruit.sushida.util;
 
 /**
- * A hires timer. This measures time in seconds as floating point values.
+ * A hires' timer. This measures time in seconds as floating point values.
  * All Timers created are updated simultaneously by calling the static method
  * tick(). This ensures that within a single iteration of a game loop that
  * all timers are updated consistently with each other.
@@ -13,7 +13,7 @@ package net.teamfruit.sushida.util;
 public class Timer {
 
     // Timer resolution
-    private static long resolution = 1000;
+    private static final long resolution = 1000;
 
     // When the timer was started
     private long startTime;

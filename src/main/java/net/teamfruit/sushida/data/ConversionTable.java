@@ -9,7 +9,7 @@ import java.util.List;
 public class ConversionTable {
 
     private final ListMultimap<String, String> conversionMap;
-    private int maxKeyLength;
+    private final int maxKeyLength;
 
     public ConversionTable(ListMultimap<String, String> conversionMap) {
         this.conversionMap = conversionMap;

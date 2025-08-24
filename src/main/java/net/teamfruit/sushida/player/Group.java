@@ -24,11 +24,11 @@ public class Group {
     private String wordName = "word";
     private GameMode gameMode = GameModes.time.mode;
     private Word word = Sushida.logic.word.get(wordName);
-    private Map<GameSettingType, Integer> settings = new HashMap<>();
-    private Set<PlayerData> members = new HashSet<>();
+    private final Map<GameSettingType, Integer> settings = new HashMap<>();
+    private final Set<PlayerData> members = new HashSet<>();
     private ImmutableList<Map.Entry<String, String>> wordRequiredList;
 
-    private Scoreboard groupScoreboard;
+    private final Scoreboard groupScoreboard;
     private Team groupTeamTitle;
 
     private Team groupTeamCountdownWait;

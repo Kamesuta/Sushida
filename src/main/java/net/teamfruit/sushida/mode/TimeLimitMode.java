@@ -248,7 +248,7 @@ public class TimeLimitMode implements GameMode {
         return wordRequiredListByLevel.stream()
                 .flatMap(e -> e.getValue().stream())
                 .collect(CustomCollectors.toShuffledList()).stream()
-                .flatMap(e -> e.stream())
+                .flatMap(Collection::stream)
                 .collect(ImmutableList.toImmutableList());
     }
 }
